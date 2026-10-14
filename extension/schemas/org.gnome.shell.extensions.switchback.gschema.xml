@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="switchback">
+  <schema id="org.gnome.shell.extensions.switchback" path="/org/gnome/shell/extensions/switchback/">
+    <key name="caps-lock-switch-enabled" type="b">
+      <default>true</default>
+      <summary>Enable Caps Lock layout toggle</summary>
+      <description>Use single press of Caps Lock to switch between keyboard layouts.</description>
+    </key>
+
+    <key name="auto-switch-enabled" type="b">
+      <default>true</default>
+      <summary>Auto-switch enabled</summary>
+      <description>Automatically switch back to the primary layout when the countdown finishes.</description>
+    </key>
+
+    <key name="show-indicator" type="b">
+      <default>true</default>
+      <summary>Show indicator bar</summary>
+      <description>Whether to show the visual indicator bar on the screen.</description>
+    </key>
+
+    <key name="timeout-seconds" type="d">
+      <default>3.0</default>
+      <range min="0.5" max="30.0"/>
+      <summary>Timeout in seconds</summary>
+      <description>Inactivity timeout in seconds before switching back to the primary layout.</description>
+    </key>
+
+    <key name="bar-position" type="s">
+      <default>'top'</default>
+      <choices>
+        <choice value='top'/>
+        <choice value='bottom'/>
+        <choice value='top-bottom'/>
+        <choice value='left'/>
+        <choice value='right'/>
+        <choice value='left-right'/>
+      </choices>
+      <summary>Indicator position</summary>
+      <description>Edge of the screen where the indicator bar is placed: top, bottom, top-bottom, left, right, left-right.</description>
+    </key>
+
+    <key name="margin-top" type="i">
+      <default>0</default>
+      <range min="0" max="200"/>
+      <summary>Top margin</summary>
+      <description>Margin from the top screen edge in pixels.</description>
+    </key>
+
+    <key name="margin-bottom" type="i">
+      <default>0</default>
+      <range min="0" max="200"/>
+      <summary>Bottom margin</summary>
+      <description>Margin from the bottom screen edge in pixels.</description>
+    </key>
+
+    <key name="margin-left" type="i">
+      <default>0</default>
+      <range min="0" max="200"/>
+      <summary>Left margin</summary>
+      <description>Margin from the left screen edge in pixels.</description>
+    </key>
+
+    <key name="margin-right" type="i">
+      <default>0</default>
+      <range min="0" max="200"/>
+      <summary>Right margin</summary>
+      <description>Margin from the right screen edge in pixels.</description>
+    </key>
+
+    <key name="bar-margin" type="i">
+      <default>0</default>
+      <range min="0" max="200"/>
+      <summary>Legacy margin</summary>
+      <description>Fallback margin in pixels.</description>
+    </key>
+
+    <key name="bar-thickness" type="i">
+      <default>3</default>
+      <range min="1" max="50"/>
+      <summary>Bar thickness</summary>
+      <description>Thickness of the indicator bar in pixels.</description>
+    </key>
+
+    <key name="bar-length-fraction" type="d">
+      <default>0.5</default>
+      <range min="0.05" max="1.0"/>
+      <summary>Bar length fraction</summary>
+      <description>Length of the indicator bar as a fraction of the screen edge dimension (0.05 to 1.0).</description>
+    </key>
+
+    <key name="bar-color" type="s">
+      <default>'#3584e4'</default>
+      <summary>Bar color</summary>
+      <description>CSS color string for the indicator bar (e.g. #3584e4, #ffffff, rgba(...)).</description>
+    </key>
+
+    <key name="bar-radius" type="i">
+      <default>2</default>
+      <range min="0" max="30"/>
+      <summary>Corner radius</summary>
+      <description>Border corner radius in pixels.</description>
+    </key>
+
+    <key name="animation-mode" type="s">
+      <default>'to-center'</default>
+      <choices>
+        <choice value='to-center'/>
+        <choice value='to-start'/>
+        <choice value='to-end'/>
+      </choices>
+      <summary>Animation direction</summary>
+      <description>Shrink animation mode: to-center (symmetrical), to-start (left/top), to-end (right/bottom).</description>
+    </key>
+
+    <key name="only-on-primary-monitor" type="b">
+      <default>true</default>
+      <summary>Primary monitor only</summary>
+      <description>Show the indicator bar only on the primary display.</description>
+    </key>
+
+    <key name="switch-to-source-index" type="i">
+      <default>0</default>
+      <summary>Target layout index</summary>
+      <description>Input source index to activate upon timeout (default 0 is usually English/primary).</description>
+    </key>
+  </schema>
+</schemalist>

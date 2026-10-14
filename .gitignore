@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+*.shell-extension.zip
+schemas/gschemas.compiled
+.DS_Store

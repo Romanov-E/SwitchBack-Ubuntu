@@ -1,0 +1,262 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SwitchBack Ubuntu 2.2.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Romanov-E/SwitchBack-Ubuntu\n"
+"POT-Creation-Date: 2026-10-14 15:45+0300\n"
+"PO-Revision-Date: 2026-10-14 15:45+0300\n"
+"Last-Translator: SwitchBack Team\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+# ══════════════════════════════════════════════════════════════
+# СТРАНИЦА 1: ПОВЕДЕНИЕ (BEHAVIOR)
+# ══════════════════════════════════════════════════════════════
+
+msgid "Behavior"
+msgstr "Поведение"
+
+msgid "Keyboard Layout Switching"
+msgstr "Переключение раскладки"
+
+msgid "Assign Caps Lock key for quick input language switching"
+msgstr "Назначение клавиши Caps Lock для быстрой смены языка ввода"
+
+msgid "Switch layout with Caps Lock key"
+msgstr "Переключение раскладки по клавише Caps Lock"
+
+msgid "Use single press of Caps Lock to quickly switch language. When disabled, standard system shortcuts apply (Super+Space, Alt+Shift, etc.)"
+msgstr "Использовать одиночное нажатие Caps Lock для быстрой смены языка. Если выключено — работают стандартные горячие клавиши системы (Super+Пробел, Alt+Shift и т.д.)"
+
+msgid "Automatic Layout Return"
+msgstr "Автоматический возврат раскладки"
+
+msgid "Return to primary language after typing inactivity and indicator bar display"
+msgstr "Возврат на приоритетный язык при паузе в наборе и отображение индикатора"
+
+msgid "Auto-return to primary layout"
+msgstr "Автоматический возврат раскладки"
+
+msgid "Switch back to primary language after typing pause (master switch)"
+msgstr "Возвращать язык на приоритетный после паузы в наборе текста (главный переключатель)"
+
+msgid "Show on-screen indicator"
+msgstr "Отображать экранный индикатор"
+
+msgid "Visual animated bar (when disabled, auto-switch works silently in background)"
+msgstr "Визуальная анимированная полоса (если выключено — автовозврат работает тихо в фоне)"
+
+msgid "Timer & Switch Parameters"
+msgstr "Таймер и параметры переключения"
+
+msgid "Inactivity pause and target layout selection"
+msgstr "Пауза бездействия и выбор целевой раскладки"
+
+msgid "Timeout (seconds)"
+msgstr "Время ожидания (секунды)"
+
+msgid "Delay of typing inactivity before switching back to primary layout"
+msgstr "Пауза в наборе текста, после которой раскладка переключится на приоритетную"
+
+msgid "Target layout index"
+msgstr "Индекс приоритетной раскладки"
+
+msgid "0 — first language in GNOME input list (usually English)"
+msgstr "0 — первый язык в списке ввода GNOME (обычно английский)"
+
+msgid "Only on primary monitor"
+msgstr "Только на основном мониторе"
+
+msgid "Show countdown bar exclusively on the main display"
+msgstr "Отображать индикатор исключительно на главном дисплее"
+
+# ══════════════════════════════════════════════════════════════
+# СТРАНИЦА 2: ВНЕШНИЙ ВИД (APPEARANCE)
+# ══════════════════════════════════════════════════════════════
+
+msgid "Appearance"
+msgstr "Внешний вид"
+
+msgid "Indicator Position"
+msgstr "Положение индикатора"
+
+msgid "Screen edge and display mode (single or paired)"
+msgstr "Кромка экрана и режим отображения (одиночный или парный)"
+
+msgid "Determines bar orientation and screen edges"
+msgstr "Определяет ориентацию и кромки экрана"
+
+msgid "Top of screen (horizontal)"
+msgstr "Сверху экрана (горизонтально)"
+
+msgid "Bottom of screen (horizontal)"
+msgstr "Снизу экрана (горизонтально)"
+
+msgid "Top + Bottom (two horizontal bars)"
+msgstr "Сверху + Снизу (две горизонтальные полосы)"
+
+msgid "Left of screen (vertical)"
+msgstr "Слева экрана (вертикально)"
+
+msgid "Right of screen (vertical)"
+msgstr "Справа экрана (вертикально)"
+
+msgid "Left + Right (two vertical bars)"
+msgstr "Слева + Справа (две вертикальные полосы)"
+
+msgid "Screen Edge Margins"
+msgstr "Отступы от краёв экрана"
+
+msgid "Custom margins in pixels for each side of the display"
+msgstr "Настройка индивидуальных зазоров в пикселях для каждой стороны дисплея"
+
+msgid "Top margin (px)"
+msgstr "Отступ сверху (px)"
+
+msgid "Gap from the top screen edge (top panel)"
+msgstr "Зазор от верхней кромки экрана (верхней панели)"
+
+msgid "Bottom margin (px)"
+msgstr "Отступ снизу (px)"
+
+msgid "Gap from the bottom screen edge (dock)"
+msgstr "Зазор от нижней кромки экрана (дока)"
+
+msgid "Left margin (px)"
+msgstr "Отступ слева (px)"
+
+msgid "Gap from the left screen edge"
+msgstr "Зазор от левой кромки экрана"
+
+msgid "Right margin (px)"
+msgstr "Отступ справа (px)"
+
+msgid "Gap from the right screen edge"
+msgstr "Зазор от правой кромки экрана"
+
+msgid "Dimensions & Style"
+msgstr "Размеры и геометрия"
+
+msgid "Length, thickness, shape and color of the bar"
+msgstr "Длина, толщина, форма и цвет полосы"
+
+msgid "Bar length (% of screen)"
+msgstr "Длина полосы (% от экрана)"
+
+msgid "Percentage of screen width (or height in vertical mode)"
+msgstr "Процент от ширины (или высоты в вертикальном режиме)"
+
+msgid "Indicator thickness"
+msgstr "Толщина индикатора"
+
+msgid "Height of horizontal bar or width of vertical bar (pixels)"
+msgstr "Высота горизонтальной полосы или ширина вертикальной (в пикселях)"
+
+msgid "Corner radius"
+msgstr "Скругление углов"
+
+msgid "Corner radius in pixels (0 — sharp corners, higher — rounded capsule)"
+msgstr "Радиус скругления в пикселях (0 — острые углы, выше — скруглённая капсула)"
+
+msgid "Indicator color"
+msgstr "Цвет индикатора"
+
+msgid "Click button to choose color or opacity"
+msgstr "Нажмите кнопку для выбора цвета или прозрачности"
+
+msgid "Choose SwitchBack bar color"
+msgstr "Выберите цвет полосы SwitchBack"
+
+msgid "Shrink Animation"
+msgstr "Анимация сужения"
+
+msgid "Direction of bar shrinking during countdown"
+msgstr "Направление движения полосы во время обратного отсчёта"
+
+msgid "Shrink animation style"
+msgstr "Стиль сжатия полосы"
+
+msgid "Where the indicator collapses as time expires"
+msgstr "Куда стягивается индикатор при истечении времени"
+
+msgid "To center (symmetric from both sides)"
+msgstr "К центру (симметрично с двух сторон)"
+
+msgid "To start (left / top)"
+msgstr "К началу (влево / вверх)"
+
+msgid "To end (right / bottom)"
+msgstr "К концу (вправо / вниз)"
+
+# ══════════════════════════════════════════════════════════════
+# СТРАНИЦА 3: СЛУЖБА (SERVICE)
+# ══════════════════════════════════════════════════════════════
+
+msgid "Service"
+msgstr "Служба"
+
+msgid "Background Service Management"
+msgstr "Фоновый демон клавиатуры"
+
+msgid "Systemd user service status and control for switchback-daemon"
+msgstr "Управление системной службой switchback-daemon.service (systemd --user)"
+
+msgid "Service Status"
+msgstr "Состояние службы"
+
+msgid "Service is active and monitoring physical keyboard via /dev/input"
+msgstr "Служба активна и отслеживает клавиатуру через /dev/input"
+
+msgid "Service is stopped (timer cannot detect typing)"
+msgstr "Служба остановлена (таймер автовозврата не сможет отслеживать печать)"
+
+msgid "Run background service"
+msgstr "Работа службы"
+
+msgid "Start or stop the hardware event monitoring daemon"
+msgstr "Запуск или остановка фонового процесса чтения клавиатуры"
+
+msgid "Service autostart"
+msgstr "Автозапуск при входе в систему"
+
+msgid "Start daemon automatically when logging into Ubuntu"
+msgstr "Автоматический старт демона при загрузке пользовательской сессии"
+
+msgid "Restart Service"
+msgstr "Перезапустить службу"
+
+msgid "Force restart daemon to re-scan hardware devices"
+msgstr "Принудительный перезапуск демона для обновления списка устройств"
+
+msgid "Restart"
+msgstr "Перезапустить"
+
+msgid "Security & Privacy"
+msgstr "Безопасность и производительность"
+
+msgid "Data Privacy & Zero Logging"
+msgstr "Защита данных и приватность"
+
+msgid "SwitchBack DOES NOT record, store, or analyze typed text. The daemon strictly tracks the timestamp of physical keypresses to reset the timer."
+msgstr "SwitchBack НЕ сохраняет и НЕ анализирует вводимый текст. Демон фиксирует только сам факт нажатия клавиши для сброса таймера."
+
+msgid "Hardware Mouse Isolation"
+msgstr "Аппаратная изоляция мыши"
+
+msgid "Clicks, cursor movement, and mouse wheels (including horizontal wheels) are filtered at the kernel level and do not affect the typing timer."
+msgstr "Клики, перемещения курсора и любые колёсики мыши (включая боковые) полностью отфильтрованы на уровне ядра и не влияют на таймер."
+
+msgid "About"
+msgstr "О программе"
+
+msgid "SwitchBack Ubuntu Version"
+msgstr "Версия SwitchBack Ubuntu"
+
+msgid "For GNOME Shell 45 – 51, Wayland & X11"
+msgstr "Для GNOME Shell 45 – 51, Wayland & X11"
+
+msgid "GitHub Repository"
+msgstr "Репозиторий GitHub"

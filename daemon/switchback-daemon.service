@@ -1,0 +1,15 @@
+[Unit]
+Description=SwitchBack Physical Keyboard Activity Daemon
+Documentation=https://github.com/Romanov-E/SwitchBack-Ubuntu
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/switchback/daemon.py
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

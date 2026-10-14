@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#303848"/>
+      <stop offset="100%" stop-color="#1e222e"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3584e4"/>
+      <stop offset="100%" stop-color="#62a0ea"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base App Card -->
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="url(#bgGrad)" stroke="#454f63" stroke-width="2"/>
+
+  <!-- Keyboard Body Silhouette -->
+  <rect x="22" y="38" width="84" height="58" rx="10" fill="#262c38" stroke="#3b4455" stroke-width="2"/>
+
+  <!-- Keys Grid -->
+  <rect x="28" y="44" width="14" height="10" rx="3" fill="#3c4558"/>
+  <rect x="46" y="44" width="14" height="10" rx="3" fill="#3c4558"/>
+  <rect x="64" y="44" width="14" height="10" rx="3" fill="#3c4558"/>
+  <rect x="82" y="44" width="18" height="10" rx="3" fill="#3c4558"/>
+
+  <!-- Middle Row (Caps Lock highlighted) -->
+  <rect x="28" y="58" width="20" height="10" rx="3" fill="#3584e4" opacity="0.85"/>
+  <rect x="52" y="58" width="14" height="10" rx="3" fill="#3c4558"/>
+  <rect x="70" y="58" width="14" height="10" rx="3" fill="#3c4558"/>
+  <rect x="88" y="58" width="12" height="10" rx="3" fill="#3c4558"/>
+
+  <!-- Spacebar -->
+  <rect x="44" y="72" width="40" height="10" rx="3" fill="#485368"/>
+
+  <!-- Glow Indicator Bar (SwitchBack Indicator) -->
+  <g filter="url(#glow)">
+    <rect x="28" y="20" width="72" height="6" rx="3" fill="url(#accentGrad)"/>
+  </g>
+
+  <!-- Switch Arrow Icon Overlay -->
+  <path d="M 64 100 C 54 100, 46 106, 46 112 M 46 112 L 52 108 M 46 112 L 52 116" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 64 112 C 74 112, 82 106, 82 100 M 82 100 L 76 104 M 82 100 L 76 96" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
