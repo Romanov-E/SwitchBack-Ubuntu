@@ -135,11 +135,28 @@ systemctl --user restart switchback-daemon.service 2>/dev/null || true
 echo -e "${GREEN}✅ Служба switchback-daemon.service активна.${NC}"
 
 # 9. Установка иконки
-ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
+HICOLOR_DIR="$HOME/.local/share/icons/hicolor"
+ICON_DIR="$HICOLOR_DIR/scalable/apps"
 mkdir -p "$ICON_DIR"
+if [ ! -f "$HICOLOR_DIR/index.theme" ]; then
+    cat << 'EOF' > "$HICOLOR_DIR/index.theme"
+[Icon Theme]
+Name=Hicolor
+Comment=User Hicolor Theme
+Hidden=true
+Directories=scalable/apps
+
+[scalable/apps]
+Size=48
+Type=Scalable
+MinSize=16
+MaxSize=512
+Context=Applications
+EOF
+fi
 cp -f "$PROJECT_DIR/desktop/icons/switchback.svg" "$ICON_DIR/switchback.svg"
 if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -q "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true
+    gtk-update-icon-cache -q "$HICOLOR_DIR" >/dev/null 2>&1 || true
 fi
 
 # 10. Активация расширения

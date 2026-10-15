@@ -247,7 +247,69 @@ class SwitchBackInstaller(Adw.Application):
             return True
         return False
 
+    def ensure_desktop_icon_integration(self):
+        try:
+            icons_dir = os.path.join(PROJECT_DIR, "desktop", "icons")
+            display = Gdk.Display.get_default()
+            if display:
+                icon_theme = Gtk.IconTheme.get_for_display(display)
+                icon_theme.add_search_path(icons_dir)
+
+            svg_icon = os.path.join(icons_dir, "switchback.svg")
+            if os.path.exists(svg_icon):
+                user_hicolor = os.path.expanduser("~/.local/share/icons/hicolor")
+                user_icons = os.path.join(user_hicolor, "scalable", "apps")
+                os.makedirs(user_icons, exist_ok=True)
+                
+                # FreeDesktop standard: hicolor directory requires index.theme
+                index_theme = os.path.join(user_hicolor, "index.theme")
+                if not os.path.exists(index_theme):
+                    with open(index_theme, "w", encoding="utf-8") as f:
+                        f.write("""[Icon Theme]
+Name=Hicolor
+Comment=User Hicolor Theme
+Hidden=true
+Directories=scalable/apps
+
+[scalable/apps]
+Size=48
+Type=Scalable
+MinSize=16
+MaxSize=512
+Context=Applications
+""")
+
+                for name in ["switchback.svg", "io.github.romanov_e.switchback.installer.svg"]:
+                    target = os.path.join(user_icons, name)
+                    if not os.path.exists(target):
+                        shutil.copy2(svg_icon, target)
+                
+                if shutil.which("gtk-update-icon-cache"):
+                    subprocess.run(["gtk-update-icon-cache", "-q", user_hicolor], capture_output=True, check=False)
+
+            apps_dir = os.path.expanduser("~/.local/share/applications")
+            os.makedirs(apps_dir, exist_ok=True)
+            desktop_file = os.path.join(apps_dir, "io.github.romanov_e.switchback.installer.desktop")
+            if not os.path.exists(desktop_file):
+                with open(desktop_file, "w", encoding="utf-8") as f:
+                    f.write(f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SwitchBack Setup
+Name[ru]=Установка SwitchBack
+Icon=switchback
+Exec={os.path.join(PROJECT_DIR, 'install-gui')}
+StartupWMClass=io.github.romanov_e.switchback.installer
+NoDisplay=true
+Terminal=false
+""")
+                if shutil.which("update-desktop-database"):
+                    subprocess.run(["update-desktop-database", apps_dir], capture_output=True, check=False)
+        except Exception:
+            pass
+
     def do_activate(self):
+        self.ensure_desktop_icon_integration()
         self.check_existing_installation()
 
         self.win = Adw.ApplicationWindow(application=self, title=self.t('app_title'))
