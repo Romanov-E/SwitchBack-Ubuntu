@@ -4,6 +4,7 @@ import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Keyboard from 'resource:///org/gnome/shell/ui/status/keyboard.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 function getArmsForPosition(pos, monitor, fraction, thickness, margins) {
     const { top: mTop, bottom: mBottom, left: mLeft, right: mRight } = margins;
     const hMaxLen = Math.max(8, Math.round(monitor.width * fraction));

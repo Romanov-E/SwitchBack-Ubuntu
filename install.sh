@@ -138,26 +138,10 @@ echo -e "${GREEN}✅ Служба switchback-daemon.service активна.${NC}
 HICOLOR_DIR="$HOME/.local/share/icons/hicolor"
 ICON_DIR="$HICOLOR_DIR/scalable/apps"
 mkdir -p "$ICON_DIR"
-if [ ! -f "$HICOLOR_DIR/index.theme" ]; then
-    cat << 'EOF' > "$HICOLOR_DIR/index.theme"
-[Icon Theme]
-Name=Hicolor
-Comment=User Hicolor Theme
-Hidden=true
-Directories=scalable/apps
-
-[scalable/apps]
-Size=48
-Type=Scalable
-MinSize=16
-MaxSize=512
-Context=Applications
-EOF
-fi
+# Удаляем ошибочные index.theme и icon-theme.cache, если они были созданы ранее
+rm -f "$HICOLOR_DIR/index.theme" "$HICOLOR_DIR/icon-theme.cache"
 cp -f "$PROJECT_DIR/desktop/icons/switchback.svg" "$ICON_DIR/switchback.svg"
-if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -q "$HICOLOR_DIR" >/dev/null 2>&1 || true
-fi
+
 
 # 10. Активация расширения
 echo -e "${BLUE}⚡ Активация расширения GNOME...${NC}"

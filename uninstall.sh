@@ -43,13 +43,12 @@ fi
 echo "5. Удаление иконок и ярлыков..."
 rm -f "$HOME/.local/share/icons/hicolor/scalable/apps/switchback.svg"
 rm -f "$HOME/.local/share/icons/hicolor/scalable/apps/io.github.romanov_e.switchback.installer.svg"
+rm -f "$HOME/.local/share/icons/hicolor/index.theme" "$HOME/.local/share/icons/hicolor/icon-theme.cache"
 rm -f "$HOME/.local/share/applications/io.github.romanov_e.switchback.installer.desktop"
 rm -f "$HOME/.local/share/applications/switchback-settings.desktop"
 rm -f "$HOME/.local/bin/switchback-settings"
 
-if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -q "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
-fi
+
 if command -v update-desktop-database >/dev/null 2>&1; then
     update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
 fi

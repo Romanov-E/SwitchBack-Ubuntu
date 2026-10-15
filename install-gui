@@ -261,31 +261,19 @@ class SwitchBackInstaller(Adw.Application):
                 user_icons = os.path.join(user_hicolor, "scalable", "apps")
                 os.makedirs(user_icons, exist_ok=True)
                 
-                # FreeDesktop standard: hicolor directory requires index.theme
-                index_theme = os.path.join(user_hicolor, "index.theme")
-                if not os.path.exists(index_theme):
-                    with open(index_theme, "w", encoding="utf-8") as f:
-                        f.write("""[Icon Theme]
-Name=Hicolor
-Comment=User Hicolor Theme
-Hidden=true
-Directories=scalable/apps
-
-[scalable/apps]
-Size=48
-Type=Scalable
-MinSize=16
-MaxSize=512
-Context=Applications
-""")
+                # Cleanup any accidental partial index.theme or cache in user hicolor
+                for rogue in ["index.theme", "icon-theme.cache"]:
+                    p = os.path.join(user_hicolor, rogue)
+                    if os.path.exists(p):
+                        try:
+                            os.remove(p)
+                        except Exception:
+                            pass
 
                 for name in ["switchback.svg", "io.github.romanov_e.switchback.installer.svg"]:
                     target = os.path.join(user_icons, name)
                     if not os.path.exists(target):
                         shutil.copy2(svg_icon, target)
-                
-                if shutil.which("gtk-update-icon-cache"):
-                    subprocess.run(["gtk-update-icon-cache", "-q", user_hicolor], capture_output=True, check=False)
 
             apps_dir = os.path.expanduser("~/.local/share/applications")
             os.makedirs(apps_dir, exist_ok=True)
@@ -1093,11 +1081,17 @@ Terminal=false
                 subprocess.run(["update-desktop-database", os.path.expanduser("~/.local/share/applications")], capture_output=True, check=False)
 
             # Icon
-            icon_dir = os.path.expanduser("~/.local/share/icons/hicolor/scalable/apps")
+            user_hicolor = os.path.expanduser("~/.local/share/icons/hicolor")
+            icon_dir = os.path.join(user_hicolor, "scalable", "apps")
             os.makedirs(icon_dir, exist_ok=True)
+            for rogue in ["index.theme", "icon-theme.cache"]:
+                p = os.path.join(user_hicolor, rogue)
+                if os.path.exists(p):
+                    try:
+                        os.remove(p)
+                    except Exception:
+                        pass
             shutil.copy2(svg_icon, os.path.join(icon_dir, "switchback.svg"))
-            if shutil.which("gtk-update-icon-cache"):
-                subprocess.run(["gtk-update-icon-cache", "-q", os.path.expanduser("~/.local/share/icons/hicolor")], check=False)
 
             # Service
             service_dir = os.path.expanduser("~/.config/systemd/user")
@@ -1261,11 +1255,21 @@ Terminal=false
                 user_glib = os.path.expanduser("~/.local/share/glib-2.0/schemas")
                 subprocess.run(['glib-compile-schemas', user_glib], check=False)
 
-            icon_file = os.path.expanduser("~/.local/share/icons/hicolor/scalable/apps/switchback.svg")
-            if os.path.exists(icon_file):
-                os.remove(icon_file)
-                if shutil.which("gtk-update-icon-cache"):
-                    subprocess.run(["gtk-update-icon-cache", "-q", os.path.expanduser("~/.local/share/icons/hicolor")], check=False)
+            for name in ["switchback.svg", "io.github.romanov_e.switchback.installer.svg"]:
+                f = os.path.expanduser(f"~/.local/share/icons/hicolor/scalable/apps/{name}")
+                if os.path.exists(f):
+                    try:
+                        os.remove(f)
+                    except Exception:
+                        pass
+            user_hicolor = os.path.expanduser("~/.local/share/icons/hicolor")
+            for rogue in ["index.theme", "icon-theme.cache"]:
+                p = os.path.join(user_hicolor, rogue)
+                if os.path.exists(p):
+                    try:
+                        os.remove(p)
+                    except Exception:
+                        pass
 
             self.log("✅ SwitchBack has been cleanly uninstalled.")
             GLib.idle_add(self.progress_bar.set_fraction, 1.0)
