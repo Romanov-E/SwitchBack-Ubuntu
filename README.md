@@ -123,9 +123,13 @@ Launch the modern GTK4/Libadwaita installer:
 ```
 *(You can also double-click `SwitchBack-Installer.desktop` directly in Ubuntu Files / Nautilus)*
 
-<p align="center">
-  <img src="docs/screenshots/installer-gui-en.png" width="500" alt="SwitchBack Graphical Installer" />
-</p>
+<div align="center">
+
+| Setup Options | Live Progress & Log |
+| :---: | :---: |
+| <img src="docs/screenshots/installer-gui-en.png" width="380" alt="SwitchBack Graphical Setup" /> | <img src="docs/screenshots/installer-gui-progress-en.png" width="380" alt="Live Installation Progress" /> |
+
+</div>
 
 ### Option B: Terminal Script
 Run the automated CLI script:
