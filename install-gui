@@ -80,6 +80,7 @@ TRANSLATIONS = {
         'feature_timer': '⏱️ <b>Автовозврат</b>: возврат на основной язык после паузы в наборе',
         'feature_hud': '🎨 <b>Экранный индикатор</b>: визуализация отсчёта в углах и по краям экрана',
         'lang_toggle': '🌐 English',
+        'install_in_progress': 'Идёт операция, пожалуйста, подождите...',
     },
     'en': {
         'app_title': 'SwitchBack Ubuntu Setup',
@@ -138,6 +139,7 @@ TRANSLATIONS = {
         'feature_timer': '⏱️ <b>Auto-return</b>: switches back to primary layout on typing pauses',
         'feature_hud': '🎨 <b>HUD Indicators</b>: sleek animated countdown bars &amp; corner brackets',
         'lang_toggle': '🌐 Русский',
+        'install_in_progress': 'Installation is in progress, please wait...',
     }
 }
 
@@ -230,6 +232,7 @@ class SwitchBackInstaller(Adw.Application):
         self.log_lines = []
         self.installed_version = None
         self.daemon_active = False
+        self.is_installing = False
 
     def t(self, key, **kwargs):
         text = TRANSLATIONS[self.current_lang].get(key, key)
@@ -237,12 +240,20 @@ class SwitchBackInstaller(Adw.Application):
             return text.format(**kwargs)
         return text
 
+    def on_close_request(self, window):
+        if self.is_installing:
+            toast = Adw.Toast.new(self.t('install_in_progress'))
+            self.toast_overlay.add_toast(toast)
+            return True
+        return False
+
     def do_activate(self):
         self.check_existing_installation()
 
         self.win = Adw.ApplicationWindow(application=self, title=self.t('app_title'))
-        self.win.set_default_size(620, 720)
+        self.win.set_default_size(600, 690)
         self.win.set_size_request(480, 560)
+        self.win.connect("close-request", self.on_close_request)
 
         # Custom CSS styling
         self.load_styles()
@@ -871,6 +882,7 @@ class SwitchBackInstaller(Adw.Application):
         thread.start()
 
     def run_installation(self, options):
+        self.is_installing = True
         self.log("🚀 Starting SwitchBack Ubuntu installation...")
         self.log(f"Source directory: {PROJECT_DIR}")
 
@@ -901,7 +913,18 @@ class SwitchBackInstaller(Adw.Application):
             # Step 2: Input group
             GLib.idle_add(self.step_rows['input'].set_status, "running")
             GLib.idle_add(self.progress_bar.set_fraction, 0.30)
-            user = os.environ.get('USER', os.getlogin() if hasattr(os, 'getlogin') else 'user')
+            user = os.environ.get('USER')
+            if not user:
+                try:
+                    user = os.getlogin()
+                except Exception:
+                    pass
+            if not user:
+                try:
+                    import pwd
+                    user = pwd.getpwuid(os.getuid()).pw_name
+                except Exception:
+                    user = 'user'
             self.log(f"Checking hardware keyboard permissions for user '{user}' in /dev/input...")
 
             try:
@@ -983,6 +1006,19 @@ class SwitchBackInstaller(Adw.Application):
             shutil.copy2(os.path.join(PROJECT_DIR, "daemon", "daemon.py"), daemon_py)
             os.chmod(daemon_py, 0o755)
 
+            # Remove legacy settings files if present
+            legacy_desktop = os.path.expanduser("~/.local/share/applications/switchback-settings.desktop")
+            legacy_bin = os.path.expanduser("~/.local/bin/switchback-settings")
+            legacy_py = os.path.join(daemon_target, "switchback-settings.py")
+            for leg in [legacy_desktop, legacy_bin, legacy_py]:
+                if os.path.exists(leg):
+                    try:
+                        os.remove(leg)
+                    except Exception:
+                        pass
+            if shutil.which("update-desktop-database"):
+                subprocess.run(["update-desktop-database", os.path.expanduser("~/.local/share/applications")], capture_output=True, check=False)
+
             # Icon
             icon_dir = os.path.expanduser("~/.local/share/icons/hicolor/scalable/apps")
             os.makedirs(icon_dir, exist_ok=True)
@@ -1036,6 +1072,8 @@ class SwitchBackInstaller(Adw.Application):
         except Exception as e:
             self.log(f"❌ Error during installation: {e}")
             GLib.idle_add(self.show_error_page, str(e))
+        finally:
+            self.is_installing = False
 
     def show_done_page(self, options):
         # Configure notice card
@@ -1055,7 +1093,13 @@ class SwitchBackInstaller(Adw.Application):
         self.stack.set_visible_child_name("done")
 
         if options.get('open_prefs', True) and not self.need_logout:
-            GLib.timeout_add(600, lambda: subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@local']))
+            def _open_prefs():
+                try:
+                    subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@local'])
+                except Exception:
+                    pass
+                return GLib.SOURCE_REMOVE
+            GLib.timeout_add(600, _open_prefs)
 
     def show_error_page(self, error_msg):
         self.error_desc.set_text(error_msg)
@@ -1065,16 +1109,27 @@ class SwitchBackInstaller(Adw.Application):
     # Uninstall Dialog & Execution
     # --------------------------------------------------------------------------
     def on_confirm_uninstall(self, btn):
-        dialog = Adw.AlertDialog(
-            heading=self.t('uninstall_confirm_title'),
-            body=self.t('uninstall_confirm_desc')
-        )
-        dialog.add_response("cancel", self.t('btn_cancel'))
-        dialog.add_response("uninstall", self.t('btn_uninstall_action'))
-        dialog.set_response_appearance("uninstall", Adw.ResponseAppearance.DESTRUCTIVE)
-
-        dialog.connect("response", self.on_uninstall_response)
-        dialog.present(self.win)
+        if hasattr(Adw, 'AlertDialog'):
+            dialog = Adw.AlertDialog(
+                heading=self.t('uninstall_confirm_title'),
+                body=self.t('uninstall_confirm_desc')
+            )
+            dialog.add_response("cancel", self.t('btn_cancel'))
+            dialog.add_response("uninstall", self.t('btn_uninstall_action'))
+            dialog.set_response_appearance("uninstall", Adw.ResponseAppearance.DESTRUCTIVE)
+            dialog.connect("response", self.on_uninstall_response)
+            dialog.present(self.win)
+        else:
+            dialog = Adw.MessageDialog(
+                transient_for=self.win,
+                heading=self.t('uninstall_confirm_title'),
+                body=self.t('uninstall_confirm_desc')
+            )
+            dialog.add_response("cancel", self.t('btn_cancel'))
+            dialog.add_response("uninstall", self.t('btn_uninstall_action'))
+            dialog.set_response_appearance("uninstall", Adw.ResponseAppearance.DESTRUCTIVE)
+            dialog.connect("response", self.on_uninstall_response)
+            dialog.present()
 
     def on_uninstall_response(self, dialog, response):
         if response == "uninstall":
@@ -1091,6 +1146,7 @@ class SwitchBackInstaller(Adw.Application):
             thread.start()
 
     def run_uninstallation(self):
+        self.is_installing = True
         self.log("🧹 Starting SwitchBack uninstallation...")
         try:
             # 1. Disable & remove extension
@@ -1146,6 +1202,8 @@ class SwitchBackInstaller(Adw.Application):
         except Exception as e:
             self.log(f"Error during uninstall: {e}")
             GLib.idle_add(self.show_error_page, str(e))
+        finally:
+            self.is_installing = False
 
 
 def main():

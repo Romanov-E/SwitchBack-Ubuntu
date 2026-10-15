@@ -111,6 +111,23 @@ def create_or_get_release():
 
 def upload_asset(release, file_path, content_type):
     file_name = os.path.basename(file_path)
+    
+    # If asset already exists on release, delete it to allow re-upload
+    for asset in release.get("assets", []):
+        if asset.get("name") == file_name:
+            asset_id = asset.get("id")
+            del_url = f"https://api.github.com/repos/{OWNER}/{REPO}/releases/assets/{asset_id}"
+            del_req = urllib.request.Request(
+                del_url,
+                headers={"Authorization": f"token {TOKEN}", "User-Agent": "SwitchBack-Release-Bot"},
+                method="DELETE"
+            )
+            try:
+                with urllib.request.urlopen(del_req) as _:
+                    print(f"🗑️ Removed previous asset {file_name} (ID: {asset_id})")
+            except Exception as e:
+                print(f"Notice: Failed to delete previous asset {file_name}: {e}")
+
     upload_url_template = release["upload_url"] # e.g. https://uploads.github.com/repos/.../assets{?name,label}
     upload_url = upload_url_template.split("{")[0] + f"?name={urllib.parse.quote(file_name)}"
     
@@ -131,11 +148,8 @@ def upload_asset(release, file_path, content_type):
             print(f"✅ Uploaded {file_name}: {data.get('browser_download_url')}")
     except urllib.error.HTTPError as e:
         err_msg = e.read().decode()
-        if e.code == 422:
-            print(f"⚠️ Asset {file_name} might already exist: {err_msg}")
-        else:
-            print(f"❌ Failed to upload {file_name}: {e.code} {err_msg}")
-            raise
+        print(f"❌ Failed to upload {file_name}: {e.code} {err_msg}")
+        raise
 
 def main():
     print(f"🚀 Publishing release {TAG} to GitHub...")

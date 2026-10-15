@@ -124,6 +124,10 @@ cd SwitchBack-Ubuntu
 ```
 *(Также можно просто дважды кликнуть по файлу `SwitchBack-Installer.desktop` в проводнике «Файлы»)*
 
+<p align="center">
+  <img src="docs/screenshots/installer-gui.png" width="500" alt="Графический установщик SwitchBack" />
+</p>
+
 ### Способ Б: Установка через терминал
 Запустите скрипт автоматической установки:
 
