@@ -31,7 +31,7 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
   - **Independent Margins:** Pixel-accurate offsets for top, bottom, left, and right screen edges.
   - **Geometry:** Configurable thickness (1–40 px), length (5% to 100%), and corner radius (up to full pill shape).
   - **Color & Alpha:** Full GTK color palette with RGBA opacity support.
-  - **Animations & Effects:** Collapse to center, split outward to edges, fill from center outward, collapse to start/end, and configurable smooth fade-in/fade-out duration (0–800 ms).
+  - **Animations & Effects:** 6 motion styles (collapse to center, split outward to edges, fill from center outward, converge from edges to center, collapse to start, and collapse to end), plus configurable smooth fade-in and fade-out transitions (0–800 ms).
   - **16:9 Live Preview:** High-framerate proportional monitor preview synchronized with display VSync.
 - **Hardware Event Filtering:**
   - Reads Linux kernel input events directly via `/dev/input/event*`.
