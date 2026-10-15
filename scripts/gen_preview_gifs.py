@@ -146,11 +146,13 @@ def generate_gif(preset, lang, out_filename):
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
         cr = cairo.Context(surface)
 
-        # Card container with subtle border
-        draw_rounded_rect(cr, 1, 1, W - 2, H - 2, 14)
+        # Clean solid card background (fills entire rectangle, eliminating corner artifacts)
         cr.set_source_rgb(0.98, 0.98, 0.99)
-        cr.fill_preserve()
-        cr.set_source_rgba(0, 0, 0, 0.08)
+        cr.paint()
+
+        # Subtle 1px rectangular card border
+        cr.rectangle(0.5, 0.5, W - 1, H - 1)
+        cr.set_source_rgba(0, 0, 0, 0.07)
         cr.set_line_width(1)
         cr.stroke()
 
