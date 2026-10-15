@@ -304,8 +304,12 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
             const motionDurationUs = 950 * 1000;  // 0.95s motion
             const pauseDurationUs = 150 * 1000;   // 0.15s pause
-            const fadeSettingMs = settings.get_int('fade-duration');
-            const transitionDurationUs = Math.max(60, Math.min(250, fadeSettingMs)) * 1000;
+            const isSplitFade = settings.get_boolean('split-fade-durations');
+            const isReverseMode = (activeAnimMode === 'fill-from-center' || activeAnimMode === 'from-edges-to-center');
+            const targetFadeMs = isSplitFade
+                ? (isReverseMode ? settings.get_int('fade-out-duration') : settings.get_int('fade-in-duration'))
+                : settings.get_int('fade-duration');
+            const transitionDurationUs = Math.max(60, Math.min(1500, targetFadeMs)) * 1000;
             const cycleDurationUs = motionDurationUs + pauseDurationUs + transitionDurationUs;
             const totalIterations = 3;
 
@@ -510,6 +514,9 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
         settings.connect('changed::bar-radius', queuePreview);
         settings.connect('changed::bar-color', queuePreview);
         settings.connect('changed::fade-duration', queuePreview);
+        settings.connect('changed::split-fade-durations', queuePreview);
+        settings.connect('changed::fade-in-duration', queuePreview);
+        settings.connect('changed::fade-out-duration', queuePreview);
         settings.connect('changed::bar-position', () => {
             queuePreview();
             playPreviewAnimation();
@@ -739,9 +746,9 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
             subtitle: _('Duration of fade-in and fade-out animations (0 — disabled)'),
             adjustment: new Gtk.Adjustment({
                 lower: 0,
-                upper: 800,
-                step_increment: 25,
-                page_increment: 50,
+                upper: 2000,
+                step_increment: 50,
+                page_increment: 100,
                 value: settings.get_int('fade-duration'),
             }),
         });
@@ -750,8 +757,8 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
             const val = Math.round(rowFade.get_value());
             if (val === 0) {
                 rowFade.subtitle = _('0 ms — instant (smooth fading disabled)');
-            } else if (val === 150) {
-                rowFade.subtitle = _('150 ms (default) — balanced smooth transition');
+            } else if (val === 300) {
+                rowFade.subtitle = _('300 ms (default) — balanced smooth transition');
             } else {
                 rowFade.subtitle = `${val} ${_('ms')} — ${_('Smooth fade-in and fade-out duration')}`;
             }
@@ -763,6 +770,88 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
             updateFadeSubtitle();
         });
         groupAnimation.add(rowFade);
+
+        // Option B: Separate Fade-In and Fade-Out Expander
+        const isSplitInitial = settings.get_boolean('split-fade-durations');
+        const rowSplitFade = new Adw.ExpanderRow({
+            title: _('Separate appearance and fade timing'),
+            subtitle: _('Configure different durations for fade-in and fade-out'),
+            show_enable_switch: true,
+            enable_expansion: isSplitInitial,
+            expanded: isSplitInitial,
+        });
+
+        const rowFadeIn = new Adw.SpinRow({
+            title: _('Fade-in appearance duration (ms)'),
+            subtitle: _('Smooth appearance when switching to secondary layout'),
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 1000,
+                step_increment: 25,
+                page_increment: 50,
+                value: settings.get_int('fade-in-duration'),
+            }),
+        });
+
+        const updateFadeInSubtitle = () => {
+            const val = Math.round(rowFadeIn.get_value());
+            if (val === 0) {
+                rowFadeIn.subtitle = _('0 ms — instant appearance');
+            } else if (val === 150) {
+                rowFadeIn.subtitle = _('150 ms (default) — quick crisp entrance');
+            } else {
+                rowFadeIn.subtitle = `${val} ${_('ms')} — ${_('Smooth fade-in duration')}`;
+            }
+        };
+        updateFadeInSubtitle();
+
+        rowFadeIn.connect('notify::value', () => {
+            settings.set_int('fade-in-duration', Math.round(rowFadeIn.get_value()));
+            updateFadeInSubtitle();
+        });
+        rowSplitFade.add_row(rowFadeIn);
+
+        const rowFadeOut = new Adw.SpinRow({
+            title: _('Fade-out dissolution duration (ms)'),
+            subtitle: _('Smooth fade when countdown timer expires'),
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 2000,
+                step_increment: 50,
+                page_increment: 100,
+                value: settings.get_int('fade-out-duration'),
+            }),
+        });
+
+        const updateFadeOutSubtitle = () => {
+            const val = Math.round(rowFadeOut.get_value());
+            if (val === 0) {
+                rowFadeOut.subtitle = _('0 ms — instant disappearance');
+            } else if (val === 800) {
+                rowFadeOut.subtitle = _('800 ms (default) — soft cinematic dissolution');
+            } else {
+                rowFadeOut.subtitle = `${val} ${_('ms')} — ${_('Smooth fade-out duration')}`;
+            }
+        };
+        updateFadeOutSubtitle();
+
+        rowFadeOut.connect('notify::value', () => {
+            settings.set_int('fade-out-duration', Math.round(rowFadeOut.get_value()));
+            updateFadeOutSubtitle();
+        });
+        rowSplitFade.add_row(rowFadeOut);
+
+        const syncSplitState = () => {
+            const isSplit = rowSplitFade.enable_expansion;
+            settings.set_boolean('split-fade-durations', isSplit);
+            rowFade.set_sensitive(!isSplit);
+            rowSplitFade.expanded = isSplit;
+        };
+
+        rowSplitFade.connect('notify::enable-expansion', syncSplitState);
+        rowFade.set_sensitive(!isSplitInitial);
+
+        groupAnimation.add(rowSplitFade);
 
         // --- Group 4: Screen Edge Margins ---
         const groupMargins = new Adw.PreferencesGroup({

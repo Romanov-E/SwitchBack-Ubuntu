@@ -34,11 +34,11 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.3.0
   - Interactive graphical installation with real-time log terminal and progress bar.
   - Multi-language switcher (RU / EN).
   - Launchable directly from terminal or by double-clicking `SwitchBack-Installer.desktop`.
-- **📐 10 Indicator Animations & New Placement Modes**:
-  - Center-to-edges expansion & edges-to-center contraction.
-  - Smooth fade-in & fade-out transitions with configurable durations (50 ms – 500 ms).
-  - 4 corner positions (top-left, top-right, bottom-left, bottom-right).
-  - All 4 corners simultaneously mode.
+- **📐 Flexible Indicator Animations & New Placement Modes**:
+  - 6 motion styles including outward split (`to-edges`), expansion (`fill-from-center`), and seamless inward convergence (`from-edges-to-center`).
+  - Directional corner radius rounding and sub-pixel overlap eliminating all gaps or notches when lines meet.
+  - Master smooth transition duration (0–2000 ms) + separate Fade-In (0–1000 ms) and Fade-Out (0–2000 ms) Libadwaita expander controls with live preview feedback.
+  - 4 corner positions (top-left, top-right, bottom-left, bottom-right) and simultaneous 4-corner HUD mode.
 - **🖥️ 16:9 Realistic Virtual Display Preview in Preferences**:
   - Enlarged 16:9 aspect ratio monitor with active bezel styling.
   - Automatic 3-cycle animation repeat when switching animation types for instant feedback.

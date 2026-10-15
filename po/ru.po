@@ -239,11 +239,51 @@ msgstr "0 мс — мгновенно (плавное затухание вык�
 msgid "150 ms (default) — balanced smooth transition"
 msgstr "150 мс (по умолчанию) — сбалансированный плавный переход"
 
+msgid "300 ms (default) — balanced smooth transition"
+msgstr "300 мс (по умолчанию) — сбалансированный плавный переход"
+
+msgid "Separate appearance and fade timing"
+msgstr "Раздельная настройка появления и затухания"
+
+msgid "Configure different durations for fade-in and fade-out"
+msgstr "Задать разное время для плавного появления и затухания"
+
+msgid "Fade-in appearance duration (ms)"
+msgstr "Время плавного появления (мс)"
+
+msgid "Smooth appearance when switching to secondary layout"
+msgstr "Плавное проявление полосы при переключении раскладки"
+
+msgid "0 ms — instant appearance"
+msgstr "0 мс — мгновенное появление"
+
+msgid "150 ms (default) — quick crisp entrance"
+msgstr "150 мс (по умолчанию) — быстрое аккуратное появление"
+
+msgid "Smooth fade-in duration"
+msgstr "Длительность плавного появления"
+
+msgid "Fade-out dissolution duration (ms)"
+msgstr "Время плавного затухания (мс)"
+
+msgid "Smooth fade when countdown timer expires"
+msgstr "Мягкое растворение полосы по завершении таймера"
+
+msgid "0 ms — instant disappearance"
+msgstr "0 мс — мгновенное исчезновение"
+
+msgid "800 ms (default) — soft cinematic dissolution"
+msgstr "800 мс (по умолчанию) — мягкое кинематографичное растворение"
+
+msgid "Smooth fade-out duration"
+msgstr "Длительность плавного затухания"
+
 msgid "ms"
 msgstr "мс"
 
 msgid "Smooth fade-in and fade-out duration"
 msgstr "Длительность плавного проявления и затухания"
+
 
 # ══════════════════════════════════════════════════════════════
 # СТРАНИЦА 3: СЛУЖБА (SERVICE)

@@ -139,6 +139,13 @@ export default class SwitchBackExtension extends Extension {
         this._barRadius = this._settings.get_int('bar-radius');
         this._animationMode = this._settings.get_string('animation-mode'); // 'to-center', 'to-edges', 'fill-from-center', 'from-edges-to-center', 'to-start', 'to-end'
         this._fadeDuration = this._settings.get_int('fade-duration');
+        this._splitFadeDurations = this._settings.get_boolean('split-fade-durations');
+        this._fadeInDuration = this._splitFadeDurations
+            ? this._settings.get_int('fade-in-duration')
+            : this._fadeDuration;
+        this._fadeOutDuration = this._splitFadeDurations
+            ? this._settings.get_int('fade-out-duration')
+            : this._fadeDuration;
         this._onlyPrimaryMonitor = this._settings.get_boolean('only-on-primary-monitor');
         this._targetSourceIndex = this._settings.get_int('switch-to-source-index');
     }
@@ -212,12 +219,30 @@ export default class SwitchBackExtension extends Extension {
     }
 
     _applyBarStyles() {
-        const style =
-            `background-color: ${this._barColor}; ` +
-            `border-radius: ${this._barRadius}px;`;
+        const isSplit = (this._animationMode === 'to-edges' || this._animationMode === 'from-edges-to-center');
+        const isVertical = (this._barPosition === 'left' || this._barPosition === 'right' || this._barPosition === 'left-right');
+        const r = this._barRadius;
 
-        for (const bar of this._bars) {
-            bar.set_style(style);
+        if (isSplit) {
+            const styleA = isVertical
+                ? `background-color: ${this._barColor}; border-radius: ${r}px ${r}px 0px 0px;`
+                : `background-color: ${this._barColor}; border-radius: ${r}px 0px 0px ${r}px;`;
+            const styleB = isVertical
+                ? `background-color: ${this._barColor}; border-radius: 0px 0px ${r}px ${r}px;`
+                : `background-color: ${this._barColor}; border-radius: 0px ${r}px ${r}px 0px;`;
+
+            for (let i = 0; i < this._bars.length; i += 2) {
+                if (this._bars[i]) this._bars[i].set_style(styleA);
+                if (this._bars[i + 1]) this._bars[i + 1].set_style(styleB);
+            }
+        } else {
+            const style =
+                `background-color: ${this._barColor}; ` +
+                `border-radius: ${r}px;`;
+
+            for (const bar of this._bars) {
+                bar.set_style(style);
+            }
         }
     }
 
@@ -270,12 +295,12 @@ export default class SwitchBackExtension extends Extension {
             for (const bar of this._bars) {
                 Main.layoutManager.uiGroup.set_child_above_sibling(bar, null);
                 bar.remove_all_transitions();
-                if (this._fadeDuration > 0) {
+                if (this._fadeInDuration > 0) {
                     bar.opacity = 0;
                     bar.visible = true;
                     bar.ease({
                         opacity: 255,
-                        duration: this._fadeDuration,
+                        duration: this._fadeInDuration,
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     });
                 } else {
@@ -338,11 +363,19 @@ export default class SwitchBackExtension extends Extension {
                 if (this._animationMode === 'to-edges' || this._animationMode === 'from-edges-to-center') {
                     const halfA = Math.floor(maxLen / 2);
                     const halfB = maxLen - halfA;
-                    const p = (this._animationMode === 'from-edges-to-center') ? elapsedFraction : progress;
-                    const lenA = Math.round(halfA * p);
-                    const lenB = Math.round(halfB * p);
+
+                    let p = progress;
+                    if (this._animationMode === 'from-edges-to-center') {
+                        // Lines converge to meet at 88% of timeout so they merge into a solid line before fade-out
+                        p = Math.min(1.0, elapsedFraction / 0.88);
+                    }
+
+                    // Seamless center overlap when lines converge (p >= 0.95) to eliminate any notch or gap
+                    const overlap = (this._animationMode === 'from-edges-to-center' && p >= 0.95) ? 2 : 0;
+                    const lenA = Math.round(halfA * p) + overlap;
+                    const lenB = Math.round(halfB * p) + overlap;
                     const coordA = arm.start;
-                    const coordB = arm.end - lenB;
+                    const coordB = Math.max(arm.start + halfA - overlap, arm.end - lenB);
 
                     const barA = this._bars[i * 2];
                     const barB = this._bars[i * 2 + 1];
@@ -406,12 +439,12 @@ export default class SwitchBackExtension extends Extension {
             this._timerId = null;
         }
 
-        if (animated && this._fadeDuration > 0 && this._bars.some(b => b.visible && b.opacity > 0)) {
+        if (animated && this._fadeOutDuration > 0 && this._bars.some(b => b.visible && b.opacity > 0)) {
             for (const bar of this._bars) {
                 bar.remove_all_transitions();
                 bar.ease({
                     opacity: 0,
-                    duration: this._fadeDuration,
+                    duration: this._fadeOutDuration,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: () => {
                         bar.visible = false;

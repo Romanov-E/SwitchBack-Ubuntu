@@ -122,10 +122,30 @@
     </key>
 
     <key name="fade-duration" type="i">
-      <default>150</default>
-      <range min="0" max="800"/>
+      <default>300</default>
+      <range min="0" max="2000"/>
       <summary>Fade duration in milliseconds</summary>
       <description>Duration of smooth fade-in and fade-out animations in milliseconds (0 to disable).</description>
+    </key>
+
+    <key name="split-fade-durations" type="b">
+      <default>false</default>
+      <summary>Separate fade-in and fade-out durations</summary>
+      <description>Whether to configure separate timing for fade-in and fade-out.</description>
+    </key>
+
+    <key name="fade-in-duration" type="i">
+      <default>150</default>
+      <range min="0" max="1000"/>
+      <summary>Fade-in duration in milliseconds</summary>
+      <description>Duration of smooth fade-in appearance in milliseconds.</description>
+    </key>
+
+    <key name="fade-out-duration" type="i">
+      <default>800</default>
+      <range min="0" max="2000"/>
+      <summary>Fade-out duration in milliseconds</summary>
+      <description>Duration of smooth fade-out dissolution in milliseconds.</description>
     </key>
 
     <key name="only-on-primary-monitor" type="b">
