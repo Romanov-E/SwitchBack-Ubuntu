@@ -44,6 +44,42 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ---
 
+<details>
+<summary><b>📸 Screenshots & Live Preview Animations (Click to expand)</b></summary>
+<br/>
+
+### ⚙️ Preferences Window Tabs
+
+<div align="center">
+
+| Tab 1: Behavior | Tab 2: Appearance | Tab 3: Service |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tab1-behavior.png" width="280" alt="Tab 1: Behavior" /> | <img src="docs/screenshots/tab2-appearance.png" width="280" alt="Tab 2: Appearance" /> | <img src="docs/screenshots/tab3-service.png" width="280" alt="Tab 3: Service" /> |
+
+</div>
+
+### ✨ Live Indicator Preview Animations
+
+<div align="center">
+
+| All 4 Corners Simultaneously (Cyan) | Top-Left Corner (Coral) |
+| :---: | :---: |
+| <img src="docs/screenshots/preview-all-corners-cyan.gif" width="340" alt="All 4 corners simultaneously" /> | <img src="docs/screenshots/preview-top-left-coral.gif" width="340" alt="Top-left corner" /> |
+
+| Top of Screen (Amber Gold) | Bottom-Right Corner (Emerald Green) |
+| :---: | :---: |
+| <img src="docs/screenshots/preview-top-amber.gif" width="340" alt="Top of screen" /> | <img src="docs/screenshots/preview-bottom-right-green.gif" width="340" alt="Bottom-right corner" /> |
+
+| Dual Left + Right (Neon Purple) |
+| :---: |
+| <img src="docs/screenshots/preview-dual-purple.gif" width="340" alt="Dual left and right bars" /> |
+
+</div>
+
+</details>
+
+---
+
 ## Architecture
 
 ```

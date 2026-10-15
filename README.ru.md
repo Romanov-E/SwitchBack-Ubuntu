@@ -44,6 +44,42 @@
 
 ---
 
+<details>
+<summary><b>📸 Скриншоты интерфейса и анимации визуализации (нажмите, чтобы развернуть)</b></summary>
+<br/>
+
+### ⚙️ Вкладки окна настроек
+
+<div align="center">
+
+| Вкладка 1: Поведение | Вкладка 2: Внешний вид | Вкладка 3: Служба |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tab1-behavior.png" width="280" alt="Вкладка 1: Поведение" /> | <img src="docs/screenshots/tab2-appearance.png" width="280" alt="Вкладка 2: Внешний вид" /> | <img src="docs/screenshots/tab3-service.png" width="280" alt="Вкладка 3: Служба" /> |
+
+</div>
+
+### ✨ Анимации визуализации индикатора на экране превью
+
+<div align="center">
+
+| Все 4 угла одновременно (Неоновый циан) | Верхний левый угол (Кораллово-красный) |
+| :---: | :---: |
+| <img src="docs/screenshots/preview-all-corners-cyan.gif" width="340" alt="Все 4 угла одновременно" /> | <img src="docs/screenshots/preview-top-left-coral.gif" width="340" alt="Верхний левый угол" /> |
+
+| Сверху экрана (Янтарное золото) | Нижний правый угол (Изумрудно-зелёный) |
+| :---: | :---: |
+| <img src="docs/screenshots/preview-top-amber.gif" width="340" alt="Сверху экрана" /> | <img src="docs/screenshots/preview-bottom-right-green.gif" width="340" alt="Нижний правый угол" /> |
+
+| Слева + Справа (Фиолетовый киберпанк) |
+| :---: |
+| <img src="docs/screenshots/preview-dual-purple.gif" width="340" alt="Слева и справа" /> |
+
+</div>
+
+</details>
+
+---
+
 ## Архитектура
 
 ```
