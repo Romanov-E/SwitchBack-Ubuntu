@@ -62,15 +62,15 @@
 
 | Сверху экрана — Сжатие к центру (Белый) | Верхний правый угол — Г-образный (Ubuntu Orange) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-top-white.gif" width="340" alt="Сверху экрана (Белый)" /> | <img src="docs/screenshots/preview-top-right-orange.gif" width="340" alt="Верхний правый угол (Ubuntu Orange)" /> |
+| <img src="docs/screenshots/preview-top-white.gif?v=2" width="340" alt="Сверху экрана (Белый)" /> | <img src="docs/screenshots/preview-top-right-orange.gif?v=2" width="340" alt="Верхний правый угол (Ubuntu Orange)" /> |
 
 | Снизу экрана — К краям (Изумрудно-зелёный) | Все 4 угла экрана — HUD (Неоновый циан) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-bottom-green.gif" width="340" alt="Снизу экрана (Изумрудный)" /> | <img src="docs/screenshots/preview-all-corners-cyan.gif" width="340" alt="Все 4 угла экрана (Циан)" /> |
+| <img src="docs/screenshots/preview-bottom-green.gif?v=2" width="340" alt="Снизу экрана (Изумрудный)" /> | <img src="docs/screenshots/preview-all-corners-cyan.gif?v=2" width="340" alt="Все 4 угла экрана (Циан)" /> |
 
 | Сверху и снизу экрана (Янтарное золото) | Слева и справа экрана (Кибер-фиолетовый) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-dual-amber.gif" width="340" alt="Сверху и снизу экрана" /> | <img src="docs/screenshots/preview-dual-purple.gif" width="340" alt="Слева и справа экрана" /> |
+| <img src="docs/screenshots/preview-dual-amber.gif?v=2" width="340" alt="Сверху и снизу экрана" /> | <img src="docs/screenshots/preview-dual-purple.gif?v=2" width="340" alt="Слева и справа экрана" /> |
 
 </div>
 

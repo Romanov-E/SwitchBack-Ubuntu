@@ -62,15 +62,15 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 | Top Screen Edge — Contract to Center (White) | Top-Right Corner — L-Bracket (Ubuntu Orange) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-top-white-en.gif" width="340" alt="Top Screen Edge (White)" /> | <img src="docs/screenshots/preview-top-right-orange-en.gif" width="340" alt="Top-Right Corner (Ubuntu Orange)" /> |
+| <img src="docs/screenshots/preview-top-white-en.gif?v=2" width="340" alt="Top Screen Edge (White)" /> | <img src="docs/screenshots/preview-top-right-orange-en.gif?v=2" width="340" alt="Top-Right Corner (Ubuntu Orange)" /> |
 
 | Bottom Screen Edge — Expand to Edges (Green) | All 4 Corners HUD (Cyber Cyan) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-bottom-green-en.gif" width="340" alt="Bottom Screen Edge (Green)" /> | <img src="docs/screenshots/preview-all-corners-cyan-en.gif" width="340" alt="All 4 Corners HUD (Cyber Cyan)" /> |
+| <img src="docs/screenshots/preview-bottom-green-en.gif?v=2" width="340" alt="Bottom Screen Edge (Green)" /> | <img src="docs/screenshots/preview-all-corners-cyan-en.gif?v=2" width="340" alt="All 4 Corners HUD (Cyber Cyan)" /> |
 
 | Dual Top & Bottom Bars (Amber Gold) | Dual Left & Right Bars (Cyber Purple) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-dual-amber-en.gif" width="340" alt="Dual Top & Bottom Bars" /> | <img src="docs/screenshots/preview-dual-purple-en.gif" width="340" alt="Dual Left & Right Bars" /> |
+| <img src="docs/screenshots/preview-dual-amber-en.gif?v=2" width="340" alt="Dual Top & Bottom Bars" /> | <img src="docs/screenshots/preview-dual-purple-en.gif?v=2" width="340" alt="Dual Left & Right Bars" /> |
 
 </div>
 
