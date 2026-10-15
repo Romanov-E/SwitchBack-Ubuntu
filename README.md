@@ -115,13 +115,15 @@ cd SwitchBack-Ubuntu
 ```
 
 ### Option A: Graphical Installer (Recommended)
-Launch the modern GTK4/Libadwaita installer:
+Launch the modern GTK4/Libadwaita installer & manager:
 
 ```bash
 ./install-gui
 # or: ./install.sh --gui
 ```
 *(You can also double-click `SwitchBack-Installer.desktop` directly in Ubuntu Files / Nautilus)*
+
+Supports fresh setup, configuring startup options, opening preferences, and cleanly reinstalling or removing SwitchBack at any time.
 
 <div align="center">
 

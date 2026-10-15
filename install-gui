@@ -29,7 +29,7 @@ TRANSLATIONS = {
         'version': f'Версия {VERSION}',
         'already_installed_title': 'SwitchBack уже установлен в системе',
         'already_installed_desc': 'Версия {ver} • Служба {daemon_status}',
-        'btn_reinstall': 'Переустановить',
+        'btn_reinstall': 'Переустановить SwitchBack',
         'btn_prefs': 'Настройки',
         'btn_uninstall': 'Удалить',
         'options_group_title': 'Параметры установки',
@@ -88,7 +88,7 @@ TRANSLATIONS = {
         'version': f'Version {VERSION}',
         'already_installed_title': 'SwitchBack is already installed',
         'already_installed_desc': 'Version {ver} • Service {daemon_status}',
-        'btn_reinstall': 'Reinstall',
+        'btn_reinstall': 'Reinstall SwitchBack',
         'btn_prefs': 'Settings',
         'btn_uninstall': 'Uninstall',
         'options_group_title': 'Installation Options',
@@ -380,11 +380,11 @@ Terminal=false
             font-weight: 700;
         }
         .status-box-installed {
-            background-color: alpha(#2ec27e, 0.12);
-            border: 1px solid alpha(#2ec27e, 0.35);
-            border-radius: 12px;
+            background-color: alpha(#2ec27e, 0.10);
+            border: 1px solid alpha(#2ec27e, 0.30);
+            border-radius: 14px;
             padding: 14px 18px;
-            margin: 6px 0 10px 0;
+            margin: 4px 0 10px 0;
         }
         .status-box-warn {
             background-color: alpha(#e5a50a, 0.14);
@@ -450,6 +450,10 @@ Terminal=false
             font-size: 1.05rem;
             font-weight: 700;
             padding: 12px 24px;
+        }
+        .secondary-pill-btn {
+            padding: 10px 20px;
+            font-weight: 500;
         }
         """
         css_provider.load_from_data(css.encode('utf-8'))
@@ -551,28 +555,6 @@ Terminal=false
         inst_header.append(inst_text_box)
         self.installed_box.append(inst_header)
 
-        # Buttons inside existing install card
-        inst_btn_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        inst_btn_row.set_margin_top(6)
-
-        self.btn_reinstall = Gtk.Button(label=self.t('btn_reinstall'))
-        self.btn_reinstall.add_css_class("suggested-action")
-        self.btn_reinstall.set_hexpand(True)
-        self.btn_reinstall.connect("clicked", self.on_start_install)
-        inst_btn_row.append(self.btn_reinstall)
-
-        self.btn_prefs = Gtk.Button(label=self.t('btn_prefs'))
-        self.btn_prefs.set_hexpand(True)
-        self.btn_prefs.connect("clicked", self.on_open_preferences)
-        inst_btn_row.append(self.btn_prefs)
-
-        self.btn_uninstall = Gtk.Button(label=self.t('btn_uninstall'))
-        self.btn_uninstall.add_css_class("destructive-action")
-        self.btn_uninstall.set_hexpand(True)
-        self.btn_uninstall.connect("clicked", self.on_confirm_uninstall)
-        inst_btn_row.append(self.btn_uninstall)
-
-        self.installed_box.append(inst_btn_row)
         content.append(self.installed_box)
         self.installed_box.set_visible(self.installed_version is not None)
 
@@ -616,20 +598,49 @@ Terminal=false
 
         content.append(self.options_group)
 
-        # Primary Install Button (shown when not already installed)
-        btn_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        btn_box.set_margin_top(10)
-        btn_box.set_halign(Gtk.Align.CENTER)
+        # Actions Area (Fresh Install OR Already Installed)
+        self.action_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        self.action_area.set_margin_top(12)
+        self.action_area.set_halign(Gtk.Align.CENTER)
 
+        # 1. Fresh Install Button
         self.btn_install_primary = Gtk.Button(label=self.t('btn_install'))
         self.btn_install_primary.add_css_class("suggested-action")
         self.btn_install_primary.add_css_class("pill")
         self.btn_install_primary.add_css_class("big-action-btn")
         self.btn_install_primary.connect("clicked", self.on_start_install)
-        btn_box.append(self.btn_install_primary)
+        self.action_area.append(self.btn_install_primary)
 
-        content.append(btn_box)
-        self.btn_install_primary.set_visible(self.installed_version is None)
+        # 2. Installed Actions Row (Settings, Reinstall, Uninstall)
+        self.installed_actions_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        self.installed_actions_row.set_halign(Gtk.Align.CENTER)
+
+        self.btn_prefs = Gtk.Button(label=self.t('btn_prefs'))
+        self.btn_prefs.add_css_class("pill")
+        self.btn_prefs.add_css_class("secondary-pill-btn")
+        self.btn_prefs.connect("clicked", self.on_open_preferences)
+        self.installed_actions_row.append(self.btn_prefs)
+
+        self.btn_reinstall = Gtk.Button(label=self.t('btn_reinstall'))
+        self.btn_reinstall.add_css_class("suggested-action")
+        self.btn_reinstall.add_css_class("pill")
+        self.btn_reinstall.add_css_class("big-action-btn")
+        self.btn_reinstall.connect("clicked", self.on_start_install)
+        self.installed_actions_row.append(self.btn_reinstall)
+
+        self.btn_uninstall = Gtk.Button(label=self.t('btn_uninstall'))
+        self.btn_uninstall.add_css_class("destructive-action")
+        self.btn_uninstall.add_css_class("pill")
+        self.btn_uninstall.add_css_class("secondary-pill-btn")
+        self.btn_uninstall.connect("clicked", self.on_confirm_uninstall)
+        self.installed_actions_row.append(self.btn_uninstall)
+
+        self.action_area.append(self.installed_actions_row)
+        content.append(self.action_area)
+
+        is_installed = (self.installed_version is not None)
+        self.btn_install_primary.set_visible(not is_installed)
+        self.installed_actions_row.set_visible(is_installed)
         self.stack.add_named(scrolled, "welcome")
 
     # --------------------------------------------------------------------------
