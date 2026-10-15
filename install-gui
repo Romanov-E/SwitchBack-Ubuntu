@@ -29,9 +29,9 @@ TRANSLATIONS = {
         'version': f'Версия {VERSION}',
         'already_installed_title': 'SwitchBack уже установлен в системе',
         'already_installed_desc': 'Версия {ver} • Служба {daemon_status}',
-        'btn_reinstall': '🔄 Переустановить',
-        'btn_prefs': '⚙️ Настройки',
-        'btn_uninstall': '🗑️ Удалить',
+        'btn_reinstall': 'Переустановить',
+        'btn_prefs': 'Настройки',
+        'btn_uninstall': 'Удалить',
         'options_group_title': 'Параметры установки',
         'opt_caps': 'Переключение раскладки по Caps Lock',
         'opt_caps_desc': 'Назначить клавишу Caps Lock для быстрой смены языка',
@@ -39,7 +39,7 @@ TRANSLATIONS = {
         'opt_daemon_desc': 'Запускать службу отслеживания ввода при входе в систему',
         'opt_prefs': 'Открыть настройки после установки',
         'opt_prefs_desc': 'Сразу перейти к персонализации индикатора и таймера',
-        'btn_install': '🚀 Установить SwitchBack',
+        'btn_install': 'Установить SwitchBack',
         'progress_title': 'Установка SwitchBack...',
         'step_deps': 'Проверка системных зависимостей',
         'step_deps_desc': 'Python 3, glib-compile-schemas, gnome-extensions',
@@ -54,7 +54,7 @@ TRANSLATIONS = {
         'step_enable': 'Активация расширения в GNOME Shell',
         'step_enable_desc': 'Включение расширения switchback@local',
         'log_expander': 'Подробный журнал установки',
-        'btn_copy_log': '📋 Скопировать журнал',
+        'btn_copy_log': 'Скопировать журнал',
         'log_copied': 'Журнал скопирован в буфер обмена',
         'done_title': 'Установка успешно завершена!',
         'done_desc': 'Все компоненты SwitchBack установлены и настроены.',
@@ -62,8 +62,8 @@ TRANSLATIONS = {
         'logout_warn_desc': 'Вы были добавлены в группу "input". Чтобы права доступа к клавиатуре вступили в силу, выполните Выход из системы (Log Out) и войдите снова.',
         'all_ready_title': '🎉 Всё готово к работе',
         'all_ready_desc': 'Расширение активно, служба отслеживания ввода работает в фоновом режиме.',
-        'btn_open_settings': '⚙️ Открыть настройки',
-        'btn_finish': '🏁 Завершить',
+        'btn_open_settings': 'Открыть настройки',
+        'btn_finish': 'Завершить',
         'btn_close': 'Закрыть',
         'uninstall_confirm_title': 'Удалить SwitchBack Ubuntu?',
         'uninstall_confirm_desc': 'Все компоненты расширения, фоновая служба systemd и схема настроек будут полностью удалены из вашей системы.',
@@ -73,12 +73,12 @@ TRANSLATIONS = {
         'uninstalled_title': 'SwitchBack успешно удалён',
         'uninstalled_desc': 'Все компоненты чисто удалены из вашей системы.',
         'error_title': 'Ошибка установки',
-        'btn_retry': '🔄 Повторить попытку',
+        'btn_retry': 'Повторить попытку',
         'status_active': 'активна ✅',
         'status_inactive': 'не активна ⏸️',
-        'feature_caps': '⌨️ <b>Caps Lock</b>: мгновенное переключение раскладки одной клавишей',
-        'feature_timer': '⏱️ <b>Автовозврат</b>: возврат на основной язык после паузы в наборе',
-        'feature_hud': '🎨 <b>Экранный индикатор</b>: визуализация отсчёта в углах и по краям экрана',
+        'feature_caps': '⌨️  <b>Caps Lock</b> — мгновенная смена раскладки одной клавишей',
+        'feature_timer': '⏱️  <b>Автовозврат</b> — возврат на основной язык после паузы в наборе',
+        'feature_hud': '🎨  <b>Экранный индикатор</b> — визуализация отсчёта в углах и по краям экрана',
         'lang_toggle': '🌐 English',
         'install_in_progress': 'Идёт операция, пожалуйста, подождите...',
     },
@@ -88,9 +88,9 @@ TRANSLATIONS = {
         'version': f'Version {VERSION}',
         'already_installed_title': 'SwitchBack is already installed',
         'already_installed_desc': 'Version {ver} • Service {daemon_status}',
-        'btn_reinstall': '🔄 Reinstall',
-        'btn_prefs': '⚙️ Settings',
-        'btn_uninstall': '🗑️ Uninstall',
+        'btn_reinstall': 'Reinstall',
+        'btn_prefs': 'Settings',
+        'btn_uninstall': 'Uninstall',
         'options_group_title': 'Installation Options',
         'opt_caps': 'Caps Lock layout toggle',
         'opt_caps_desc': 'Configure Caps Lock key for quick single-key layout switching',
@@ -98,7 +98,7 @@ TRANSLATIONS = {
         'opt_daemon_desc': 'Start keyboard input tracking service automatically on login',
         'opt_prefs': 'Open preferences after installation',
         'opt_prefs_desc': 'Immediately configure countdown indicator and appearance',
-        'btn_install': '🚀 Install SwitchBack',
+        'btn_install': 'Install SwitchBack',
         'progress_title': 'Installing SwitchBack...',
         'step_deps': 'Checking system dependencies',
         'step_deps_desc': 'Python 3, glib-compile-schemas, gnome-extensions',
@@ -113,7 +113,7 @@ TRANSLATIONS = {
         'step_enable': 'Activating extension in GNOME Shell',
         'step_enable_desc': 'Enabling switchback@local',
         'log_expander': 'Detailed installation log',
-        'btn_copy_log': '📋 Copy Log',
+        'btn_copy_log': 'Copy Log',
         'log_copied': 'Log copied to clipboard',
         'done_title': 'Installation Complete!',
         'done_desc': 'All SwitchBack components have been installed and configured.',
@@ -121,8 +121,8 @@ TRANSLATIONS = {
         'logout_warn_desc': 'Your user was added to the "input" system group. To apply hardware keyboard permissions, please Log Out of your session and log back in.',
         'all_ready_title': '🎉 Ready to use',
         'all_ready_desc': 'The extension is enabled and the background daemon is running.',
-        'btn_open_settings': '⚙️ Open Settings',
-        'btn_finish': '🏁 Finish',
+        'btn_open_settings': 'Open Settings',
+        'btn_finish': 'Finish',
         'btn_close': 'Close',
         'uninstall_confirm_title': 'Uninstall SwitchBack Ubuntu?',
         'uninstall_confirm_desc': 'All extension components, the systemd background daemon, and configuration schemas will be cleanly removed.',
@@ -132,12 +132,12 @@ TRANSLATIONS = {
         'uninstalled_title': 'SwitchBack Successfully Uninstalled',
         'uninstalled_desc': 'All components have been cleanly removed from your system.',
         'error_title': 'Installation Encountered an Error',
-        'btn_retry': '🔄 Try Again',
+        'btn_retry': 'Try Again',
         'status_active': 'active ✅',
         'status_inactive': 'inactive ⏸️',
-        'feature_caps': '⌨️ <b>Caps Lock</b>: fast single-key layout toggle',
-        'feature_timer': '⏱️ <b>Auto-return</b>: switches back to primary layout on typing pauses',
-        'feature_hud': '🎨 <b>HUD Indicators</b>: sleek animated countdown bars &amp; corner brackets',
+        'feature_caps': '⌨️  <b>Caps Lock</b> — fast single-key layout toggle',
+        'feature_timer': '⏱️  <b>Auto-return</b> — switches back to primary layout on typing pauses',
+        'feature_hud': '🎨  <b>HUD Indicators</b> — sleek animated countdown bars &amp; corner brackets',
         'lang_toggle': '🌐 Русский',
         'install_in_progress': 'Installation is in progress, please wait...',
     }
@@ -401,10 +401,10 @@ Terminal=false
             margin: 6px 0;
         }
         .features-box {
-            background: alpha(@card_bg_color, 0.6);
-            border: 1px solid alpha(@card_border_color, 0.7);
-            border-radius: 12px;
-            padding: 12px 16px;
+            background: alpha(@window_fg_color, 0.04);
+            border: none;
+            border-radius: 14px;
+            padding: 16px 20px;
             margin-bottom: 12px;
         }
         .step-row {
@@ -577,7 +577,7 @@ Terminal=false
         self.installed_box.set_visible(self.installed_version is not None)
 
         # Features Overview
-        self.features_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.features_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.features_box.add_css_class("features-box")
 
         self.f1 = Gtk.Label(xalign=0)
