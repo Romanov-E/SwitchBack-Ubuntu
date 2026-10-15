@@ -45,7 +45,7 @@ done
 if [ ${#MISSING_DEPS[@]} -ne 0 ]; then
     echo -e "${YELLOW}⚠️  Отсутствуют необходимые пакеты: ${MISSING_DEPS[*]}${NC}"
     echo "Установка через apt..."
-    sudo apt-get update && sudo apt-get install -y python3 libglib2.0-bin-package libglib2.0-bin gnome-shell
+    sudo apt-get update && sudo apt-get install -y python3 libglib2.0-bin gnome-shell
 fi
 
 # 3. Настройка прав доступа к клавиатуре (группа input)
@@ -87,6 +87,7 @@ echo -e "${BLUE}🧩 Установка расширения GNOME Shell...${NC}
 EXT_TARGET="$HOME/.local/share/gnome-shell/extensions/switchback@local"
 mkdir -p "$EXT_TARGET/schemas"
 mkdir -p "$EXT_TARGET/locale"
+mkdir -p "$EXT_TARGET/icons"
 
 python3 "$PROJECT_DIR/scripts/compile_locales.py"
 
@@ -95,8 +96,9 @@ cp -f "$PROJECT_DIR/extension/extension.js" "$EXT_TARGET/"
 cp -f "$PROJECT_DIR/extension/prefs.js" "$EXT_TARGET/"
 cp -f "$PROJECT_DIR/extension/schemas/"* "$EXT_TARGET/schemas/"
 cp -rf "$PROJECT_DIR/extension/locale/"* "$EXT_TARGET/locale/"
+cp -f "$PROJECT_DIR/desktop/icons/switchback.svg" "$EXT_TARGET/icons/"
 
-echo -e "${GREEN}✅ Файлы расширения и локализации установлены в $EXT_TARGET${NC}"
+echo -e "${GREEN}✅ Файлы расширения, иконок и локализации установлены в $EXT_TARGET${NC}"
 
 # 7. Развёртывание демона клавиатуры
 echo -e "${BLUE}🐍 Установка демона клавиатуры...${NC}"

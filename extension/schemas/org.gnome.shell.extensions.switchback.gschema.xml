@@ -35,9 +35,14 @@
         <choice value='left'/>
         <choice value='right'/>
         <choice value='left-right'/>
+        <choice value='top-left'/>
+        <choice value='top-right'/>
+        <choice value='bottom-left'/>
+        <choice value='bottom-right'/>
+        <choice value='all-corners'/>
       </choices>
       <summary>Indicator position</summary>
-      <description>Edge of the screen where the indicator bar is placed: top, bottom, top-bottom, left, right, left-right.</description>
+      <description>Edge or corners of the screen where indicator bars are placed: top, bottom, top-bottom, left, right, left-right, top-left, top-right, bottom-left, bottom-right, all-corners.</description>
     </key>
 
     <key name="margin-top" type="i">
@@ -108,9 +113,18 @@
         <choice value='to-center'/>
         <choice value='to-start'/>
         <choice value='to-end'/>
+        <choice value='to-edges'/>
+        <choice value='fill-from-center'/>
       </choices>
       <summary>Animation direction</summary>
-      <description>Shrink animation mode: to-center (symmetrical), to-start (left/top), to-end (right/bottom).</description>
+      <description>Indicator animation mode: to-center, to-start, to-end, to-edges (split from center), fill-from-center (expand from center).</description>
+    </key>
+
+    <key name="fade-duration" type="i">
+      <default>150</default>
+      <range min="0" max="800"/>
+      <summary>Fade duration in milliseconds</summary>
+      <description>Duration of smooth fade-in and fade-out animations in milliseconds (0 to disable).</description>
     </key>
 
     <key name="only-on-primary-monitor" type="b">

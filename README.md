@@ -2,64 +2,59 @@
   <b>English 🇬🇧</b> | <a href="README.ru.md">Русский 🇷🇺</a>
 </p>
 
-# SwitchBack Ubuntu 🔄
+<div align="center">
+  <img src="desktop/icons/switchback.svg" width="96" height="96" alt="SwitchBack Ubuntu Logo" />
+  <h1>SwitchBack Ubuntu 🔄</h1>
+  <p>Keyboard layout management extension & background daemon for Ubuntu GNOME</p>
 
-[![GNOME Shell](https://img.shields.io/badge/GNOME%20Shell-45%20%7C%2046%20%7C%2047%20%7C%2048%20%7C%2049%20%7C%2050%20%7C%2051-blue.svg)](https://extensions.gnome.org/)
-[![Session](https://img.shields.io/badge/Session-Wayland%20%7C%20X11-success.svg)](#architecture)
-[![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04%20%7C%2024.10%20%7C%2025%20%7C%2026-orange.svg)](https://ubuntu.com)
-[![GitHub](https://img.shields.io/badge/Author-Romanov--E-blue?logo=github)](https://github.com/Romanov-E)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+  <p>
+    <a href="https://extensions.gnome.org/"><img src="https://img.shields.io/badge/GNOME%20Shell-45%20%7C%2046%20%7C%2047%20%7C%2048%20%7C%2049%20%7C%2050%20%7C%2051-blue.svg" alt="GNOME Shell" /></a>
+    <a href="#architecture"><img src="https://img.shields.io/badge/Session-Wayland%20%7C%20X11-success.svg" alt="Session" /></a>
+    <a href="https://ubuntu.com"><img src="https://img.shields.io/badge/Ubuntu-24.04%20%7C%2024.10%20%7C%2025%20%7C%2026-orange.svg" alt="Ubuntu" /></a>
+    <a href="https://github.com/Romanov-E"><img src="https://img.shields.io/badge/Author-Romanov--E-blue?logo=github" alt="Author" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT" /></a>
+  </p>
+</div>
 
-**SwitchBack Ubuntu** is an intelligent keyboard layout management extension and background daemon designed specifically for Ubuntu GNOME (Wayland & X11), inspired by the Windows utility [*Switchify*](https://github.com/JD72/Switchify) created by [JD72](https://github.com/JD72).
+**SwitchBack Ubuntu** is a keyboard layout management extension and background daemon for Ubuntu GNOME (Wayland and X11), inspired by the Windows utility [*Switchify*](https://github.com/JD72/Switchify) by [JD72](https://github.com/JD72).
 
-It provides effortless layout switching via `Caps Lock`, customizable screen indicators (single or dual synchronized bars), and automatic return to your primary language (e.g., English) after typing inactivity.
-
----
-
-## ✨ Features
-
-- ⌨️ **Caps Lock Fast Toggle (Optional):**
-  - Instant layout switching on single `Caps Lock` press.
-  - Can be toggled on or off directly from the preferences: when disabled, standard system shortcuts (Super+Space, Alt+Shift) work as usual.
-- ⏱️ **Inactivity Auto-Return:** Automatically reverts to your primary layout (English) after you stop typing (e.g. 2–5 seconds).
-- 📏 **Customizable Indicator (Single & Dual Modes):**
-  - **Positions:**
-    - Top (horizontal)
-    - Bottom (horizontal)
-    - **Top + Bottom (dual horizontal bars simultaneously)**
-    - Left (vertical)
-    - Right (vertical)
-    - **Left + Right (dual vertical bars simultaneously)**
-  - **Independent Directional Margins:** Configure custom screen margins for Top, Bottom, Left, and Right independently (in pixels).
-  - **Dimensions & Style:** Thickness (1–40 px), Length (5% to 100% of screen edge), Corner radius (sharp to smooth capsule).
-  - **Color & Alpha:** Full GTK Color Dialog with RGB / HEX / Opacity support.
-  - **Animation Styles:** Symmetrical shrink towards the center, or towards start/end.
-- 🎛️ **Prioritized Options & Flexible Modes:**
-  - **Silent Mode:** Auto-switch active while indicator is turned off (runs silently in the background).
-  - **Full Deactivation:** When auto-switch is disabled, the indicator is also automatically hidden.
-- 🖱️ **Hardware Evdev Isolation (Zero False-Triggers):**
-  - Reads hardware keystrokes directly via Linux kernel `/dev/input/event*`.
-  - **Mouse moves, clicks (LMB/RMB), and scroll wheels (including dual horizontal wheels like Logitech MX Master) NEVER reset the typing timer!**
-- 🛡️ **Security & Privacy by Design:**
-  - **No Keylogging:** Does NOT record, log, or transmit any typed keys. It strictly reads `EV_KEY` events to update a numeric monotonic timestamp.
-  - **Zero Root at Runtime:** Background daemon runs as a user service (`systemd --user`).
-  - **Protected IPC:** Shared memory file in RAM (`/dev/shm/switchback_key`) is locked with `0600` permissions (owner only).
-- ⚙️ **Integrated Service Management:**
-  - Start, stop, enable autostart, and restart the background daemon directly from the Extension Preferences GUI!
+It adds single-key layout switching via `Caps Lock`, customizable on-screen countdown bars, and automatic return to your primary input language after typing pauses.
 
 ---
 
-## 📸 Architecture
+## Features
+
+- **Caps Lock Toggle:** Single-key layout toggle using `Caps Lock`. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
+- **Inactivity Auto-Return:** Switches back to your primary layout (e.g., English) after a configurable pause in typing (0.5 to 30 seconds).
+- **On-Screen Indicators:**
+  - **Placements:** Top, Bottom, Dual Top + Bottom, Left, Right, Dual Left + Right, Corner L-brackets (all 4 individual corners and simultaneous 4-corner HUD).
+  - **Independent Margins:** Pixel-accurate offsets for top, bottom, left, and right screen edges.
+  - **Geometry:** Configurable thickness (1–40 px), length (5% to 100%), and corner radius (up to full pill shape).
+  - **Color & Alpha:** Full GTK color palette with RGBA opacity support.
+  - **Animations & Effects:** Collapse to center, split outward to edges, fill from center outward, collapse to start/end, and configurable smooth fade-in/fade-out duration (0–800 ms).
+  - **16:9 Live Preview:** High-framerate proportional monitor preview synchronized with display VSync.
+- **Hardware Event Filtering:**
+  - Reads Linux kernel input events directly via `/dev/input/event*`.
+  - Mouse movements, clicks, and scroll wheels (including horizontal wheels on mice like Logitech MX Master) do not reset the typing timer.
+- **Privacy & Security:**
+  - Does not log, store, or inspect typed keystrokes. The daemon only reads `EV_KEY` events to record a monotonic timestamp.
+  - Runs as a user-level service (`systemd --user`) without root privileges.
+  - IPC memory file (`/dev/shm/switchback_key`) is restricted to owner permissions (`0600`).
+- **Service Management:** Built-in controls in the preferences window to start, stop, restart, and inspect the background daemon.
+
+---
+
+## Architecture
 
 ```
                   ┌──────────────────────────────────────────────┐
                   │          Physical Keyboard (/dev/input)      │
                   └──────────────────────┬───────────────────────┘
-                                         │ EV_KEY keystrokes only
+                                         │ EV_KEY events only
                                          ▼
                   ┌──────────────────────────────────────────────┐
                   │       SwitchBack Daemon (systemd --user)     │
-                  │  Filters out all mouse buttons, moves & wheels│
+                  │   Filters out all mouse clicks and movements │
                   └──────────────────────┬───────────────────────┘
                                          │ Monotonic timestamp (0600)
                                          ▼
@@ -69,18 +64,18 @@ It provides effortless layout switching via `Caps Lock`, customizable screen ind
                                          │ Instant zero-overhead read
                                          ▼
                   ┌──────────────────────────────────────────────┐
-                  │        GNOME Shell Extension (Wayland / Mutter│
-                  │    • Smooth 60 FPS Clutter / St indicator     │
-                  │    • Auto-switch via InputSourceManager       │
-                  │    • Live GSettings sync with GTK4 Prefs GUI  │
+                  │        GNOME Shell Extension (Wayland / X11) │
+                  │    • 60 FPS Clutter / St indicator           │
+                  │    • Auto-switch via InputSourceManager      │
+                  │    • Live GSettings sync with GTK4 Prefs GUI │
                   └──────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Installation
+## Installation
 
-Clone the repository and run the automated installer:
+Clone the repository and run the installer:
 
 ```bash
 git clone https://github.com/Romanov-E/SwitchBack-Ubuntu.git
@@ -89,32 +84,32 @@ cd SwitchBack-Ubuntu
 ```
 
 ### What `install.sh` does:
-1. Validates system dependencies (`python3`, `glib-compile-schemas`, `gnome-extensions`).
-2. Configures access to `/dev/input` securely for the current user (via `input` group).
-3. Compiles the GSettings schema and installs the GNOME Shell extension.
-4. Deploys and starts the `systemd --user` background keyboard service.
+1. Verifies dependencies (`python3`, `glib-compile-schemas`, `gnome-extensions`).
+2. Adds the current user to the system `input` group for kernel event access without root.
+3. Compiles GSettings schemas and installs the GNOME Shell extension.
+4. Registers and starts the `systemd --user` background daemon.
 5. Enables the extension.
 
-> ⚠️ **Note:** If you were just added to the `input` group during installation, please **Log Out** of your Ubuntu session and log back in for the kernel permissions to take effect.
+> **Note:** If your user was just added to the `input` group, log out of your desktop session and log back in for kernel group permissions to take effect.
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
-Open the SwitchBack settings via:
-- **GNOME Extensions App:** Click the gear icon ⚙️ next to **SwitchBack Ubuntu**.
+Open preferences through:
+- **GNOME Extensions App:** Click the settings gear next to **SwitchBack Ubuntu**.
 - **Terminal:**
   ```bash
   gnome-extensions prefs switchback@local
   ```
 
-All changes apply **immediately in real time** without restarting GNOME Shell.
+All settings apply in real time without restarting GNOME Shell.
 
 ---
 
-## 🧹 Uninstallation
+## Uninstallation
 
-To cleanly remove SwitchBack and all its components:
+To remove SwitchBack and all associated files:
 
 ```bash
 cd SwitchBack-Ubuntu
@@ -123,16 +118,23 @@ cd SwitchBack-Ubuntu
 
 ---
 
-## 👏 Acknowledgments
+## Acknowledgments
 
 - Inspired by the Windows utility [Switchify](https://github.com/JD72/Switchify) created by [JD72](https://github.com/JD72).
 
 ---
 
-## 📄 License
+## Authors & Contributors
+
+- **Romanov E.** ([@Romanov-E](https://github.com/Romanov-E)) — Author & Lead Developer
+- **Antigravity** ([Google DeepMind](https://deepmind.google)) — AI Pair Programmer & Co-developer (system architecture, `/dev/input` hardware event daemon, animation mathematics, GNOME Shell extension & UI/UX)
+
+---
+
+## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for details.
-Author: [Romanov-E](https://github.com/Romanov-E).
+Authors: [Romanov-E](https://github.com/Romanov-E) & contributors.
 
 ---
 

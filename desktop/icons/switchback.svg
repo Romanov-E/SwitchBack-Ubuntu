@@ -44,6 +44,8 @@
   </g>
 
   <!-- Switch Arrow Icon Overlay -->
-  <path d="M 64 100 C 54 100, 46 106, 46 112 M 46 112 L 52 108 M 46 112 L 52 116" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M 64 112 C 74 112, 82 106, 82 100 M 82 100 L 76 104 M 82 100 L 76 96" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 48 109 C 50 102, 60 100, 75 102" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 69 98 L 76 102 L 71 108" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 80 105 C 78 112, 68 114, 53 112" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 59 116 L 52 112 L 57 106" fill="none" stroke="#62a0ea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

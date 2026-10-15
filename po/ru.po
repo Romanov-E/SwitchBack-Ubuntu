@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: SwitchBack Ubuntu 2.2.0\n"
+"Project-Id-Version: SwitchBack Ubuntu 2.3.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Romanov-E/SwitchBack-Ubuntu\n"
 "POT-Creation-Date: 2026-10-14 15:45+0300\n"
 "PO-Revision-Date: 2026-10-14 15:45+0300\n"
@@ -107,6 +107,21 @@ msgstr "Справа экрана (вертикально)"
 msgid "Left + Right (two vertical bars)"
 msgstr "Слева + Справа (две вертикальные полосы)"
 
+msgid "Top-left corner"
+msgstr "Верхний левый угол"
+
+msgid "Top-right corner"
+msgstr "Верхний правый угол"
+
+msgid "Bottom-left corner"
+msgstr "Нижний левый угол"
+
+msgid "Bottom-right corner"
+msgstr "Нижний правый угол"
+
+msgid "All 4 corners simultaneously"
+msgstr "Все 4 угла одновременно"
+
 msgid "Screen Edge Margins"
 msgstr "Отступы от краёв экрана"
 
@@ -143,6 +158,9 @@ msgstr "Размеры и геометрия"
 msgid "Length, thickness, shape and color of the bar"
 msgstr "Длина, толщина, форма и цвет полосы"
 
+msgid "Live Preview"
+msgstr "Предварительный просмотр"
+
 msgid "Bar length (% of screen)"
 msgstr "Длина полосы (% от экрана)"
 
@@ -170,17 +188,17 @@ msgstr "Нажмите кнопку для выбора цвета или про
 msgid "Choose SwitchBack bar color"
 msgstr "Выберите цвет полосы SwitchBack"
 
-msgid "Shrink Animation"
-msgstr "Анимация сужения"
+msgid "Animation & Transition Effects"
+msgstr "Анимация и эффекты перехода"
 
-msgid "Direction of bar shrinking during countdown"
-msgstr "Направление движения полосы во время обратного отсчёта"
+msgid "Indicator motion style, smooth appearance and disappearance"
+msgstr "Стиль движения полосы, плавное проявление и затухание"
 
-msgid "Shrink animation style"
-msgstr "Стиль сжатия полосы"
+msgid "Indicator animation style"
+msgstr "Стиль анимации индикатора"
 
-msgid "Where the indicator collapses as time expires"
-msgstr "Куда стягивается индикатор при истечении времени"
+msgid "Motion of the bar during countdown"
+msgstr "Движение полосы во время обратного отсчёта"
 
 msgid "To center (symmetric from both sides)"
 msgstr "К центру (симметрично с двух сторон)"
@@ -190,6 +208,39 @@ msgstr "К началу (влево / вверх)"
 
 msgid "To end (right / bottom)"
 msgstr "К концу (вправо / вниз)"
+
+msgid "To edges (split from center outward)"
+msgstr "К краям (распадение от центра в стороны)"
+
+msgid "Fill from center (expand to edges)"
+msgstr "Заполнение от центра к краям"
+
+msgid "Test shrink animation"
+msgstr "Проверить анимацию сужения"
+
+msgid "Click to test shrink animation"
+msgstr "Нажмите для проверки анимации"
+
+msgid "Click screen to test animation"
+msgstr "Нажмите на экран для проверки анимации"
+
+msgid "Smooth appearance and fade duration (ms)"
+msgstr "Плавное появление и затухание (мс)"
+
+msgid "Duration of fade-in and fade-out animations (0 — disabled)"
+msgstr "Длительность эффектов появления и скрытия полосы (0 — выключено)"
+
+msgid "0 ms — instant (smooth fading disabled)"
+msgstr "0 мс — мгновенно (плавное затухание выключено)"
+
+msgid "150 ms (default) — balanced smooth transition"
+msgstr "150 мс (по умолчанию) — сбалансированный плавный переход"
+
+msgid "ms"
+msgstr "мс"
+
+msgid "Smooth fade-in and fade-out duration"
+msgstr "Длительность плавного проявления и затухания"
 
 # ══════════════════════════════════════════════════════════════
 # СТРАНИЦА 3: СЛУЖБА (SERVICE)
@@ -260,3 +311,16 @@ msgstr "Для GNOME Shell 45 – 51, Wayland & X11"
 
 msgid "GitHub Repository"
 msgstr "Репозиторий GitHub"
+
+msgid "Placement & Dimensions"
+msgstr "Расположение и размеры"
+
+msgid "Screen position, length, thickness, shape and color"
+msgstr "Кромка экрана, длина, толщина, форма и цвет полосы"
+
+msgid "Visual demonstration of the on-screen countdown indicator"
+msgstr "Визуальная демонстрация экранного индикатора"
+
+msgid "Developers & Contributors"
+msgstr "Разработчики и контрибьюторы"
+

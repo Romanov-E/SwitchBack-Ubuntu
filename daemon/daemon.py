@@ -36,6 +36,10 @@ def is_keyboard_device(path):
     """Checks if a device at path is a keyboard and returns fd if true, else None."""
     try:
         fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+    except OSError:
+        return None
+
+    try:
         # Check supported event types: EVIOCGBIT(0, 4)
         buf = bytearray(4)
         fcntl.ioctl(fd, 0x80044520, buf)
@@ -49,6 +53,10 @@ def is_keyboard_device(path):
             has_letters = (key_buf[2] != 0 or key_buf[3] != 0 or key_buf[7] != 0)
             if has_letters:
                 return fd
+    except Exception:
+        pass
+
+    try:
         os.close(fd)
     except Exception:
         pass
@@ -94,6 +102,8 @@ def main():
     global shm_fd
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
+    if hasattr(signal, 'SIGHUP'):
+        signal.signal(signal.SIGHUP, cleanup)
 
     print("[SwitchBack Daemon] Запуск фонового демона клавиатуры...", flush=True)
 
@@ -106,6 +116,7 @@ def main():
         print(f"[SwitchBack Daemon] Ошибка создания {SHM_PATH}: {e}", file=sys.stderr, flush=True)
 
     rescan_devices()
+    fd_map = {fd: path for path, fd in opened_devices.items()}
 
     if not opened_devices:
         print("[SwitchBack Daemon] Клавиатуры не найдены или нет доступа к /dev/input.", file=sys.stderr)
@@ -128,18 +139,20 @@ def main():
             rescan_devices()
             if len(opened_devices) != last_device_count:
                 last_device_count = len(opened_devices)
+                fd_map = {fd: path for path, fd in opened_devices.items()}
                 print(f"[SwitchBack Daemon] Список устройств обновлён: {last_device_count} активных", flush=True)
 
         if not opened_devices:
             time.sleep(2.0)
             rescan_devices()
+            fd_map = {fd: path for path, fd in opened_devices.items()}
             continue
 
-        fd_map = {fd: path for path, fd in opened_devices.items()}
         try:
             r, _, _ = select.select(list(fd_map.keys()), [], [], 2.0)
         except (select.error, ValueError):
             rescan_devices()
+            fd_map = {fd: path for path, fd in opened_devices.items()}
             continue
 
         if not r:
@@ -173,6 +186,8 @@ def main():
                 except Exception:
                     pass
                 del opened_devices[path]
+        if devices_to_remove:
+            fd_map = {fd: path for path, fd in opened_devices.items()}
 
         if key_hit and shm_fd >= 0:
             try:
