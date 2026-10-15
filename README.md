@@ -60,17 +60,17 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 <div align="center">
 
-| All 4 Corners Simultaneously (Cyan) | Top-Left Corner (Coral) |
+| Top Screen Edge — Contract to Center (White) | Top-Right Corner — L-Bracket (Ubuntu Orange) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-all-corners-cyan.gif" width="340" alt="All 4 corners simultaneously" /> | <img src="docs/screenshots/preview-top-left-coral.gif" width="340" alt="Top-left corner" /> |
+| <img src="docs/screenshots/preview-top-white-en.gif" width="340" alt="Top Screen Edge (White)" /> | <img src="docs/screenshots/preview-top-right-orange-en.gif" width="340" alt="Top-Right Corner (Ubuntu Orange)" /> |
 
-| Top of Screen (Amber Gold) | Bottom-Right Corner (Emerald Green) |
+| Bottom Screen Edge — Expand to Edges (Green) | All 4 Corners HUD (Cyber Cyan) |
 | :---: | :---: |
-| <img src="docs/screenshots/preview-top-amber.gif" width="340" alt="Top of screen" /> | <img src="docs/screenshots/preview-bottom-right-green.gif" width="340" alt="Bottom-right corner" /> |
+| <img src="docs/screenshots/preview-bottom-green-en.gif" width="340" alt="Bottom Screen Edge (Green)" /> | <img src="docs/screenshots/preview-all-corners-cyan-en.gif" width="340" alt="All 4 Corners HUD (Cyber Cyan)" /> |
 
-| Dual Left + Right (Neon Purple) |
-| :---: |
-| <img src="docs/screenshots/preview-dual-purple.gif" width="340" alt="Dual left and right bars" /> |
+| Dual Top & Bottom Bars (Amber Gold) | Dual Left & Right Bars (Cyber Purple) |
+| :---: | :---: |
+| <img src="docs/screenshots/preview-dual-amber-en.gif" width="340" alt="Dual Top & Bottom Bars" /> | <img src="docs/screenshots/preview-dual-purple-en.gif" width="340" alt="Dual Left & Right Bars" /> |
 
 </div>
 
