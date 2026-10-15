@@ -30,19 +30,29 @@ DIST_DIR = os.path.join(PROJECT_DIR, "dist")
 RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.3.0
 
 ### ✨ Key Features & Improvements
+
 - **🎨 Modern GTK4 + Libadwaita GUI Installer (`install-gui`)**:
   - Interactive graphical installation with real-time log terminal and progress bar.
   - Multi-language switcher (RU / EN).
   - Launchable directly from terminal or by double-clicking `SwitchBack-Installer.desktop`.
-- **📐 Flexible Indicator Animations & New Placement Modes**:
-  - 6 motion styles including outward split (`to-edges`), expansion (`fill-from-center`), and seamless inward convergence (`from-edges-to-center`).
-  - Directional corner radius rounding and sub-pixel overlap eliminating all gaps or notches when lines meet.
-  - Master smooth transition duration (0–2000 ms) + separate Fade-In (0–1000 ms) and Fade-Out (0–2000 ms) Libadwaita expander controls with live preview feedback.
-  - 4 corner positions (top-left, top-right, bottom-left, bottom-right) and simultaneous 4-corner HUD mode.
+
+- **📐 Indicator Animation Modes & Seamless Convergence**:
+  - 6 motion styles: Collapse to center, split to edges, fill from center outward, converge from edges to center (`from-edges-to-center`), collapse to start, and collapse to end.
+  - Sub-pixel precise alignment and directional corner radius rounding: lines converge into an unbroken solid bar without notches, gaps, or seams.
+  - 4 corner L-bracket positions and simultaneous 4-corner HUD mode.
+
+- **⏱️ Advanced Transition Timing (Libadwaita Expander)**:
+  - Master transition duration slider (`0–2000 ms`, default `300 ms`).
+  - Option B separate timing controls via dedicated expander row:
+    - **Fade-In appearance duration:** `0–1000 ms` (default `150 ms`).
+    - **Fade-Out dissolution duration:** `0–2000 ms` (default `800 ms`).
+  - Live 16:9 monitor preview immediately reflects the configured in/out timing.
+
 - **🖥️ 16:9 Realistic Virtual Display Preview in Preferences**:
   - Enlarged 16:9 aspect ratio monitor with active bezel styling.
-  - Automatic 3-cycle animation repeat when switching animation types for instant feedback.
+  - Automatic 3-cycle animation repeat when switching animation types for instant visual feedback.
   - Sub-pixel precise indicator and corner positioning preview.
+
 - **🛡️ Full GNOME Shell 45 – 51 & Wayland Support**:
   - Clean real-time `/dev/shm` shared memory IPC with zero lag and zero CPU overhead.
   - Complete English & Russian localizations with refined typography.
@@ -66,7 +76,7 @@ Download and extract `SwitchBack-Ubuntu-v2.3.0.tar.gz` or `.zip`:
 ---
 
 ### 👥 Authors & Contributors
-- **Evgeniy Romanov** ([@Romanov-E](https://github.com/Romanov-E)) — Project Creator, Architect & Lead Maintainer
+- **Romanov E.** ([@Romanov-E](https://github.com/Romanov-E)) — Project Creator, Architect & Lead Maintainer
 - **Antigravity** ([Google DeepMind](https://deepmind.google)) — Autonomous Agentic Coding Assistant & Co-Developer
 """
 
@@ -84,7 +94,22 @@ def create_or_get_release():
         with urllib.request.urlopen(req) as resp:
             data = json.loads(resp.read().decode())
             print(f"ℹ️ Release for {TAG} already exists (ID: {data['id']})")
-            return data
+            
+            # Patch release text and title
+            patch_payload = {
+                "name": f"v{VERSION} — Smooth Transitions, Inward Convergence & GUI Installer",
+                "body": RELEASE_BODY
+            }
+            patch_req = urllib.request.Request(
+                f"{url}/{data['id']}",
+                data=json.dumps(patch_payload).encode("utf-8"),
+                headers=headers,
+                method="PATCH"
+            )
+            with urllib.request.urlopen(patch_req) as patch_resp:
+                updated_data = json.loads(patch_resp.read().decode())
+                print(f"📝 Updated release body on GitHub (ID: {updated_data['id']})")
+                return updated_data
     except urllib.error.HTTPError as e:
         if e.code != 404:
             raise
@@ -93,7 +118,7 @@ def create_or_get_release():
     payload = {
         "tag_name": TAG,
         "target_commitish": "main",
-        "name": f"v{VERSION} — Smooth Transitions, Corner Modes & GUI Installer",
+        "name": f"v{VERSION} — Smooth Transitions, Inward Convergence & GUI Installer",
         "body": RELEASE_BODY,
         "draft": False,
         "prerelease": False
