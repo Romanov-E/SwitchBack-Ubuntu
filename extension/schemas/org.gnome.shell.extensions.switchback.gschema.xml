@@ -115,9 +115,10 @@
         <choice value='to-end'/>
         <choice value='to-edges'/>
         <choice value='fill-from-center'/>
+        <choice value='from-edges-to-center'/>
       </choices>
       <summary>Animation direction</summary>
-      <description>Indicator animation mode: to-center, to-start, to-end, to-edges (split from center), fill-from-center (expand from center).</description>
+      <description>Indicator animation mode: to-center, to-start, to-end, to-edges (split from center), fill-from-center (expand from center), from-edges-to-center (converge to center).</description>
     </key>
 
     <key name="fade-duration" type="i">

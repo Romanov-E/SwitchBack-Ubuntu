@@ -137,7 +137,7 @@ export default class SwitchBackExtension extends Extension {
         this._barLengthFraction = this._settings.get_double('bar-length-fraction');
         this._barColor = this._settings.get_string('bar-color');
         this._barRadius = this._settings.get_int('bar-radius');
-        this._animationMode = this._settings.get_string('animation-mode'); // 'to-center', 'to-start', 'to-end', 'to-edges', 'fill-from-center'
+        this._animationMode = this._settings.get_string('animation-mode'); // 'to-center', 'to-edges', 'fill-from-center', 'from-edges-to-center', 'to-start', 'to-end'
         this._fadeDuration = this._settings.get_int('fade-duration');
         this._onlyPrimaryMonitor = this._settings.get_boolean('only-on-primary-monitor');
         this._targetSourceIndex = this._settings.get_int('switch-to-source-index');
@@ -181,7 +181,7 @@ export default class SwitchBackExtension extends Extension {
             armCount = 2;
         }
 
-        const isSplitMode = (this._animationMode === 'to-edges');
+        const isSplitMode = (this._animationMode === 'to-edges' || this._animationMode === 'from-edges-to-center');
         const barsPerArm = isSplitMode ? 2 : 1;
         const count = armCount * barsPerArm;
 
@@ -335,11 +335,12 @@ export default class SwitchBackExtension extends Extension {
                 const maxLen = arm.end - arm.start;
                 const mid = Math.round((arm.start + arm.end) / 2);
 
-                if (this._animationMode === 'to-edges') {
+                if (this._animationMode === 'to-edges' || this._animationMode === 'from-edges-to-center') {
                     const halfA = Math.floor(maxLen / 2);
                     const halfB = maxLen - halfA;
-                    const lenA = Math.round(halfA * progress);
-                    const lenB = Math.round(halfB * progress);
+                    const p = (this._animationMode === 'from-edges-to-center') ? elapsedFraction : progress;
+                    const lenA = Math.round(halfA * p);
+                    const lenB = Math.round(halfB * p);
                     const coordA = arm.start;
                     const coordB = arm.end - lenB;
 

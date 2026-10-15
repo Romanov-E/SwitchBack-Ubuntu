@@ -215,6 +215,9 @@ msgstr "К краям (распадение от центра в стороны)
 msgid "Fill from center (expand to edges)"
 msgstr "Заполнение от центра к краям"
 
+msgid "From edges to center (from both sides)"
+msgstr "От краёв к центру (с обоих сторон)"
+
 msgid "Test shrink animation"
 msgstr "Проверить анимацию сужения"
 

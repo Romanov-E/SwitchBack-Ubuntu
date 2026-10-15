@@ -187,12 +187,13 @@ def generate_gif(preset, lang, out_filename):
             maxLen = arm["end"] - arm["start"]
             mid = int((arm["start"] + arm["end"]) / 2)
 
-            if mode == "to-edges":
+            if mode == "to-edges" or mode == "from-edges-to-center":
                 halfA = maxLen // 2
                 halfB = maxLen - halfA
-                lenA = int(halfA * progress)
-                lenB = int(halfB * progress)
-                if progress >= 0.98:
+                p = (1.0 - progress) if mode == "from-edges-to-center" else progress
+                lenA = int(halfA * p)
+                lenB = int(halfB * p)
+                if p >= 0.98:
                     barR = min(rad, t // 2, maxLen // 2)
                     if arm["v"]:
                         draw_rounded_rect(cr, arm["fixed"], arm["start"], t, maxLen, barR)

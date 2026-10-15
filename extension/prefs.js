@@ -331,7 +331,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
                 const cycleElapsed = now - cycleStartTime;
 
-                if (activeAnimMode === 'fill-from-center') {
+                if (activeAnimMode === 'fill-from-center' || activeAnimMode === 'from-edges-to-center') {
                     if (cycleElapsed < motionDurationUs) {
                         animProgress = cycleElapsed / motionDurationUs;
                         animOpacity = 1.0;
@@ -427,7 +427,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
                 const maxLen = arm.end - arm.start;
                 const mid = Math.round((arm.start + arm.end) / 2);
 
-                if (mode === 'to-edges') {
+                if (mode === 'to-edges' || mode === 'from-edges-to-center') {
                     const halfA = Math.floor(maxLen / 2);
                     const halfB = maxLen - halfA;
                     const lenA = Math.round(halfA * animProgress);
@@ -682,10 +682,11 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
             _('To center (symmetric from both sides)'),
             _('To edges (split from center outward)'),
             _('Fill from center (expand to edges)'),
+            _('From edges to center (from both sides)'),
             _('To start (left / top)'),
             _('To end (right / bottom)'),
         ]);
-        const animKeys = ['to-center', 'to-edges', 'fill-from-center', 'to-start', 'to-end'];
+        const animKeys = ['to-center', 'to-edges', 'fill-from-center', 'from-edges-to-center', 'to-start', 'to-end'];
 
         const rowAnim = new Adw.ComboRow({
             title: _('Indicator animation style'),
