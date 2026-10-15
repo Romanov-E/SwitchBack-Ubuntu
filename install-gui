@@ -251,7 +251,7 @@ class SwitchBackInstaller(Adw.Application):
         self.check_existing_installation()
 
         self.win = Adw.ApplicationWindow(application=self, title=self.t('app_title'))
-        self.win.set_default_size(600, 690)
+        self.win.set_default_size(620, 840)
         self.win.set_size_request(480, 560)
         self.win.connect("close-request", self.on_close_request)
 
