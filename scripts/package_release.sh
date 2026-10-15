@@ -24,6 +24,7 @@ cp -f "$PROJECT_DIR/SwitchBack-Installer.desktop" "$STAGE_DIR/"
 cp -f "$PROJECT_DIR/uninstall.sh" "$STAGE_DIR/"
 cp -f "$PROJECT_DIR/README.md" "$STAGE_DIR/"
 cp -f "$PROJECT_DIR/README.ru.md" "$STAGE_DIR/"
+cp -f "$PROJECT_DIR/CONTRIBUTORS.md" "$STAGE_DIR/"
 cp -f "$PROJECT_DIR/LICENSE" "$STAGE_DIR/"
 
 # Ensure executable permissions
