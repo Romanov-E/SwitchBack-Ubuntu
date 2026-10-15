@@ -3,3 +3,6 @@ __pycache__/
 *.shell-extension.zip
 schemas/gschemas.compiled
 .DS_Store
+dist/
+*.tar.gz
+*.zip

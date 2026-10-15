@@ -6,6 +6,12 @@
 
 set -e
 
+# Support GUI installer
+if [ "$1" = "--gui" ] || [ "$1" = "-g" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    exec python3 "$SCRIPT_DIR/install-gui" "$@"
+fi
+
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
@@ -22,7 +28,8 @@ echo "  ███████║╚███╔███╔╝██║   ██
 echo "  ╚══════╝ ╚══╝╚══╝ ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝"
 echo -e "${NC}"
 echo -e "${BOLD}Установка SwitchBack Indicator для Ubuntu GNOME...${NC}"
-echo -e "${BOLD}Installing SwitchBack Indicator for Ubuntu GNOME...${NC}\n"
+echo -e "${BOLD}Installing SwitchBack Indicator for Ubuntu GNOME...${NC}"
+echo -e "${YELLOW}💡 Доступен графический установщик: ./install-gui (или ./install.sh --gui)${NC}\n"
 
 # 1. Проверка прав (не от root)
 if [ "$EUID" -eq 0 ]; then

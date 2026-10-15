@@ -1,0 +1,1156 @@
+#!/usr/bin/env python3
+# ==============================================================================
+# SwitchBack Ubuntu — Modern Graphical Installer & Manager
+# GNOME Shell Extension + Hardware Keyboard Inactivity Daemon
+# https://github.com/Romanov-E/SwitchBack-Ubuntu
+# ==============================================================================
+
+import os
+import sys
+import grp
+import time
+import shutil
+import subprocess
+import threading
+
+import gi
+gi.require_version('Gtk', '4.0')
+gi.require_version('Adw', '1')
+from gi.repository import Gtk, Adw, GLib, Gio, Gdk, Pango
+
+PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
+VERSION = "2.3.0"
+
+# Translations
+TRANSLATIONS = {
+    'ru': {
+        'app_title': 'Установка SwitchBack Ubuntu',
+        'subtitle': 'Автовозврат раскладки и умный индикатор ввода для Ubuntu GNOME',
+        'version': f'Версия {VERSION}',
+        'already_installed_title': 'SwitchBack уже установлен в системе',
+        'already_installed_desc': 'Версия {ver} • Служба {daemon_status}',
+        'btn_reinstall': '🔄 Переустановить',
+        'btn_prefs': '⚙️ Настройки',
+        'btn_uninstall': '🗑️ Удалить',
+        'options_group_title': 'Параметры установки',
+        'opt_caps': 'Переключение раскладки по Caps Lock',
+        'opt_caps_desc': 'Назначить клавишу Caps Lock для быстрой смены языка',
+        'opt_daemon': 'Автозапуск фонового демона',
+        'opt_daemon_desc': 'Запускать службу отслеживания ввода при входе в систему',
+        'opt_prefs': 'Открыть настройки после установки',
+        'opt_prefs_desc': 'Сразу перейти к персонализации индикатора и таймера',
+        'btn_install': '🚀 Установить SwitchBack',
+        'progress_title': 'Установка SwitchBack...',
+        'step_deps': 'Проверка системных зависимостей',
+        'step_deps_desc': 'Python 3, glib-compile-schemas, gnome-extensions',
+        'step_input': 'Проверка прав доступа к клавиатуре',
+        'step_input_desc': 'Группа пользователей input (/dev/input)',
+        'step_schemas': 'Сборка схемы GSettings и переводов',
+        'step_schemas_desc': 'Компиляция XML-схем и файлов локализации',
+        'step_ext': 'Развёртывание расширения GNOME Shell',
+        'step_ext_desc': 'Копирование в ~/.local/share/gnome-shell/extensions',
+        'step_daemon': 'Настройка фонового демона и службы',
+        'step_daemon_desc': 'Регистрация пользовательской службы systemd',
+        'step_enable': 'Активация расширения в GNOME Shell',
+        'step_enable_desc': 'Включение расширения switchback@local',
+        'log_expander': 'Подробный журнал установки',
+        'btn_copy_log': '📋 Скопировать журнал',
+        'log_copied': 'Журнал скопирован в буфер обмена',
+        'done_title': 'Установка успешно завершена!',
+        'done_desc': 'Все компоненты SwitchBack установлены и настроены.',
+        'logout_warn_title': '⚠️ Требуется перезапуск сеанса',
+        'logout_warn_desc': 'Вы были добавлены в группу "input". Чтобы права доступа к клавиатуре вступили в силу, выполните Выход из системы (Log Out) и войдите снова.',
+        'all_ready_title': '🎉 Всё готово к работе',
+        'all_ready_desc': 'Расширение активно, служба отслеживания ввода работает в фоновом режиме.',
+        'btn_open_settings': '⚙️ Открыть настройки',
+        'btn_finish': '🏁 Завершить',
+        'btn_close': 'Закрыть',
+        'uninstall_confirm_title': 'Удалить SwitchBack Ubuntu?',
+        'uninstall_confirm_desc': 'Все компоненты расширения, фоновая служба systemd и схема настроек будут полностью удалены из вашей системы.',
+        'btn_cancel': 'Отмена',
+        'btn_uninstall_action': 'Удалить',
+        'uninstalling_title': 'Удаление SwitchBack...',
+        'uninstalled_title': 'SwitchBack успешно удалён',
+        'uninstalled_desc': 'Все компоненты чисто удалены из вашей системы.',
+        'error_title': 'Ошибка установки',
+        'btn_retry': '🔄 Повторить попытку',
+        'status_active': 'активна ✅',
+        'status_inactive': 'не активна ⏸️',
+        'feature_caps': '⌨️ <b>Caps Lock</b>: мгновенное переключение раскладки одной клавишей',
+        'feature_timer': '⏱️ <b>Автовозврат</b>: возврат на основной язык после паузы в наборе',
+        'feature_hud': '🎨 <b>Экранный индикатор</b>: визуализация отсчёта в углах и по краям экрана',
+        'lang_toggle': '🌐 English',
+    },
+    'en': {
+        'app_title': 'SwitchBack Ubuntu Setup',
+        'subtitle': 'Keyboard layout management extension & background daemon for Ubuntu GNOME',
+        'version': f'Version {VERSION}',
+        'already_installed_title': 'SwitchBack is already installed',
+        'already_installed_desc': 'Version {ver} • Service {daemon_status}',
+        'btn_reinstall': '🔄 Reinstall',
+        'btn_prefs': '⚙️ Settings',
+        'btn_uninstall': '🗑️ Uninstall',
+        'options_group_title': 'Installation Options',
+        'opt_caps': 'Caps Lock layout toggle',
+        'opt_caps_desc': 'Configure Caps Lock key for quick single-key layout switching',
+        'opt_daemon': 'Autostart background daemon',
+        'opt_daemon_desc': 'Start keyboard input tracking service automatically on login',
+        'opt_prefs': 'Open preferences after installation',
+        'opt_prefs_desc': 'Immediately configure countdown indicator and appearance',
+        'btn_install': '🚀 Install SwitchBack',
+        'progress_title': 'Installing SwitchBack...',
+        'step_deps': 'Checking system dependencies',
+        'step_deps_desc': 'Python 3, glib-compile-schemas, gnome-extensions',
+        'step_input': 'Checking keyboard device permissions',
+        'step_input_desc': 'User input group access (/dev/input)',
+        'step_schemas': 'Compiling GSettings schemas & locales',
+        'step_schemas_desc': 'Compiling XML schemas and translation catalogs',
+        'step_ext': 'Deploying GNOME Shell extension',
+        'step_ext_desc': 'Copying files to ~/.local/share/gnome-shell/extensions',
+        'step_daemon': 'Configuring daemon & systemd service',
+        'step_daemon_desc': 'Registering systemd --user service',
+        'step_enable': 'Activating extension in GNOME Shell',
+        'step_enable_desc': 'Enabling switchback@local',
+        'log_expander': 'Detailed installation log',
+        'btn_copy_log': '📋 Copy Log',
+        'log_copied': 'Log copied to clipboard',
+        'done_title': 'Installation Complete!',
+        'done_desc': 'All SwitchBack components have been installed and configured.',
+        'logout_warn_title': '⚠️ Session logout required',
+        'logout_warn_desc': 'Your user was added to the "input" system group. To apply hardware keyboard permissions, please Log Out of your session and log back in.',
+        'all_ready_title': '🎉 Ready to use',
+        'all_ready_desc': 'The extension is enabled and the background daemon is running.',
+        'btn_open_settings': '⚙️ Open Settings',
+        'btn_finish': '🏁 Finish',
+        'btn_close': 'Close',
+        'uninstall_confirm_title': 'Uninstall SwitchBack Ubuntu?',
+        'uninstall_confirm_desc': 'All extension components, the systemd background daemon, and configuration schemas will be cleanly removed.',
+        'btn_cancel': 'Cancel',
+        'btn_uninstall_action': 'Uninstall',
+        'uninstalling_title': 'Uninstalling SwitchBack...',
+        'uninstalled_title': 'SwitchBack Successfully Uninstalled',
+        'uninstalled_desc': 'All components have been cleanly removed from your system.',
+        'error_title': 'Installation Encountered an Error',
+        'btn_retry': '🔄 Try Again',
+        'status_active': 'active ✅',
+        'status_inactive': 'inactive ⏸️',
+        'feature_caps': '⌨️ <b>Caps Lock</b>: fast single-key layout toggle',
+        'feature_timer': '⏱️ <b>Auto-return</b>: switches back to primary layout on typing pauses',
+        'feature_hud': '🎨 <b>HUD Indicators</b>: sleek animated countdown bars &amp; corner brackets',
+        'lang_toggle': '🌐 Русский',
+    }
+}
+
+class StepRow(Gtk.Box):
+    def __init__(self, title_text, desc_text):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=14)
+        self.set_margin_top(4)
+        self.set_margin_bottom(4)
+        self.add_css_class("step-row")
+
+        # Icon stack: pending / spinner / done / error
+        self.icon_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.icon_box.set_valign(Gtk.Align.CENTER)
+        self.icon_box.set_size_request(24, 24)
+
+        self.pending_icon = Gtk.Image.new_from_icon_name("radio-symbolic")
+        self.pending_icon.add_css_class("dim-label")
+
+        self.spinner = Gtk.Spinner()
+        self.spinner.set_size_request(20, 20)
+
+        self.done_icon = Gtk.Image.new_from_icon_name("emblem-ok-symbolic")
+        self.done_icon.add_css_class("accent-success")
+
+        self.error_icon = Gtk.Image.new_from_icon_name("dialog-error-symbolic")
+        self.error_icon.add_css_class("accent-error")
+
+        self.icon_box.append(self.pending_icon)
+        self.append(self.icon_box)
+
+        # Text box
+        text_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        text_box.set_hexpand(True)
+
+        self.title_label = Gtk.Label(label=title_text, xalign=0)
+        self.title_label.add_css_class("heading-step")
+
+        self.desc_label = Gtk.Label(label=desc_text, xalign=0)
+        self.desc_label.add_css_class("caption")
+        self.desc_label.add_css_class("dim-label")
+
+        text_box.append(self.title_label)
+        text_box.append(self.desc_label)
+        self.append(text_box)
+
+        self.set_status("pending")
+
+    def set_status(self, status):
+        # Remove current child
+        child = self.icon_box.get_first_child()
+        if child:
+            self.icon_box.remove(child)
+
+        self.remove_css_class("step-pending")
+        self.remove_css_class("step-running")
+        self.remove_css_class("step-done")
+        self.remove_css_class("step-error")
+
+        if status == "pending":
+            self.icon_box.append(self.pending_icon)
+            self.add_css_class("step-pending")
+        elif status == "running":
+            self.icon_box.append(self.spinner)
+            self.spinner.start()
+            self.add_css_class("step-running")
+        elif status == "done":
+            self.spinner.stop()
+            self.icon_box.append(self.done_icon)
+            self.add_css_class("step-done")
+        elif status == "error":
+            self.spinner.stop()
+            self.icon_box.append(self.error_icon)
+            self.add_css_class("step-error")
+
+    def update_texts(self, title_text, desc_text):
+        self.title_label.set_text(title_text)
+        self.desc_label.set_text(desc_text)
+
+
+class SwitchBackInstaller(Adw.Application):
+    def __init__(self):
+        super().__init__(
+            application_id="io.github.romanov_e.switchback.installer",
+            flags=Gio.ApplicationFlags.NON_UNIQUE
+        )
+        # Default language based on system locale
+        lang = os.environ.get('LANG', 'en').lower()
+        self.current_lang = 'ru' if lang.startswith('ru') else 'en'
+        self.need_logout = False
+        self.log_lines = []
+        self.installed_version = None
+        self.daemon_active = False
+
+    def t(self, key, **kwargs):
+        text = TRANSLATIONS[self.current_lang].get(key, key)
+        if kwargs:
+            return text.format(**kwargs)
+        return text
+
+    def do_activate(self):
+        self.check_existing_installation()
+
+        self.win = Adw.ApplicationWindow(application=self, title=self.t('app_title'))
+        self.win.set_default_size(620, 720)
+        self.win.set_size_request(480, 560)
+
+        # Custom CSS styling
+        self.load_styles()
+
+        # Toast overlay
+        self.toast_overlay = Adw.ToastOverlay()
+        self.win.set_content(self.toast_overlay)
+
+        # Main Box
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.toast_overlay.set_child(main_box)
+
+        # HeaderBar
+        self.header_bar = Adw.HeaderBar()
+        self.title_widget = Adw.WindowTitle(
+            title=self.t('app_title'),
+            subtitle=self.t('version')
+        )
+        self.header_bar.set_title_widget(self.title_widget)
+
+        # Language toggle button
+        self.lang_btn = Gtk.Button(label=self.t('lang_toggle'))
+        self.lang_btn.add_css_class("flat")
+        self.lang_btn.connect("clicked", self.on_toggle_language)
+        self.header_bar.pack_start(self.lang_btn)
+
+        main_box.append(self.header_bar)
+
+        # View Stack for Pages
+        self.stack = Adw.ViewStack()
+        main_box.append(self.stack)
+
+        # Build Pages
+        self.build_welcome_page()
+        self.build_progress_page()
+        self.build_done_page()
+        self.build_uninstalled_page()
+        self.build_error_page()
+
+        self.stack.set_visible_child_name("welcome")
+        self.win.present()
+
+    def load_styles(self):
+        css_provider = Gtk.CssProvider()
+        css = """
+        .hero-card {
+            padding: 24px 20px 16px 20px;
+        }
+        .logo-frame {
+            background: alpha(@accent_color, 0.08);
+            border: 1px solid alpha(@accent_color, 0.22);
+            border-radius: 24px;
+            padding: 12px;
+            margin-bottom: 4px;
+        }
+        .version-pill {
+            background-color: alpha(@accent_bg_color, 0.15);
+            color: @accent_fg_color;
+            border-radius: 9999px;
+            padding: 3px 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .status-box-installed {
+            background-color: alpha(#2ec27e, 0.12);
+            border: 1px solid alpha(#2ec27e, 0.35);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 6px 0 10px 0;
+        }
+        .status-box-warn {
+            background-color: alpha(#e5a50a, 0.14);
+            border: 1px solid alpha(#e5a50a, 0.35);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 6px 0;
+        }
+        .status-box-success {
+            background-color: alpha(#2ec27e, 0.12);
+            border: 1px solid alpha(#2ec27e, 0.35);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 6px 0;
+        }
+        .features-box {
+            background: alpha(@card_bg_color, 0.6);
+            border: 1px solid alpha(@card_border_color, 0.7);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+        }
+        .step-row {
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 200ms ease;
+        }
+        .step-pending {
+            opacity: 0.45;
+        }
+        .step-running {
+            background-color: alpha(@accent_bg_color, 0.12);
+            border: 1px solid alpha(@accent_bg_color, 0.25);
+            opacity: 1.0;
+        }
+        .step-done {
+            opacity: 1.0;
+        }
+        .step-error {
+            background-color: alpha(#e01b24, 0.12);
+            border: 1px solid alpha(#e01b24, 0.3);
+            opacity: 1.0;
+        }
+        .heading-step {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .accent-success {
+            color: #2ec27e;
+        }
+        .accent-error {
+            color: #e01b24;
+        }
+        .terminal-view {
+            background-color: #1a1b26;
+            color: #a9b1d6;
+            font-family: 'JetBrains Mono', 'Ubuntu Mono', 'Fira Code', monospace;
+            font-size: 11px;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .big-action-btn {
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 12px 24px;
+        }
+        """
+        css_provider.load_from_data(css.encode('utf-8'))
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(),
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+
+    def check_existing_installation(self):
+        ext_path = os.path.expanduser('~/.local/share/gnome-shell/extensions/switchback@local/metadata.json')
+        if os.path.exists(ext_path):
+            self.installed_version = VERSION
+        else:
+            self.installed_version = None
+
+        try:
+            res = subprocess.run(
+                ['systemctl', '--user', 'is-active', 'switchback-daemon.service'],
+                capture_output=True, text=True, timeout=2
+            )
+            self.daemon_active = (res.stdout.strip() == 'active')
+        except Exception:
+            self.daemon_active = False
+
+    # --------------------------------------------------------------------------
+    # Page 1: Welcome / Setup Options
+    # --------------------------------------------------------------------------
+    def build_welcome_page(self):
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_propagate_natural_height(True)
+
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        content.set_margin_start(28)
+        content.set_margin_end(28)
+        content.set_margin_top(16)
+        content.set_margin_bottom(24)
+        scrolled.set_child(content)
+
+        # Hero Banner
+        hero = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        hero.set_halign(Gtk.Align.CENTER)
+        hero.add_css_class("hero-card")
+
+        # Icon
+        svg_path = os.path.join(PROJECT_DIR, "desktop", "icons", "switchback.svg")
+        if os.path.exists(svg_path):
+            logo_frame = Gtk.Box()
+            logo_frame.set_halign(Gtk.Align.CENTER)
+            logo_frame.add_css_class("logo-frame")
+            logo_img = Gtk.Image.new_from_file(svg_path)
+            logo_img.set_pixel_size(84)
+            logo_frame.append(logo_img)
+            hero.append(logo_frame)
+
+        # Title & Version
+        title_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        title_box.set_halign(Gtk.Align.CENTER)
+
+        self.welcome_title = Gtk.Label(label="SwitchBack Ubuntu")
+        self.welcome_title.add_css_class("title-1")
+        title_box.append(self.welcome_title)
+
+        version_pill = Gtk.Label(label=f"v{VERSION}")
+        version_pill.add_css_class("version-pill")
+        title_box.append(version_pill)
+        hero.append(title_box)
+
+        self.welcome_subtitle = Gtk.Label(label=self.t('subtitle'))
+        self.welcome_subtitle.add_css_class("dim-label")
+        self.welcome_subtitle.set_wrap(True)
+        self.welcome_subtitle.set_justify(Gtk.Justification.CENTER)
+        self.welcome_subtitle.set_max_width_chars(52)
+        hero.append(self.welcome_subtitle)
+
+        content.append(hero)
+
+        # Existing Installation Card (if installed)
+        self.installed_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        self.installed_box.add_css_class("status-box-installed")
+
+        inst_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        ok_icon = Gtk.Image.new_from_icon_name("emblem-ok-symbolic")
+        ok_icon.add_css_class("accent-success")
+        inst_header.append(ok_icon)
+
+        inst_text_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        self.inst_title = Gtk.Label(label=self.t('already_installed_title'), xalign=0)
+        self.inst_title.add_css_class("heading")
+
+        status_str = self.t('status_active') if self.daemon_active else self.t('status_inactive')
+        self.inst_desc = Gtk.Label(
+            label=self.t('already_installed_desc', ver=VERSION, daemon_status=status_str),
+            xalign=0
+        )
+        self.inst_desc.add_css_class("caption")
+        inst_text_box.append(self.inst_title)
+        inst_text_box.append(self.inst_desc)
+        inst_header.append(inst_text_box)
+        self.installed_box.append(inst_header)
+
+        # Buttons inside existing install card
+        inst_btn_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        inst_btn_row.set_margin_top(6)
+
+        self.btn_reinstall = Gtk.Button(label=self.t('btn_reinstall'))
+        self.btn_reinstall.add_css_class("suggested-action")
+        self.btn_reinstall.set_hexpand(True)
+        self.btn_reinstall.connect("clicked", self.on_start_install)
+        inst_btn_row.append(self.btn_reinstall)
+
+        self.btn_prefs = Gtk.Button(label=self.t('btn_prefs'))
+        self.btn_prefs.set_hexpand(True)
+        self.btn_prefs.connect("clicked", self.on_open_preferences)
+        inst_btn_row.append(self.btn_prefs)
+
+        self.btn_uninstall = Gtk.Button(label=self.t('btn_uninstall'))
+        self.btn_uninstall.add_css_class("destructive-action")
+        self.btn_uninstall.set_hexpand(True)
+        self.btn_uninstall.connect("clicked", self.on_confirm_uninstall)
+        inst_btn_row.append(self.btn_uninstall)
+
+        self.installed_box.append(inst_btn_row)
+        content.append(self.installed_box)
+        self.installed_box.set_visible(self.installed_version is not None)
+
+        # Features Overview
+        self.features_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.features_box.add_css_class("features-box")
+
+        self.f1 = Gtk.Label(xalign=0)
+        self.f1.set_markup(self.t('feature_caps'))
+        self.f2 = Gtk.Label(xalign=0)
+        self.f2.set_markup(self.t('feature_timer'))
+        self.f3 = Gtk.Label(xalign=0)
+        self.f3.set_markup(self.t('feature_hud'))
+
+        self.features_box.append(self.f1)
+        self.features_box.append(self.f2)
+        self.features_box.append(self.f3)
+        content.append(self.features_box)
+
+        # Setup Options PreferencesGroup
+        self.options_group = Adw.PreferencesGroup()
+        self.options_group.set_title(self.t('options_group_title'))
+
+        self.row_caps = Adw.SwitchRow()
+        self.row_caps.set_title(self.t('opt_caps'))
+        self.row_caps.set_subtitle(self.t('opt_caps_desc'))
+        self.row_caps.set_active(True)
+        self.options_group.add(self.row_caps)
+
+        self.row_daemon = Adw.SwitchRow()
+        self.row_daemon.set_title(self.t('opt_daemon'))
+        self.row_daemon.set_subtitle(self.t('opt_daemon_desc'))
+        self.row_daemon.set_active(True)
+        self.options_group.add(self.row_daemon)
+
+        self.row_prefs = Adw.SwitchRow()
+        self.row_prefs.set_title(self.t('opt_prefs'))
+        self.row_prefs.set_subtitle(self.t('opt_prefs_desc'))
+        self.row_prefs.set_active(True)
+        self.options_group.add(self.row_prefs)
+
+        content.append(self.options_group)
+
+        # Primary Install Button (shown when not already installed)
+        btn_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        btn_box.set_margin_top(10)
+        btn_box.set_halign(Gtk.Align.CENTER)
+
+        self.btn_install_primary = Gtk.Button(label=self.t('btn_install'))
+        self.btn_install_primary.add_css_class("suggested-action")
+        self.btn_install_primary.add_css_class("pill")
+        self.btn_install_primary.add_css_class("big-action-btn")
+        self.btn_install_primary.connect("clicked", self.on_start_install)
+        btn_box.append(self.btn_install_primary)
+
+        content.append(btn_box)
+        self.btn_install_primary.set_visible(self.installed_version is None)
+        self.stack.add_named(scrolled, "welcome")
+
+    # --------------------------------------------------------------------------
+    # Page 2: Installation Progress & Logs
+    # --------------------------------------------------------------------------
+    def build_progress_page(self):
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_propagate_natural_height(True)
+
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
+        content.set_margin_start(28)
+        content.set_margin_end(28)
+        content.set_margin_top(20)
+        content.set_margin_bottom(24)
+        scrolled.set_child(content)
+
+        # Progress Header
+        prog_header = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.progress_title = Gtk.Label(label=self.t('progress_title'), xalign=0)
+        self.progress_title.add_css_class("title-2")
+        prog_header.append(self.progress_title)
+
+        self.progress_bar = Gtk.ProgressBar()
+        self.progress_bar.set_fraction(0.0)
+        self.progress_bar.add_css_class("accent-bar")
+        prog_header.append(self.progress_bar)
+        content.append(prog_header)
+
+        # Step Rows in card
+        steps_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        steps_card.add_css_class("card")
+        steps_card.set_margin_top(4)
+
+        self.step_rows = {
+            'deps': StepRow(self.t('step_deps'), self.t('step_deps_desc')),
+            'input': StepRow(self.t('step_input'), self.t('step_input_desc')),
+            'schemas': StepRow(self.t('step_schemas'), self.t('step_schemas_desc')),
+            'ext': StepRow(self.t('step_ext'), self.t('step_ext_desc')),
+            'daemon': StepRow(self.t('step_daemon'), self.t('step_daemon_desc')),
+            'enable': StepRow(self.t('step_enable'), self.t('step_enable_desc')),
+        }
+
+        for row in self.step_rows.values():
+            steps_card.append(row)
+
+        content.append(steps_card)
+
+        # Terminal Console Log Expander
+        self.log_expander = Gtk.Expander(label=self.t('log_expander'))
+        self.log_expander.set_expanded(False)
+
+        exp_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        exp_box.set_margin_top(8)
+
+        log_scroll = Gtk.ScrolledWindow()
+        log_scroll.set_min_content_height(160)
+        log_scroll.set_max_content_height(260)
+
+        self.log_buffer = Gtk.TextBuffer()
+        self.log_view = Gtk.TextView.new_with_buffer(self.log_buffer)
+        self.log_view.set_editable(False)
+        self.log_view.set_cursor_visible(False)
+        self.log_view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+        self.log_view.add_css_class("terminal-view")
+        log_scroll.set_child(self.log_view)
+        exp_box.append(log_scroll)
+
+        # Copy Log Button
+        self.btn_copy_log = Gtk.Button(label=self.t('btn_copy_log'))
+        self.btn_copy_log.add_css_class("flat")
+        self.btn_copy_log.set_halign(Gtk.Align.END)
+        self.btn_copy_log.connect("clicked", self.on_copy_log)
+        exp_box.append(self.btn_copy_log)
+
+        self.log_expander.set_child(exp_box)
+        content.append(self.log_expander)
+
+        self.stack.add_named(scrolled, "progress")
+
+    # --------------------------------------------------------------------------
+    # Page 3: Done / Success Page
+    # --------------------------------------------------------------------------
+    def build_done_page(self):
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_propagate_natural_height(True)
+
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        content.set_margin_start(28)
+        content.set_margin_end(28)
+        content.set_margin_top(28)
+        content.set_margin_bottom(28)
+        scrolled.set_child(content)
+
+        # Celebration Icon
+        icon_box = Gtk.Box()
+        icon_box.set_halign(Gtk.Align.CENTER)
+        icon_box.add_css_class("logo-frame")
+        done_img = Gtk.Image.new_from_icon_name("emblem-ok-symbolic")
+        done_img.set_pixel_size(72)
+        done_img.add_css_class("accent-success")
+        icon_box.append(done_img)
+        content.append(icon_box)
+
+        # Done Titles
+        title_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        title_box.set_halign(Gtk.Align.CENTER)
+
+        self.done_title = Gtk.Label(label=self.t('done_title'))
+        self.done_title.add_css_class("title-1")
+        title_box.append(self.done_title)
+
+        self.done_subtitle = Gtk.Label(label=self.t('done_desc'))
+        self.done_subtitle.add_css_class("dim-label")
+        title_box.append(self.done_subtitle)
+        content.append(title_box)
+
+        # Notice Card (either Logout warning or All Ready)
+        self.done_notice_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.done_notice_title = Gtk.Label(xalign=0)
+        self.done_notice_title.add_css_class("heading")
+
+        self.done_notice_desc = Gtk.Label(xalign=0)
+        self.done_notice_desc.set_wrap(True)
+        self.done_notice_desc.add_css_class("body")
+
+        self.done_notice_box.append(self.done_notice_title)
+        self.done_notice_box.append(self.done_notice_desc)
+        content.append(self.done_notice_box)
+
+        # Action Buttons
+        btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        btn_box.set_halign(Gtk.Align.CENTER)
+        btn_box.set_margin_top(12)
+
+        self.btn_done_prefs = Gtk.Button(label=self.t('btn_open_settings'))
+        self.btn_done_prefs.add_css_class("suggested-action")
+        self.btn_done_prefs.add_css_class("pill")
+        self.btn_done_prefs.connect("clicked", self.on_open_preferences)
+        btn_box.append(self.btn_done_prefs)
+
+        self.btn_done_finish = Gtk.Button(label=self.t('btn_finish'))
+        self.btn_done_finish.add_css_class("pill")
+        self.btn_done_finish.connect("clicked", lambda *_: self.win.close())
+        btn_box.append(self.btn_done_finish)
+
+        content.append(btn_box)
+        self.stack.add_named(scrolled, "done")
+
+    # --------------------------------------------------------------------------
+    # Page 4: Uninstalled Page
+    # --------------------------------------------------------------------------
+    def build_uninstalled_page(self):
+        status_page = Adw.StatusPage()
+        status_page.set_icon_name("user-trash-symbolic")
+        status_page.set_title(self.t('uninstalled_title'))
+        status_page.set_description(self.t('uninstalled_desc'))
+
+        btn = Gtk.Button(label=self.t('btn_close'))
+        btn.add_css_class("pill")
+        btn.set_halign(Gtk.Align.CENTER)
+        btn.connect("clicked", lambda *_: self.win.close())
+        status_page.set_child(btn)
+
+        self.uninstalled_status_page = status_page
+        self.stack.add_named(status_page, "uninstalled")
+
+    # --------------------------------------------------------------------------
+    # Page 5: Error Page
+    # --------------------------------------------------------------------------
+    def build_error_page(self):
+        scrolled = Gtk.ScrolledWindow()
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
+        content.set_margin_start(28)
+        content.set_margin_end(28)
+        content.set_margin_top(28)
+        content.set_margin_bottom(28)
+        scrolled.set_child(content)
+
+        icon = Gtk.Image.new_from_icon_name("dialog-error-symbolic")
+        icon.set_pixel_size(64)
+        icon.add_css_class("accent-error")
+        content.append(icon)
+
+        self.error_title = Gtk.Label(label=self.t('error_title'))
+        self.error_title.add_css_class("title-1")
+        content.append(self.error_title)
+
+        self.error_desc = Gtk.Label(label="", xalign=0)
+        self.error_desc.set_wrap(True)
+        content.append(self.error_desc)
+
+        btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        btn_box.set_halign(Gtk.Align.CENTER)
+
+        self.btn_retry = Gtk.Button(label=self.t('btn_retry'))
+        self.btn_retry.add_css_class("suggested-action")
+        self.btn_retry.add_css_class("pill")
+        self.btn_retry.connect("clicked", self.on_start_install)
+        btn_box.append(self.btn_retry)
+
+        self.btn_err_close = Gtk.Button(label=self.t('btn_close'))
+        self.btn_err_close.add_css_class("pill")
+        self.btn_err_close.connect("clicked", lambda *_: self.win.close())
+        btn_box.append(self.btn_err_close)
+
+        content.append(btn_box)
+        self.stack.add_named(scrolled, "error")
+
+    # --------------------------------------------------------------------------
+    # Language Toggle & Dynamic Strings
+    # --------------------------------------------------------------------------
+    def on_toggle_language(self, btn):
+        self.current_lang = 'en' if self.current_lang == 'ru' else 'ru'
+        self.update_all_labels()
+
+    def update_all_labels(self):
+        self.win.set_title(self.t('app_title'))
+        self.title_widget.set_title(self.t('app_title'))
+        self.title_widget.set_subtitle(self.t('version'))
+        self.lang_btn.set_label(self.t('lang_toggle'))
+
+        self.welcome_subtitle.set_text(self.t('subtitle'))
+        self.inst_title.set_text(self.t('already_installed_title'))
+
+        status_str = self.t('status_active') if self.daemon_active else self.t('status_inactive')
+        self.inst_desc.set_text(self.t('already_installed_desc', ver=VERSION, daemon_status=status_str))
+
+        self.btn_reinstall.set_label(self.t('btn_reinstall'))
+        self.btn_prefs.set_label(self.t('btn_prefs'))
+        self.btn_uninstall.set_label(self.t('btn_uninstall'))
+
+        self.f1.set_markup(self.t('feature_caps'))
+        self.f2.set_markup(self.t('feature_timer'))
+        self.f3.set_markup(self.t('feature_hud'))
+
+        self.options_group.set_title(self.t('options_group_title'))
+        self.row_caps.set_title(self.t('opt_caps'))
+        self.row_caps.set_subtitle(self.t('opt_caps_desc'))
+        self.row_daemon.set_title(self.t('opt_daemon'))
+        self.row_daemon.set_subtitle(self.t('opt_daemon_desc'))
+        self.row_prefs.set_title(self.t('opt_prefs'))
+        self.row_prefs.set_subtitle(self.t('opt_prefs_desc'))
+
+        self.btn_install_primary.set_label(self.t('btn_install'))
+        self.progress_title.set_text(self.t('progress_title'))
+
+        self.step_rows['deps'].update_texts(self.t('step_deps'), self.t('step_deps_desc'))
+        self.step_rows['input'].update_texts(self.t('step_input'), self.t('step_input_desc'))
+        self.step_rows['schemas'].update_texts(self.t('step_schemas'), self.t('step_schemas_desc'))
+        self.step_rows['ext'].update_texts(self.t('step_ext'), self.t('step_ext_desc'))
+        self.step_rows['daemon'].update_texts(self.t('step_daemon'), self.t('step_daemon_desc'))
+        self.step_rows['enable'].update_texts(self.t('step_enable'), self.t('step_enable_desc'))
+
+        self.log_expander.set_label(self.t('log_expander'))
+        self.btn_copy_log.set_label(self.t('btn_copy_log'))
+
+        self.done_title.set_text(self.t('done_title'))
+        self.done_subtitle.set_text(self.t('done_desc'))
+        self.btn_done_prefs.set_label(self.t('btn_open_settings'))
+        self.btn_done_finish.set_label(self.t('btn_finish'))
+
+        self.uninstalled_status_page.set_title(self.t('uninstalled_title'))
+        self.uninstalled_status_page.set_description(self.t('uninstalled_desc'))
+        self.error_title.set_text(self.t('error_title'))
+        self.btn_retry.set_label(self.t('btn_retry'))
+        self.btn_err_close.set_label(self.t('btn_close'))
+
+    # --------------------------------------------------------------------------
+    # Actions & Installation Workflow
+    # --------------------------------------------------------------------------
+    def log(self, text):
+        def _append():
+            timestamp = time.strftime("[%H:%M:%S]")
+            line = f"{timestamp} {text}\n"
+            self.log_lines.append(line)
+            end_iter = self.log_buffer.get_end_iter()
+            self.log_buffer.insert(end_iter, line)
+            # Auto scroll to bottom
+            mark = self.log_buffer.create_mark(None, self.log_buffer.get_end_iter(), False)
+            self.log_view.scroll_to_mark(mark, 0.05, False, 0.0, 1.0)
+        GLib.idle_add(_append)
+
+    def on_copy_log(self, btn):
+        clipboard = self.win.get_clipboard()
+        clipboard.set("".join(self.log_lines))
+        toast = Adw.Toast.new(self.t('log_copied'))
+        self.toast_overlay.add_toast(toast)
+
+    def on_open_preferences(self, btn):
+        try:
+            subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@local'])
+        except Exception as e:
+            self.log(f"Failed to open preferences: {e}")
+
+    def on_start_install(self, btn):
+        self.stack.set_visible_child_name("progress")
+        self.progress_bar.set_fraction(0.0)
+        self.log_lines.clear()
+        self.log_buffer.set_text("")
+        self.need_logout = False
+
+        for row in self.step_rows.values():
+            row.set_status("pending")
+
+        options = {
+            'caps_toggle': self.row_caps.get_active(),
+            'enable_daemon': self.row_daemon.get_active(),
+            'open_prefs': self.row_prefs.get_active()
+        }
+
+        thread = threading.Thread(target=self.run_installation, args=(options,), daemon=True)
+        thread.start()
+
+    def run_installation(self, options):
+        self.log("🚀 Starting SwitchBack Ubuntu installation...")
+        self.log(f"Source directory: {PROJECT_DIR}")
+
+        try:
+            # Step 1: Dependencies
+            GLib.idle_add(self.step_rows['deps'].set_status, "running")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.15)
+            self.log("Checking system dependencies (python3, glib-compile-schemas, gnome-extensions)...")
+
+            missing = []
+            for cmd in ['python3', 'glib-compile-schemas', 'gnome-extensions']:
+                if not shutil.which(cmd):
+                    missing.append(cmd)
+
+            if missing:
+                self.log(f"Missing packages: {', '.join(missing)}. Requesting installation via pkexec apt-get...")
+                res = subprocess.run(
+                    ['pkexec', 'apt-get', 'install', '-y', 'python3', 'libglib2.0-bin', 'gnome-shell'],
+                    capture_output=True, text=True
+                )
+                if res.returncode != 0:
+                    raise RuntimeError(f"Failed to install dependencies: {res.stderr}")
+                self.log("Dependencies installed successfully.")
+            else:
+                self.log("All dependencies are satisfied.")
+            GLib.idle_add(self.step_rows['deps'].set_status, "done")
+
+            # Step 2: Input group
+            GLib.idle_add(self.step_rows['input'].set_status, "running")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.30)
+            user = os.environ.get('USER', os.getlogin() if hasattr(os, 'getlogin') else 'user')
+            self.log(f"Checking hardware keyboard permissions for user '{user}' in /dev/input...")
+
+            try:
+                groups_out = subprocess.check_output(['groups', user], text=True)
+                in_input = 'input' in groups_out.split()
+            except Exception:
+                in_input = False
+
+            if not in_input:
+                self.log(f"User '{user}' is not in 'input' group. Requesting elevated privileges via pkexec...")
+                res = subprocess.run(['pkexec', 'usermod', '-aG', 'input', user], capture_output=True, text=True)
+                if res.returncode != 0:
+                    raise RuntimeError(f"Failed to add user to 'input' group: {res.stderr}")
+                self.need_logout = True
+                self.log(f"✅ User '{user}' added to 'input' group (session logout required).")
+            else:
+                self.log("✅ User already has 'input' group access.")
+            GLib.idle_add(self.step_rows['input'].set_status, "done")
+
+            # Step 3: Compile Schemas & Locales
+            GLib.idle_add(self.step_rows['schemas'].set_status, "running")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.50)
+            self.log("Compiling extension GSettings schemas and locale translations...")
+
+            schemas_dir = os.path.join(PROJECT_DIR, "extension", "schemas")
+            subprocess.run(['glib-compile-schemas', schemas_dir], check=True)
+
+            user_glib = os.path.expanduser("~/.local/share/glib-2.0/schemas")
+            os.makedirs(user_glib, exist_ok=True)
+            schema_file = "org.gnome.shell.extensions.switchback.gschema.xml"
+            shutil.copyfile(
+                os.path.join(schemas_dir, schema_file),
+                os.path.join(user_glib, schema_file)
+            )
+            subprocess.run(['glib-compile-schemas', user_glib], check=True)
+
+            locales_script = os.path.join(PROJECT_DIR, "scripts", "compile_locales.py")
+            if os.path.exists(locales_script):
+                subprocess.run([sys.executable, locales_script], check=True)
+                self.log("Compiled locale catalogs (.mo).")
+
+            GLib.idle_add(self.step_rows['schemas'].set_status, "done")
+
+            # Step 4: Deploy Extension
+            GLib.idle_add(self.step_rows['ext'].set_status, "running")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.65)
+            ext_target = os.path.expanduser("~/.local/share/gnome-shell/extensions/switchback@local")
+            self.log(f"Deploying extension files to {ext_target}...")
+
+            os.makedirs(os.path.join(ext_target, "schemas"), exist_ok=True)
+            os.makedirs(os.path.join(ext_target, "locale"), exist_ok=True)
+            os.makedirs(os.path.join(ext_target, "icons"), exist_ok=True)
+
+            for item in ["metadata.json", "extension.js", "prefs.js"]:
+                src = os.path.join(PROJECT_DIR, "extension", item)
+                if os.path.exists(src):
+                    shutil.copy2(src, ext_target)
+
+            for f in os.listdir(schemas_dir):
+                shutil.copy2(os.path.join(schemas_dir, f), os.path.join(ext_target, "schemas"))
+
+            loc_src = os.path.join(PROJECT_DIR, "extension", "locale")
+            if os.path.exists(loc_src):
+                shutil.copytree(loc_src, os.path.join(ext_target, "locale"), dirs_exist_ok=True)
+
+            svg_icon = os.path.join(PROJECT_DIR, "desktop", "icons", "switchback.svg")
+            if os.path.exists(svg_icon):
+                shutil.copy2(svg_icon, os.path.join(ext_target, "icons"))
+
+            GLib.idle_add(self.step_rows['ext'].set_status, "done")
+
+            # Step 5: Deploy Daemon & Systemd Service
+            GLib.idle_add(self.step_rows['daemon'].set_status, "running")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.80)
+
+            daemon_target = os.path.expanduser("~/.local/share/switchback")
+            os.makedirs(daemon_target, exist_ok=True)
+            daemon_py = os.path.join(daemon_target, "daemon.py")
+            shutil.copy2(os.path.join(PROJECT_DIR, "daemon", "daemon.py"), daemon_py)
+            os.chmod(daemon_py, 0o755)
+
+            # Icon
+            icon_dir = os.path.expanduser("~/.local/share/icons/hicolor/scalable/apps")
+            os.makedirs(icon_dir, exist_ok=True)
+            shutil.copy2(svg_icon, os.path.join(icon_dir, "switchback.svg"))
+            if shutil.which("gtk-update-icon-cache"):
+                subprocess.run(["gtk-update-icon-cache", "-q", os.path.expanduser("~/.local/share/icons/hicolor")], check=False)
+
+            # Service
+            service_dir = os.path.expanduser("~/.config/systemd/user")
+            os.makedirs(service_dir, exist_ok=True)
+            shutil.copy2(
+                os.path.join(PROJECT_DIR, "daemon", "switchback-daemon.service"),
+                service_dir
+            )
+
+            subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
+            if options.get('enable_daemon', True):
+                subprocess.run(["systemctl", "--user", "enable", "switchback-daemon.service"], check=False)
+                subprocess.run(["systemctl", "--user", "restart", "switchback-daemon.service"], check=False)
+                self.log("✅ Background daemon service activated.")
+
+            GLib.idle_add(self.step_rows['daemon'].set_status, "done")
+
+            # Step 6: Caps Lock & Enable Extension
+            GLib.idle_add(self.step_rows['enable'].set_status, "running")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.95)
+
+            if options.get('caps_toggle', True):
+                try:
+                    cur_xkb = subprocess.check_output(
+                        ['gsettings', 'get', 'org.gnome.desktop.input-sources', 'xkb-options'],
+                        text=True
+                    )
+                    if 'grp:caps_toggle' not in cur_xkb:
+                        subprocess.run([
+                            'gsettings', 'set', 'org.gnome.desktop.input-sources', 'xkb-options', "['grp:caps_toggle']"
+                        ], check=False)
+                        self.log("✅ Configured Caps Lock layout switching.")
+                except Exception as e:
+                    self.log(f"Notice: Failed to set xkb-options: {e}")
+
+            subprocess.run(['gnome-extensions', 'enable', 'switchback@local'], check=False)
+            self.log("✅ GNOME Shell extension enabled.")
+            GLib.idle_add(self.step_rows['enable'].set_status, "done")
+            GLib.idle_add(self.progress_bar.set_fraction, 1.0)
+
+            # Finish
+            time.sleep(0.4)
+            GLib.idle_add(self.show_done_page, options)
+
+        except Exception as e:
+            self.log(f"❌ Error during installation: {e}")
+            GLib.idle_add(self.show_error_page, str(e))
+
+    def show_done_page(self, options):
+        # Configure notice card
+        child = self.done_notice_box.get_first_child()
+        self.done_notice_box.remove_css_class("status-box-warn")
+        self.done_notice_box.remove_css_class("status-box-success")
+
+        if self.need_logout:
+            self.done_notice_box.add_css_class("status-box-warn")
+            self.done_notice_title.set_text(self.t('logout_warn_title'))
+            self.done_notice_desc.set_text(self.t('logout_warn_desc'))
+        else:
+            self.done_notice_box.add_css_class("status-box-success")
+            self.done_notice_title.set_text(self.t('all_ready_title'))
+            self.done_notice_desc.set_text(self.t('all_ready_desc'))
+
+        self.stack.set_visible_child_name("done")
+
+        if options.get('open_prefs', True) and not self.need_logout:
+            GLib.timeout_add(600, lambda: subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@local']))
+
+    def show_error_page(self, error_msg):
+        self.error_desc.set_text(error_msg)
+        self.stack.set_visible_child_name("error")
+
+    # --------------------------------------------------------------------------
+    # Uninstall Dialog & Execution
+    # --------------------------------------------------------------------------
+    def on_confirm_uninstall(self, btn):
+        dialog = Adw.AlertDialog(
+            heading=self.t('uninstall_confirm_title'),
+            body=self.t('uninstall_confirm_desc')
+        )
+        dialog.add_response("cancel", self.t('btn_cancel'))
+        dialog.add_response("uninstall", self.t('btn_uninstall_action'))
+        dialog.set_response_appearance("uninstall", Adw.ResponseAppearance.DESTRUCTIVE)
+
+        dialog.connect("response", self.on_uninstall_response)
+        dialog.present(self.win)
+
+    def on_uninstall_response(self, dialog, response):
+        if response == "uninstall":
+            self.stack.set_visible_child_name("progress")
+            self.progress_title.set_text(self.t('uninstalling_title'))
+            self.progress_bar.set_fraction(0.3)
+            self.log_lines.clear()
+            self.log_buffer.set_text("")
+
+            for row in self.step_rows.values():
+                row.set_status("pending")
+
+            thread = threading.Thread(target=self.run_uninstallation, daemon=True)
+            thread.start()
+
+    def run_uninstallation(self):
+        self.log("🧹 Starting SwitchBack uninstallation...")
+        try:
+            # 1. Disable & remove extension
+            self.log("Disabling GNOME extension...")
+            subprocess.run(['gnome-extensions', 'disable', 'switchback@local'], check=False)
+            ext_path = os.path.expanduser("~/.local/share/gnome-shell/extensions/switchback@local")
+            if os.path.exists(ext_path):
+                shutil.rmtree(ext_path, ignore_errors=True)
+            self.log("Extension files removed.")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.4)
+
+            # 2. Stop & disable daemon service
+            self.log("Stopping and disabling switchback-daemon.service...")
+            subprocess.run(['systemctl', '--user', 'stop', 'switchback-daemon.service'], check=False)
+            subprocess.run(['systemctl', '--user', 'disable', 'switchback-daemon.service'], check=False)
+            svc_file = os.path.expanduser("~/.config/systemd/user/switchback-daemon.service")
+            if os.path.exists(svc_file):
+                os.remove(svc_file)
+            subprocess.run(['systemctl', '--user', 'daemon-reload'], check=False)
+            self.log("Daemon service removed.")
+            GLib.idle_add(self.progress_bar.set_fraction, 0.6)
+
+            # 3. Remove daemon folder & shm
+            daemon_folder = os.path.expanduser("~/.local/share/switchback")
+            if os.path.exists(daemon_folder):
+                shutil.rmtree(daemon_folder, ignore_errors=True)
+            shm_file = "/dev/shm/switchback_key"
+            if os.path.exists(shm_file):
+                try:
+                    os.remove(shm_file)
+                except Exception:
+                    pass
+            GLib.idle_add(self.progress_bar.set_fraction, 0.8)
+
+            # 4. Remove schema & icon
+            schema_file = os.path.expanduser("~/.local/share/glib-2.0/schemas/org.gnome.shell.extensions.switchback.gschema.xml")
+            if os.path.exists(schema_file):
+                os.remove(schema_file)
+                user_glib = os.path.expanduser("~/.local/share/glib-2.0/schemas")
+                subprocess.run(['glib-compile-schemas', user_glib], check=False)
+
+            icon_file = os.path.expanduser("~/.local/share/icons/hicolor/scalable/apps/switchback.svg")
+            if os.path.exists(icon_file):
+                os.remove(icon_file)
+                if shutil.which("gtk-update-icon-cache"):
+                    subprocess.run(["gtk-update-icon-cache", "-q", os.path.expanduser("~/.local/share/icons/hicolor")], check=False)
+
+            self.log("✅ SwitchBack has been cleanly uninstalled.")
+            GLib.idle_add(self.progress_bar.set_fraction, 1.0)
+            time.sleep(0.4)
+            GLib.idle_add(self.stack.set_visible_child_name, "uninstalled")
+
+        except Exception as e:
+            self.log(f"Error during uninstall: {e}")
+            GLib.idle_add(self.show_error_page, str(e))
+
+
+def main():
+    app = SwitchBackInstaller()
+    return app.run(sys.argv)
+
+if __name__ == "__main__":
+    sys.exit(main())

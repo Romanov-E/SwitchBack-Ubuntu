@@ -181,7 +181,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
         // --- Group 3: Timer & Parameters ---
         const groupTimer = new Adw.PreferencesGroup({
-            title: _('Timer & Switch Parameters'),
+            title: _('Timer &amp; Switch Parameters'),
             description: _('Inactivity pause and target layout selection'),
         });
         pageBehavior.add(groupTimer);
@@ -520,7 +520,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
         // --- Group 2: Placement & Dimensions ---
         const groupGeometry = new Adw.PreferencesGroup({
-            title: _('Placement & Dimensions'),
+            title: _('Placement &amp; Dimensions'),
             description: _('Screen position, length, thickness, shape and color'),
         });
         pageAppearance.add(groupGeometry);
@@ -673,7 +673,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
         // --- Group 4: Animation & Transitions ---
         const groupAnimation = new Adw.PreferencesGroup({
-            title: _('Animation & Transition Effects'),
+            title: _('Animation &amp; Transition Effects'),
             description: _('Indicator motion style, smooth appearance and disappearance'),
         });
         pageAppearance.add(groupAnimation);
@@ -918,12 +918,12 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
         // --- Group 2: Security & Privacy ---
         const groupSecurity = new Adw.PreferencesGroup({
-            title: _('Security & Privacy'),
+            title: _('Security &amp; Privacy'),
         });
         pageService.add(groupSecurity);
 
         const rowSecurityInfo = new Adw.ActionRow({
-            title: _('Data Privacy & Zero Logging'),
+            title: _('Data Privacy &amp; Zero Logging'),
             subtitle: _('SwitchBack DOES NOT record, store, or analyze typed text. The daemon strictly tracks the timestamp of physical keypresses to reset the timer.'),
         });
         const iconSec = new Gtk.Image({
@@ -954,7 +954,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
         const rowVersion = new Adw.ActionRow({
             title: 'SwitchBack Ubuntu',
-            subtitle: _('For GNOME Shell 45 – 51, Wayland & X11'),
+            subtitle: _('For GNOME Shell 45 – 51, Wayland &amp; X11'),
         });
 
         // App Icon
@@ -987,7 +987,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
         groupAbout.add(rowVersion);
 
         const rowCredits = new Adw.ActionRow({
-            title: _('Developers & Contributors'),
+            title: _('Developers &amp; Contributors'),
             subtitle: 'Romanov E. (@Romanov-E), Antigravity (Google DeepMind)',
         });
         const iconCredits = new Gtk.Image({

@@ -49,7 +49,7 @@ msgstr "Отображать экранный индикатор"
 msgid "Visual animated bar (when disabled, auto-switch works silently in background)"
 msgstr "Визуальная анимированная полоса (если выключено — автовозврат работает тихо в фоне)"
 
-msgid "Timer & Switch Parameters"
+msgid "Timer &amp; Switch Parameters"
 msgstr "Таймер и параметры переключения"
 
 msgid "Inactivity pause and target layout selection"
@@ -188,7 +188,7 @@ msgstr "Нажмите кнопку для выбора цвета или про
 msgid "Choose SwitchBack bar color"
 msgstr "Выберите цвет полосы SwitchBack"
 
-msgid "Animation & Transition Effects"
+msgid "Animation &amp; Transition Effects"
 msgstr "Анимация и эффекты перехода"
 
 msgid "Indicator motion style, smooth appearance and disappearance"
@@ -285,10 +285,10 @@ msgstr "Принудительный перезапуск демона для о
 msgid "Restart"
 msgstr "Перезапустить"
 
-msgid "Security & Privacy"
+msgid "Security &amp; Privacy"
 msgstr "Безопасность и производительность"
 
-msgid "Data Privacy & Zero Logging"
+msgid "Data Privacy &amp; Zero Logging"
 msgstr "Защита данных и приватность"
 
 msgid "SwitchBack DOES NOT record, store, or analyze typed text. The daemon strictly tracks the timestamp of physical keypresses to reset the timer."
@@ -306,13 +306,13 @@ msgstr "О программе"
 msgid "SwitchBack Ubuntu Version"
 msgstr "Версия SwitchBack Ubuntu"
 
-msgid "For GNOME Shell 45 – 51, Wayland & X11"
-msgstr "Для GNOME Shell 45 – 51, Wayland & X11"
+msgid "For GNOME Shell 45 – 51, Wayland &amp; X11"
+msgstr "Для GNOME Shell 45 – 51, Wayland &amp; X11"
 
 msgid "GitHub Repository"
 msgstr "Репозиторий GitHub"
 
-msgid "Placement & Dimensions"
+msgid "Placement &amp; Dimensions"
 msgstr "Расположение и размеры"
 
 msgid "Screen position, length, thickness, shape and color"
@@ -321,6 +321,6 @@ msgstr "Кромка экрана, длина, толщина, форма и ц�
 msgid "Visual demonstration of the on-screen countdown indicator"
 msgstr "Визуальная демонстрация экранного индикатора"
 
-msgid "Developers & Contributors"
+msgid "Developers &amp; Contributors"
 msgstr "Разработчики и контрибьюторы"
 

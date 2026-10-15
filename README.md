@@ -24,41 +24,39 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## ✨ Features
 
-- ⌨️ **Caps Lock Toggle:** Single-key layout toggle using `Caps Lock`. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
-- ⏱️ **Inactivity Auto-Return:** Switches back to your primary layout (e.g., English) after a configurable pause in typing (0.5 to 30 seconds).
-- 🎨 **On-Screen Indicators:**
-  - 📍 **Placements:** Top, Bottom, Dual Top + Bottom, Left, Right, Dual Left + Right, Corner L-brackets (all 4 individual corners and simultaneous 4-corner HUD).
-  - 📏 **Independent Margins:** Pixel-accurate offsets for top, bottom, left, and right screen edges.
-  - 📐 **Geometry:** Configurable thickness (1–40 px), length (5% to 100%), and corner radius (up to full pill shape).
-  - 🌈 **Color & Alpha:** Full GTK color palette with RGBA opacity support.
-  - 🪄 **Animations & Effects:** Collapse to center, split outward to edges, fill from center outward, collapse to start/end, and configurable smooth fade-in/fade-out duration (0–800 ms).
-  - 🖥️ **16:9 Live Preview:** High-framerate proportional monitor preview synchronized with display VSync.
-- 🖱️ **Hardware Event Filtering:**
-  - ⚡ Reads Linux kernel input events directly via `/dev/input/event*`.
-  - 🎯 Mouse movements, clicks, and scroll wheels (including horizontal wheels on mice like Logitech MX Master) do not reset the typing timer.
-- 🔒 **Privacy & Security:**
-  - 🛡️ Does not log, store, or inspect typed keystrokes. The daemon only reads `EV_KEY` events to record a monotonic timestamp.
-  - 👤 Runs as a user-level service (`systemd --user`) without root privileges.
-  - 🔑 IPC memory file (`/dev/shm/switchback_key`) is restricted to owner permissions (`0600`).
-- 🎛️ **Service Management:** Built-in controls in the preferences window to start, stop, restart, and inspect the background daemon.
+- **Caps Lock Toggle:** Single-key layout toggle using `Caps Lock`. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
+- **Inactivity Auto-Return:** Switches back to your primary layout (e.g., English) after a configurable pause in typing (0.5 to 30 seconds).
+- **On-Screen Indicators:**
+  - **Placements:** Top, Bottom, Dual Top + Bottom, Left, Right, Dual Left + Right, Corner L-brackets (all 4 individual corners and simultaneous 4-corner HUD).
+  - **Independent Margins:** Pixel-accurate offsets for top, bottom, left, and right screen edges.
+  - **Geometry:** Configurable thickness (1–40 px), length (5% to 100%), and corner radius (up to full pill shape).
+  - **Color & Alpha:** Full GTK color palette with RGBA opacity support.
+  - **Animations & Effects:** Collapse to center, split outward to edges, fill from center outward, collapse to start/end, and configurable smooth fade-in/fade-out duration (0–800 ms).
+  - **16:9 Live Preview:** High-framerate proportional monitor preview synchronized with display VSync.
+- **Hardware Event Filtering:**
+  - Reads Linux kernel input events directly via `/dev/input/event*`.
+  - Mouse movements, clicks, and scroll wheels (including horizontal wheels on mice like Logitech MX Master) do not reset the typing timer.
+- **Privacy & Security:**
+  - Does not log, store, or inspect typed keystrokes. The daemon only reads `EV_KEY` events to record a monotonic timestamp.
+  - Runs as a user-level service (`systemd --user`) without root privileges.
+  - IPC memory file (`/dev/shm/switchback_key`) is restricted to owner permissions (`0600`).
+- **Service Management:** Built-in controls in the preferences window to start, stop, restart, and inspect the background daemon.
 
 ---
 
-<details>
-<summary><b>📸 Screenshots & Live Preview Animations (Click to expand)</b></summary>
-<br/>
+## 📸 Interface & Live Preview Animations
 
-### ⚙️ Preferences Window Tabs
+### Preferences Window Tabs
 
 <div align="center">
 
 | Tab 1: Behavior | Tab 2: Appearance | Tab 3: Service |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/tab1-behavior.png" width="280" alt="Tab 1: Behavior" /> | <img src="docs/screenshots/tab2-appearance.png" width="280" alt="Tab 2: Appearance" /> | <img src="docs/screenshots/tab3-service.png" width="280" alt="Tab 3: Service" /> |
+| <img src="docs/screenshots/tab1-behavior-en.png" width="280" alt="Tab 1: Behavior" /> | <img src="docs/screenshots/tab2-appearance-en.png" width="280" alt="Tab 2: Appearance" /> | <img src="docs/screenshots/tab3-service-en.png" width="280" alt="Tab 3: Service" /> |
 
 </div>
 
-### ✨ Live Indicator Preview Animations
+### Live Indicator Preview Animations
 
 <div align="center">
 
@@ -75,8 +73,6 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 | <img src="docs/screenshots/preview-dual-purple.gif" width="340" alt="Dual left and right bars" /> |
 
 </div>
-
-</details>
 
 ---
 
@@ -111,30 +107,45 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## 🚀 Installation
 
-Clone the repository and run the installer:
+Clone the repository and choose your preferred installation method:
 
 ```bash
 git clone https://github.com/Romanov-E/SwitchBack-Ubuntu.git
 cd SwitchBack-Ubuntu
+```
+
+### Option A: Graphical Installer (Recommended)
+Launch the modern GTK4/Libadwaita installer:
+
+```bash
+./install-gui
+# or: ./install.sh --gui
+```
+*(You can also double-click `SwitchBack-Installer.desktop` directly in Ubuntu Files / Nautilus)*
+
+### Option B: Terminal Script
+Run the automated CLI script:
+
+```bash
 ./install.sh
 ```
 
-### 📦 What `install.sh` does:
+### What the installer does:
 1. Verifies dependencies (`python3`, `glib-compile-schemas`, `gnome-extensions`).
 2. Adds the current user to the system `input` group for kernel event access without root.
 3. Compiles GSettings schemas and installs the GNOME Shell extension.
 4. Registers and starts the `systemd --user` background daemon.
 5. Enables the extension.
 
-> 💡 **Note:** If your user was just added to the `input` group, log out of your desktop session and log back in for kernel group permissions to take effect.
+> **Note:** If your user was just added to the `input` group, log out of your desktop session and log back in for kernel group permissions to take effect.
 
 ---
 
 ## ⚙️ Configuration & Settings
 
 Open preferences through:
-- 🧩 **GNOME Extensions App:** Click the settings gear next to **SwitchBack Ubuntu**.
-- 💻 **Terminal:**
+- **GNOME Extensions App:** Click the settings gear next to **SwitchBack Ubuntu**.
+- **Terminal:**
   ```bash
   gnome-extensions prefs switchback@local
   ```
