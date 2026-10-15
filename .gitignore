@@ -6,3 +6,7 @@ schemas/gschemas.compiled
 dist/
 *.tar.gz
 *.zip
+
+# Internal review documents
+docs/EXPERT_REVIEW.md
+EXPERT_REVIEW.md
