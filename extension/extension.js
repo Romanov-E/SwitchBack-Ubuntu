@@ -96,8 +96,6 @@ export default class SwitchBackExtension extends Extension {
         this._lockIcon = null;
         this._lockTimeoutId = null;
         this._isShowingUnlock = false;
-        this._popupDestroyId = null;
-        this._trackedPopup = null;
 
         this._loadSettings();
         this._syncCapsLockOption();
@@ -288,9 +286,9 @@ export default class SwitchBackExtension extends Extension {
         if (this._isLocked) {
             this._isLocked = false;
             if (this._capsLockHoldNotify) {
-                // Показываем разомкнутый замочек синхронно со стандартным языковым индикатором (1500 мс)
+                // Показываем разомкнутый замочек синхронно со стандартным языковым индикатором OSD
                 this._isShowingUnlock = true;
-                this._showLockCard('changes-allow-symbolic', false, 1500);
+                this._showLockCard('changes-allow-symbolic', false);
             } else {
                 this._hideLockCard(true);
             }
@@ -331,18 +329,46 @@ export default class SwitchBackExtension extends Extension {
         Main.layoutManager.uiGroup.add_child(this._lockCard);
     }
 
+    _getOsdTimings() {
+        let hideDelayMs = 700;
+        let fadeDurationMs = 250;
+
+        try {
+            const userSchemaPath = `${GLib.get_home_dir()}/.local/share/gnome-shell/extensions/keyboard-layout-osd@gruvery.systems/schemas`;
+            const sysSchemaPath = '/usr/share/gnome-shell/extensions/keyboard-layout-osd@gruvery.systems/schemas';
+
+            let schemaDir = null;
+            if (GLib.file_test(userSchemaPath, GLib.FileTest.IS_DIR)) {
+                schemaDir = userSchemaPath;
+            } else if (GLib.file_test(sysSchemaPath, GLib.FileTest.IS_DIR)) {
+                schemaDir = sysSchemaPath;
+            }
+
+            if (schemaDir) {
+                const schemaSource = Gio.SettingsSchemaSource.new_from_directory(
+                    schemaDir,
+                    Gio.SettingsSchemaSource.get_default(),
+                    false
+                );
+                const schema = schemaSource.lookup('org.gnome.shell.extensions.layout-osd', false);
+                if (schema) {
+                    const osdSettings = Gio.Settings.new_full(schema, null, null);
+                    hideDelayMs = Math.round(osdSettings.get_double('hide-delay') * 1000);
+                    fadeDurationMs = osdSettings.get_int('fade-duration');
+                }
+            }
+        } catch (e) {
+            // Fallback default: 700 ms удержание, 250 ms затухание
+        }
+
+        return { hideDelayMs, fadeDurationMs };
+    }
+
     _destroyLockCard() {
         this._isShowingUnlock = false;
         if (this._lockTimeoutId) {
             GLib.source_remove(this._lockTimeoutId);
             this._lockTimeoutId = null;
-        }
-        if (this._popupDestroyId && this._trackedPopup) {
-            try {
-                this._trackedPopup.disconnect(this._popupDestroyId);
-            } catch (e) {}
-            this._popupDestroyId = null;
-            this._trackedPopup = null;
         }
         if (this._lockCard) {
             try {
@@ -353,7 +379,7 @@ export default class SwitchBackExtension extends Extension {
         }
     }
 
-    _showLockCard(iconName, isPersistent, durationMs = 1500) {
+    _showLockCard(iconName, isPersistent, customDurationMs = null) {
         try {
             this._ensureLockCard();
             if (!this._lockCard) return;
@@ -365,13 +391,6 @@ export default class SwitchBackExtension extends Extension {
             if (this._lockTimeoutId) {
                 GLib.source_remove(this._lockTimeoutId);
                 this._lockTimeoutId = null;
-            }
-            if (this._popupDestroyId && this._trackedPopup) {
-                try {
-                    this._trackedPopup.disconnect(this._popupDestroyId);
-                } catch (e) {}
-                this._popupDestroyId = null;
-                this._trackedPopup = null;
             }
 
             this._lockIcon.gicon = Gio.ThemedIcon.new(iconName);
@@ -388,32 +407,26 @@ export default class SwitchBackExtension extends Extension {
             this._lockCard.set_size(width, height);
             Main.layoutManager.uiGroup.set_child_above_sibling(this._lockCard, null);
 
+            const { hideDelayMs, fadeDurationMs } = this._getOsdTimings();
+            const durationMs = customDurationMs !== null ? customDurationMs : hideDelayMs;
+
             this._lockCard.remove_all_transitions();
             this._lockCard.visible = true;
             this._lockCard.ease({
                 opacity: 255,
-                duration: 100, // В унисон со стандартным переключателем раскладок GNOME Shell (100 мс)
+                duration: 150, // Синхронное плавное появление с основным языковым индикатором OSD
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             });
 
             if (!isPersistent) {
-                // Если в GNOME Shell открыт попап переключения раскладки, синхронизируем закрытие с ним
-                if (this._ism && this._ism._switcherPopup) {
-                    const popup = this._ism._switcherPopup;
-                    this._trackedPopup = popup;
-                    this._popupDestroyId = popup.connect('destroy', () => {
-                        this._hideLockCard(true);
-                    });
-                }
-
-                // Стандартное время затухания, синхронное с основным языковым индикатором (1500 мс)
+                // Время удержания и затухания, полностью идентичные основному языковому OSD индикатору
                 this._lockTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, durationMs, () => {
                     this._lockTimeoutId = null;
                     this._isShowingUnlock = false;
                     if (this._lockCard && this._lockCard.visible) {
                         this._lockCard.ease({
                             opacity: 0,
-                            duration: 100, // В точности соответствует POPUP_FADE_OUT_TIME (100 мс) GNOME Shell
+                            duration: fadeDurationMs, // Идентичная длительность затухания
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                             onComplete: () => {
                                 if (this._lockCard && !this._isLocked && !this._isShowingUnlock) {
@@ -437,19 +450,13 @@ export default class SwitchBackExtension extends Extension {
             GLib.source_remove(this._lockTimeoutId);
             this._lockTimeoutId = null;
         }
-        if (this._popupDestroyId && this._trackedPopup) {
-            try {
-                this._trackedPopup.disconnect(this._popupDestroyId);
-            } catch (e) {}
-            this._popupDestroyId = null;
-            this._trackedPopup = null;
-        }
         if (!this._lockCard || !this._lockCard.visible) return;
         try {
+            const { fadeDurationMs } = this._getOsdTimings();
             this._lockCard.remove_all_transitions();
             this._lockCard.ease({
                 opacity: 0,
-                duration: 100, // 100 мс в точности соответствует времени затухания GNOME Shell
+                duration: fadeDurationMs, // Синхронная скорость затухания
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => {
                     if (this._lockCard && !this._isLocked && !this._isShowingUnlock) {
@@ -668,7 +675,7 @@ export default class SwitchBackExtension extends Extension {
                 this._isLocked = false;
                 if (this._capsLockHoldNotify) {
                     this._isShowingUnlock = true;
-                    this._showLockCard('changes-allow-symbolic', false, 1500);
+                    this._showLockCard('changes-allow-symbolic', false);
                 } else {
                     this._hideLockCard(true);
                 }
