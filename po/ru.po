@@ -31,6 +31,24 @@ msgstr "Переключение раскладки по клавише Caps Loc
 msgid "Use single press of Caps Lock to quickly switch language. When disabled, standard system shortcuts apply (Super+Space, Alt+Shift, etc.)"
 msgstr "Использовать одиночное нажатие Caps Lock для быстрой смены языка. Если выключено — работают стандартные горячие клавиши системы (Super+Пробел, Alt+Shift и т.д.)"
 
+msgid "Lock layout by holding Caps Lock"
+msgstr "Фиксация раскладки удержанием Caps Lock"
+
+msgid "Hold Caps Lock to temporarily lock current layout and disable auto-return. Single tap unlocks."
+msgstr "Удерживайте Caps Lock для фиксации раскладки без автовозврата. Одиночное нажатие снимает фиксацию."
+
+msgid "Hold duration to lock (ms)"
+msgstr "Время удержания для фиксации (мс)"
+
+msgid "Duration to hold Caps Lock before locking the layout"
+msgstr "Длительность удержания Caps Lock для включения фиксации"
+
+msgid "Layout Locked"
+msgstr "Раскладка зафиксирована"
+
+msgid "Layout Unlocked"
+msgstr "Фиксация снята"
+
 msgid "Automatic Layout Return"
 msgstr "Автоматический возврат раскладки"
 

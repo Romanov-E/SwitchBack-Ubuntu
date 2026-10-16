@@ -7,6 +7,19 @@
       <description>Use single press of Caps Lock to switch between keyboard layouts.</description>
     </key>
 
+    <key name="caps-lock-hold-enabled" type="b">
+      <default>true</default>
+      <summary>Enable layout lock by holding Caps Lock</summary>
+      <description>Temporarily lock non-primary keyboard layout by holding Caps Lock key.</description>
+    </key>
+
+    <key name="caps-lock-hold-duration" type="i">
+      <default>600</default>
+      <range min="300" max="2000"/>
+      <summary>Caps Lock hold duration in milliseconds</summary>
+      <description>Duration in milliseconds Caps Lock must be held down to lock the layout.</description>
+    </key>
+
     <key name="auto-switch-enabled" type="b">
       <default>true</default>
       <summary>Auto-switch enabled</summary>

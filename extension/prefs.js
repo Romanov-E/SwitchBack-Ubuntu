@@ -108,7 +108,7 @@ function drawRoundedRect(cr, x, y, w, h, r) {
 export default class SwitchBackPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         this.initTranslations();
-        window.set_default_size(680, 740);
+        window.set_default_size(680, 800);
         const settings = this.getSettings();
 
         // ══════════════════════════════════════════════════════════════
@@ -153,6 +153,42 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
             }
         });
         groupSwitching.add(rowCapsToggle);
+
+        // Фиксация раскладки удержанием Caps Lock
+        const rowCapsHold = new Adw.SwitchRow({
+            title: _('Lock layout by holding Caps Lock'),
+            subtitle: _('Hold Caps Lock to temporarily lock current layout and disable auto-return. Single tap unlocks.'),
+            active: settings.get_boolean('caps-lock-hold-enabled'),
+        });
+        settings.bind('caps-lock-hold-enabled', rowCapsHold, 'active', Gio.SettingsBindFlags.DEFAULT);
+        groupSwitching.add(rowCapsHold);
+
+        const rowCapsHoldDuration = new Adw.SpinRow({
+            title: _('Hold duration to lock (ms)'),
+            subtitle: _('Duration in milliseconds Caps Lock must be held down to lock the layout'),
+            adjustment: new Gtk.Adjustment({
+                lower: 300,
+                upper: 2000,
+                step_increment: 50,
+                page_increment: 100,
+                value: settings.get_int('caps-lock-hold-duration'),
+            }),
+        });
+        settings.bind('caps-lock-hold-duration', rowCapsHoldDuration, 'value', Gio.SettingsBindFlags.DEFAULT);
+
+        const updateCapsHoldSubtitle = () => {
+            const val = Math.round(rowCapsHoldDuration.get_value());
+            rowCapsHoldDuration.subtitle = `${val} ${_('ms')} — ${_('Duration to hold Caps Lock before locking the layout')}`;
+        };
+        updateCapsHoldSubtitle();
+        rowCapsHoldDuration.connect('notify::value', updateCapsHoldSubtitle);
+
+        const syncHoldSensitivity = () => {
+            rowCapsHoldDuration.sensitive = rowCapsHold.active;
+        };
+        syncHoldSensitivity();
+        rowCapsHold.connect('notify::active', syncHoldSensitivity);
+        groupSwitching.add(rowCapsHoldDuration);
 
         // --- Group 2: Master Auto-Switch Toggles ---
         const groupMaster = new Adw.PreferencesGroup({
@@ -245,12 +281,20 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
         });
         window.add(pageAppearance);
 
-        // --- Group 1: Live Preview (Hero element at top) ---
+        // --- Group 1: Live Preview (Pinned hero element at top) ---
+        const topClamp = new Adw.Clamp({
+            maximum_size: 600,
+            tightening_threshold: 400,
+            margin_top: 4,
+            margin_bottom: 4,
+            margin_start: 12,
+            margin_end: 12,
+        });
+
         const groupPreview = new Adw.PreferencesGroup({
             title: _('Live Preview'),
             description: _('Visual demonstration of the on-screen countdown indicator'),
         });
-        pageAppearance.add(groupPreview);
 
         // --- Live Preview Card ---
         const rowPreview = new Adw.PreferencesRow({
@@ -259,15 +303,15 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
         const previewContainer = new Gtk.Box({
             orientation: Gtk.Orientation.VERTICAL,
-            spacing: 8,
-            margin_top: 10,
-            margin_bottom: 10,
+            spacing: 4,
+            margin_top: 6,
+            margin_bottom: 6,
             margin_start: 12,
             margin_end: 12,
         });
 
         const previewDrawingArea = new Gtk.DrawingArea({
-            height_request: 175,
+            height_request: 155,
             hexpand: true,
         });
         previewDrawingArea.set_cursor_from_name('pointer');
@@ -420,11 +464,24 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
             const mockMonitor = { x: mockX, y: mockY, width: mockW, height: mockH };
 
+            const mTopRaw = settings.get_int('margin-top');
+            const mBottomRaw = settings.get_int('margin-bottom');
+            const mLeftRaw = settings.get_int('margin-left');
+            const mRightRaw = settings.get_int('margin-right');
+
+            // Относительное масштабирование отступов (эталонный монитор 1920x1080)
+            const scaleX = mockW / 1920;
+            const scaleY = mockH / 1080;
+            const mTop = mTopRaw > 0 ? Math.max(1, Math.round(mTopRaw * scaleY * 2.5)) : 0;
+            const mBottom = mBottomRaw > 0 ? Math.max(1, Math.round(mBottomRaw * scaleY * 2.5)) : 0;
+            const mLeft = mLeftRaw > 0 ? Math.max(1, Math.round(mLeftRaw * scaleX * 2.5)) : 0;
+            const mRight = mRightRaw > 0 ? Math.max(1, Math.round(mRightRaw * scaleX * 2.5)) : 0;
+
             const arms = getArmsForPosition(position, mockMonitor, fraction, thickness, {
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
+                top: mTop,
+                bottom: mBottom,
+                left: mLeft,
+                right: mRight,
             });
 
             for (const arm of arms) {
@@ -517,6 +574,10 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
         settings.connect('changed::split-fade-durations', queuePreview);
         settings.connect('changed::fade-in-duration', queuePreview);
         settings.connect('changed::fade-out-duration', queuePreview);
+        settings.connect('changed::margin-top', queuePreview);
+        settings.connect('changed::margin-bottom', queuePreview);
+        settings.connect('changed::margin-left', queuePreview);
+        settings.connect('changed::margin-right', queuePreview);
         settings.connect('changed::bar-position', () => {
             queuePreview();
             playPreviewAnimation();
@@ -524,6 +585,10 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
 
         rowPreview.set_child(previewContainer);
         groupPreview.add(rowPreview);
+        topClamp.set_child(groupPreview);
+
+        const scrolled = pageAppearance.get_first_child();
+        topClamp.insert_before(pageAppearance, scrolled);
 
         // --- Group 2: Placement & Dimensions ---
         const groupGeometry = new Adw.PreferencesGroup({

@@ -4,6 +4,7 @@ SwitchBack Hardware Keyboard Daemon
 Monitors /dev/input/event* for physical keyboard events.
 Completely isolates keyboard input from mouse movements, clicks, and scroll wheels.
 Writes high-precision monotonic timestamp to /dev/shm/switchback_key.
+Detects Caps Lock press, hold and tap events, writing to /dev/shm/switchback_caps.
 Zero file descriptor leaks, zero keylogging, zero CPU overhead.
 """
 
@@ -16,8 +17,18 @@ import time
 import fcntl
 import signal
 
+try:
+    import gi
+    gi.require_version('Gio', '2.0')
+    from gi.repository import Gio
+    has_gio = True
+except Exception:
+    has_gio = False
+
 SHM_PATH = "/dev/shm/switchback_key"
+SHM_CAPS_PATH = "/dev/shm/switchback_caps"
 EV_KEY = 1
+KEY_CAPSLOCK = 58
 
 # Linux input-event-codes mouse/pointer button range:
 # BTN_LEFT (0x110 = 272) .. BTN_TASK (0x117 = 279), BTN_JOYSTICK, etc.
@@ -31,6 +42,32 @@ EVENT_SIZE = struct.calcsize(EVENT_FMT)
 
 opened_devices = {}
 shm_fd = -1
+shm_caps_fd = -1
+_settings_cached = None
+
+def get_hold_settings():
+    """Reads Caps Lock hold duration and enabled status from GSettings."""
+    global _settings_cached
+    if not has_gio:
+        return True, 0.6
+    try:
+        if _settings_cached is None:
+            _settings_cached = Gio.Settings(schema_id='org.gnome.shell.extensions.switchback')
+        enabled = _settings_cached.get_boolean('caps-lock-hold-enabled')
+        duration_s = max(0.2, min(3.0, _settings_cached.get_int('caps-lock-hold-duration') / 1000.0))
+        return enabled, duration_s
+    except Exception:
+        return True, 0.6
+
+def write_caps_event(action, ts_ms):
+    """Writes an event string into /dev/shm/switchback_caps."""
+    global shm_caps_fd
+    if shm_caps_fd >= 0:
+        try:
+            os.lseek(shm_caps_fd, 0, os.SEEK_SET)
+            os.write(shm_caps_fd, f"{action} {ts_ms:<20}\n".encode('ascii'))
+        except Exception:
+            pass
 
 def is_keyboard_device(path):
     """Checks if a device at path is a keyboard and returns fd if true, else None."""
@@ -83,7 +120,7 @@ def rescan_devices():
 
 def cleanup(signum=None, frame=None):
     """Graceful cleanup on shutdown."""
-    global shm_fd
+    global shm_fd, shm_caps_fd
     for fd in opened_devices.values():
         try:
             os.close(fd)
@@ -96,10 +133,16 @@ def cleanup(signum=None, frame=None):
         except Exception:
             pass
         shm_fd = -1
+    if shm_caps_fd >= 0:
+        try:
+            os.close(shm_caps_fd)
+        except Exception:
+            pass
+        shm_caps_fd = -1
     sys.exit(0)
 
 def main():
-    global shm_fd
+    global shm_fd, shm_caps_fd
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
     if hasattr(signal, 'SIGHUP'):
@@ -107,13 +150,20 @@ def main():
 
     print("[SwitchBack Daemon] Запуск фонового демона клавиатуры...", flush=True)
 
-    # Initialize shared memory file with 0600 permissions (owner read/write only)
+    # Initialize shared memory files with 0600 permissions (owner read/write only)
     try:
         shm_fd = os.open(SHM_PATH, os.O_RDWR | os.O_CREAT, 0o600)
         os.fchmod(shm_fd, 0o600)
         os.write(shm_fd, b"0               \n")
     except Exception as e:
         print(f"[SwitchBack Daemon] Ошибка создания {SHM_PATH}: {e}", file=sys.stderr, flush=True)
+
+    try:
+        shm_caps_fd = os.open(SHM_CAPS_PATH, os.O_RDWR | os.O_CREAT, 0o600)
+        os.fchmod(shm_caps_fd, 0o600)
+        os.write(shm_caps_fd, b"IDLE 0                          \n")
+    except Exception as e:
+        print(f"[SwitchBack Daemon] Ошибка создания {SHM_CAPS_PATH}: {e}", file=sys.stderr, flush=True)
 
     rescan_devices()
     fd_map = {fd: path for path, fd in opened_devices.items()}
@@ -130,10 +180,21 @@ def main():
     last_rescan = time.monotonic()
     last_device_count = len(opened_devices)
 
+    caps_down_time = None
+    caps_hold_fired = False
+
     while True:
         now = time.monotonic()
+        now_ms = int(now * 1000)
 
-        # Rescan for hotplugged or removed devices every 5 seconds
+        # 1. Check if Caps Lock hold duration threshold has been reached
+        hold_enabled, hold_duration_s = get_hold_settings()
+        if caps_down_time is not None and not caps_hold_fired:
+            if hold_enabled and (now - caps_down_time >= hold_duration_s):
+                caps_hold_fired = True
+                write_caps_event("HOLD", now_ms)
+
+        # 2. Rescan for hotplugged or removed devices every 5 seconds
         if now - last_rescan > 5.0:
             last_rescan = now
             rescan_devices()
@@ -148,8 +209,15 @@ def main():
             fd_map = {fd: path for path, fd in opened_devices.items()}
             continue
 
+        # 3. Dynamic select timeout: short while Caps Lock is held down, else 2.0s
+        if caps_down_time is not None and not caps_hold_fired:
+            remaining = max(0.01, hold_duration_s - (now - caps_down_time))
+            select_timeout = min(0.04, remaining)
+        else:
+            select_timeout = 2.0
+
         try:
-            r, _, _ = select.select(list(fd_map.keys()), [], [], 2.0)
+            r, _, _ = select.select(list(fd_map.keys()), [], [], select_timeout)
         except (select.error, ValueError):
             rescan_devices()
             fd_map = {fd: path for path, fd in opened_devices.items()}
@@ -170,11 +238,29 @@ def main():
                         vals = struct.unpack(EVENT_FMT, chunk)
                         ev_type, ev_code, ev_value = vals[-3], vals[-2], vals[-1]
 
-                        # EV_KEY: 1 (key down) or 2 (key repeat)
-                        if ev_type == EV_KEY and (ev_value == 1 or ev_value == 2):
-                            # Filter out mouse and pointer buttons
-                            if not (MOUSE_BUTTONS_START <= ev_code <= MOUSE_BUTTONS_END):
-                                key_hit = True
+                        if ev_type == EV_KEY:
+                            # Caps Lock key press/release tracking
+                            if ev_code == KEY_CAPSLOCK:
+                                key_now = time.monotonic()
+                                key_now_ms = int(key_now * 1000)
+                                if ev_value == 1:
+                                    caps_down_time = key_now
+                                    caps_hold_fired = False
+                                elif ev_value == 0:
+                                    if caps_hold_fired:
+                                        # Key released after hold: reset state
+                                        pass
+                                    else:
+                                        # Key released quickly: TAP event!
+                                        write_caps_event("TAP", key_now_ms)
+                                    caps_down_time = None
+                                    caps_hold_fired = False
+
+                            # EV_KEY: 1 (key down) or 2 (key repeat)
+                            if ev_value == 1 or ev_value == 2:
+                                # Filter out mouse and pointer buttons
+                                if not (MOUSE_BUTTONS_START <= ev_code <= MOUSE_BUTTONS_END):
+                                    key_hit = True
             except OSError:
                 # Device unplugged / invalid fd
                 devices_to_remove.append(fd_map[fd])
@@ -191,7 +277,6 @@ def main():
 
         if key_hit and shm_fd >= 0:
             try:
-                now_ms = int(time.monotonic() * 1000)
                 os.lseek(shm_fd, 0, os.SEEK_SET)
                 os.write(shm_fd, f"{now_ms:<16}\n".encode('ascii'))
             except Exception:

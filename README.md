@@ -24,15 +24,15 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## ✨ Features
 
-- **Caps Lock Toggle:** Single-key layout toggle using `Caps Lock`. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
+- **Caps Lock Toggle & Layout Lock:** Single-key layout toggle using `Caps Lock`. Hold Caps Lock (default 600 ms, configurable) to temporarily lock the non-primary layout and disable auto-return; single tap unlocks. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
 - **Inactivity Auto-Return:** Switches back to your primary layout (e.g., English) after a configurable pause in typing (0.5 to 30 seconds).
 - **On-Screen Indicators:**
   - **Placements:** Top, Bottom, Dual Top + Bottom, Left, Right, Dual Left + Right, Corner L-brackets (all 4 individual corners and simultaneous 4-corner HUD).
-  - **Independent Margins:** Pixel-accurate offsets for top, bottom, left, and right screen edges.
+  - **Independent Margins:** Pixel-accurate offsets for top, bottom, left, and right screen edges with real-time relative preview.
   - **Geometry:** Configurable thickness (1–40 px), length (5% to 100%), and corner radius (up to full pill shape).
   - **Color & Alpha:** Full GTK color palette with RGBA opacity support.
   - **Animations & Effects:** 6 motion styles (collapse to center, split outward to edges, fill from center outward, converge from edges to center, collapse to start, and collapse to end), master transition fade slider (0–2000 ms), and optional separate timing controls for entrance fade-in (0–1000 ms) and exit fade-out (0–2000 ms).
-  - **16:9 Live Preview:** High-framerate proportional monitor preview synchronized with display VSync.
+  - **Pinned 16:9 Live Preview:** High-framerate proportional monitor preview with real-time relative margin visualization, permanently pinned at the top while scrolling through settings.
 - **Hardware Event Filtering:**
   - Reads Linux kernel input events directly via `/dev/input/event*`.
   - Mouse movements, clicks, and scroll wheels (including horizontal wheels on mice like Logitech MX Master) do not reset the typing timer.

@@ -4,7 +4,8 @@ import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Keyboard from 'resource:///org/gnome/shell/ui/status/keyboard.js';
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
+
 function getArmsForPosition(pos, monitor, fraction, thickness, margins) {
     const { top: mTop, bottom: mBottom, left: mLeft, right: mRight } = margins;
     const hMaxLen = Math.max(8, Math.round(monitor.width * fraction));
@@ -73,6 +74,7 @@ function getArmsForPosition(pos, monitor, fraction, thickness, margins) {
 
 export default class SwitchBackExtension extends Extension {
     enable() {
+        this.initTranslations();
         this._settings = this.getSettings();
 
         this._timerId = null;
@@ -83,8 +85,15 @@ export default class SwitchBackExtension extends Extension {
         this._lastDaemonTs = 0;
         this._shmPath = '/dev/shm/switchback_key';
 
+        this._isLocked = false;
+        this._lastProcessedCapsTs = 0;
+        this._capsMonitor = null;
+        this._capsMonitorId = null;
+        this._capsFile = null;
+
         this._loadSettings();
         this._syncCapsLockOption();
+        this._setupCapsMonitor();
 
         try {
             this._ism = Keyboard.getInputSourceManager();
@@ -103,7 +112,11 @@ export default class SwitchBackExtension extends Extension {
             }
             this._rebuildBars();
             if (this._isSecondaryLayout() && this._autoSwitchEnabled) {
-                this._startCountdown();
+                if (this._isLocked) {
+                    this._showLockedIndicator();
+                } else {
+                    this._startCountdown();
+                }
             } else {
                 this._stopCountdown();
             }
@@ -122,10 +135,12 @@ export default class SwitchBackExtension extends Extension {
 
     _loadSettings() {
         this._capsLockSwitchEnabled = this._settings.get_boolean('caps-lock-switch-enabled');
+        this._capsLockHoldEnabled = this._settings.get_boolean('caps-lock-hold-enabled');
+        this._capsLockHoldDuration = this._settings.get_int('caps-lock-hold-duration');
         this._autoSwitchEnabled = this._settings.get_boolean('auto-switch-enabled');
         this._showIndicator = this._settings.get_boolean('show-indicator');
         this._timeoutMs = Math.round(this._settings.get_double('timeout-seconds') * 1000);
-        this._barPosition = this._settings.get_string('bar-position'); // 'top', 'bottom', 'top-bottom', 'left', 'right', 'left-right'
+        this._barPosition = this._settings.get_string('bar-position');
 
         // Направленные отступы
         this._marginTop = this._settings.get_int('margin-top');
@@ -137,7 +152,7 @@ export default class SwitchBackExtension extends Extension {
         this._barLengthFraction = this._settings.get_double('bar-length-fraction');
         this._barColor = this._settings.get_string('bar-color');
         this._barRadius = this._settings.get_int('bar-radius');
-        this._animationMode = this._settings.get_string('animation-mode'); // 'to-center', 'to-edges', 'fill-from-center', 'from-edges-to-center', 'to-start', 'to-end'
+        this._animationMode = this._settings.get_string('animation-mode');
         this._fadeDuration = this._settings.get_int('fade-duration');
         this._splitFadeDurations = this._settings.get_boolean('split-fade-durations');
         this._fadeInDuration = this._splitFadeDurations
@@ -148,6 +163,154 @@ export default class SwitchBackExtension extends Extension {
             : this._fadeDuration;
         this._onlyPrimaryMonitor = this._settings.get_boolean('only-on-primary-monitor');
         this._targetSourceIndex = this._settings.get_int('switch-to-source-index');
+    }
+
+    _setupCapsMonitor() {
+        this._destroyCapsMonitor();
+        try {
+            this._capsFile = Gio.File.new_for_path('/dev/shm/switchback_caps');
+            this._capsMonitor = this._capsFile.monitor_file(Gio.FileMonitorFlags.NONE, null);
+            this._capsMonitorId = this._capsMonitor.connect('changed', (mon, f, other, eventType) => {
+                if (eventType === Gio.FileMonitorEvent.CHANGED || eventType === Gio.FileMonitorEvent.CHANGES_DONE_HINT) {
+                    this._onCapsFileEvent();
+                }
+            });
+        } catch (e) {
+            console.error('[SwitchBack] Не удалось запустить мониторинг Caps Lock:', e);
+        }
+    }
+
+    _destroyCapsMonitor() {
+        if (this._capsMonitorId && this._capsMonitor) {
+            this._capsMonitor.disconnect(this._capsMonitorId);
+            this._capsMonitorId = null;
+        }
+        if (this._capsMonitor) {
+            this._capsMonitor.cancel();
+            this._capsMonitor = null;
+        }
+        this._capsFile = null;
+    }
+
+    _onCapsFileEvent() {
+        try {
+            const [ok, contents] = GLib.file_get_contents('/dev/shm/switchback_caps');
+            if (!ok) return;
+            const str = new TextDecoder().decode(contents).trim();
+            const parts = str.split(/\s+/);
+            const action = parts[0];
+            const ts = parseInt(parts[1], 10);
+
+            if (ts && ts <= this._lastProcessedCapsTs) return;
+            if (ts) this._lastProcessedCapsTs = ts;
+
+            if (action === 'HOLD') {
+                this._onCapsHold();
+            } else if (action === 'TAP') {
+                this._onCapsTap();
+            }
+        } catch (e) {
+            console.error('[SwitchBack] Ошибка чтения события Caps Lock:', e);
+        }
+    }
+
+    _onCapsHold() {
+        if (!this._capsLockHoldEnabled) return;
+        if (this._isLocked) return;
+
+        // Если находились на приоритетной раскладке — переключаем на вторичную
+        if (!this._isSecondaryLayout()) {
+            this._switchToSecondary();
+        }
+
+        this._isLocked = true;
+        this._stopCountdown(false);
+
+        try {
+            Main.osdWindowManager.show(-1, Gio.ThemedIcon.new('changes-prevent-symbolic'), _('Layout Locked'), null);
+        } catch (e) {}
+
+        this._showLockedIndicator();
+    }
+
+    _onCapsTap() {
+        if (this._isLocked) {
+            this._isLocked = false;
+
+            try {
+                Main.osdWindowManager.show(-1, Gio.ThemedIcon.new('changes-allow-symbolic'), _('Layout Unlocked'), null);
+            } catch (e) {}
+
+            this._switchToPrimary();
+            this._stopCountdown(true);
+        }
+    }
+
+    _showLockedIndicator() {
+        if (!this._showIndicator || this._bars.length === 0) return;
+        const monitor = Main.layoutManager.primaryMonitor;
+        if (!monitor) return;
+
+        const arms = getArmsForPosition(this._barPosition, monitor, this._barLengthFraction, this._barThickness, {
+            top: this._marginTop,
+            bottom: this._marginBottom,
+            left: this._marginLeft,
+            right: this._marginRight,
+        });
+
+        for (let i = 0; i < arms.length; i++) {
+            const arm = arms[i];
+            const maxLen = arm.end - arm.start;
+            const mid = Math.round((arm.start + arm.end) / 2);
+
+            if (this._animationMode === 'to-edges' || this._animationMode === 'from-edges-to-center') {
+                const halfA = Math.floor(maxLen / 2);
+                const halfB = maxLen - halfA;
+                const barA = this._bars[i * 2];
+                const barB = this._bars[i * 2 + 1];
+                if (barA) {
+                    barA.remove_all_transitions();
+                    if (arm.isVertical) {
+                        barA.set_position(arm.fixedCoord, arm.start);
+                        barA.set_size(this._barThickness, halfA);
+                    } else {
+                        barA.set_position(arm.start, arm.fixedCoord);
+                        barA.set_size(halfA, this._barThickness);
+                    }
+                    barA.opacity = 255;
+                    barA.visible = true;
+                }
+                if (barB) {
+                    barB.remove_all_transitions();
+                    if (arm.isVertical) {
+                        barB.set_position(arm.fixedCoord, arm.start + halfA);
+                        barB.set_size(this._barThickness, halfB);
+                    } else {
+                        barB.set_position(arm.start + halfA, arm.fixedCoord);
+                        barB.set_size(halfB, this._barThickness);
+                    }
+                    barB.opacity = 255;
+                    barB.visible = true;
+                }
+            } else {
+                const bar = this._bars[i];
+                if (bar) {
+                    bar.remove_all_transitions();
+                    const coord = (this._animationMode === 'to-start') ? arm.start :
+                                  (this._animationMode === 'to-end') ? arm.end - maxLen :
+                                  Math.round(mid - maxLen / 2);
+                    if (arm.isVertical) {
+                        bar.set_position(arm.fixedCoord, coord);
+                        bar.set_size(this._barThickness, maxLen);
+                    } else {
+                        bar.set_position(coord, arm.fixedCoord);
+                        bar.set_size(maxLen, this._barThickness);
+                    }
+                    bar.opacity = 255;
+                    bar.visible = true;
+                }
+            }
+        }
     }
 
     _syncCapsLockOption() {
@@ -254,13 +417,21 @@ export default class SwitchBackExtension extends Extension {
     _onSourceChanged() {
         // Если автовозврат выключен — ничего не делаем и прячем всё
         if (!this._autoSwitchEnabled) {
+            this._isLocked = false;
             this._stopCountdown(false);
             return;
         }
 
         if (this._isSecondaryLayout()) {
+            if (this._isLocked) {
+                // Зафиксировано: таймер не запускаем, держим индикатор
+                this._showLockedIndicator();
+                return;
+            }
             this._startCountdown();
         } else {
+            // Вернулись на приоритетную раскладку: сбрасываем фиксацию
+            this._isLocked = false;
             this._stopCountdown(true);
         }
     }
@@ -280,7 +451,7 @@ export default class SwitchBackExtension extends Extension {
     _startCountdown() {
         this._stopCountdown(false);
 
-        if (!this._autoSwitchEnabled) return;
+        if (!this._autoSwitchEnabled || this._isLocked) return;
 
         const monitor = Main.layoutManager.primaryMonitor;
         if (!monitor) return;
@@ -320,7 +491,7 @@ export default class SwitchBackExtension extends Extension {
         // Цикл обновления ~60 FPS (16 мс)
         let frameCount = 0;
         this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-            if (!this._autoSwitchEnabled || !this._isSecondaryLayout()) {
+            if (!this._autoSwitchEnabled || !this._isSecondaryLayout() || this._isLocked) {
                 this._stopCountdown(true);
                 return GLib.SOURCE_REMOVE;
             }
@@ -366,11 +537,9 @@ export default class SwitchBackExtension extends Extension {
 
                     let p = progress;
                     if (this._animationMode === 'from-edges-to-center') {
-                        // Lines converge to meet at 88% of timeout so they merge into a solid line before fade-out
                         p = Math.min(1.0, elapsedFraction / 0.88);
                     }
 
-                    // Seamless center overlap when lines converge (p >= 0.95) to eliminate any notch or gap
                     const overlap = (this._animationMode === 'from-edges-to-center' && p >= 0.95) ? 2 : 0;
                     const lenA = Math.round(halfA * p) + overlap;
                     const lenB = Math.round(halfB * p) + overlap;
@@ -480,7 +649,26 @@ export default class SwitchBackExtension extends Extension {
         }
     }
 
+    _switchToSecondary() {
+        if (!this._ism) return;
+
+        const rawSources = this._ism.inputSources ?? this._ism._inputSources ?? {};
+        const sources = Array.isArray(rawSources) ? rawSources : Object.values(rawSources);
+
+        const secondary = sources.find(s => s && s.index !== this._targetSourceIndex);
+
+        if (secondary) {
+            if (typeof secondary.activate === 'function') {
+                secondary.activate();
+            } else if (typeof this._ism.activateInputSource === 'function') {
+                this._ism.activateInputSource(secondary, false);
+            }
+        }
+    }
+
     disable() {
+        this._destroyCapsMonitor();
+        this._isLocked = false;
         this._stopCountdown(false);
 
         if (this._settingsChangedId && this._settings) {
