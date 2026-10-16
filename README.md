@@ -12,7 +12,7 @@
     <a href="#architecture"><img src="https://img.shields.io/badge/Session-Wayland%20%7C%20X11-success.svg" alt="Session" /></a>
     <a href="https://ubuntu.com"><img src="https://img.shields.io/badge/Ubuntu-24.04%20%7C%2024.10%20%7C%2025%20%7C%2026-orange.svg" alt="Ubuntu" /></a>
     <a href="https://github.com/Romanov-E"><img src="https://img.shields.io/badge/Author-Romanov--E-blue?logo=github" alt="Author" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL%203.0-blue.svg" alt="License: GPL 3.0" /></a>
   </p>
 </div>
 
@@ -157,7 +157,7 @@ Open preferences through:
 - **GNOME Extensions App:** Click the settings gear next to **SwitchBack Ubuntu**.
 - **Terminal:**
   ```bash
-  gnome-extensions prefs switchback@local
+  gnome-extensions prefs switchback@romanov-e
   ```
 
 All settings apply in real time without restarting GNOME Shell.
@@ -190,7 +190,7 @@ cd SwitchBack-Ubuntu
 
 ## 📄 License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+Distributed under the GNU General Public License v3.0 (GPLv3). See [LICENSE](LICENSE) for details.
 Authors: [Romanov-E](https://github.com/Romanov-E) & contributors.
 
 ---

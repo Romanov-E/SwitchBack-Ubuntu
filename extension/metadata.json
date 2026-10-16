@@ -1,7 +1,7 @@
 {
   "name": "SwitchBack Ubuntu",
   "description": "Автовозврат на приоритетную раскладку по таймеру простоя с гибко настраиваемой полосой индикации",
-  "uuid": "switchback@local",
+  "uuid": "switchback@romanov-e",
   "settings-schema": "org.gnome.shell.extensions.switchback",
   "gettext-domain": "switchback",
   "shell-version": [
@@ -14,5 +14,7 @@
     "51"
   ],
   "version": 5,
+  "version-name": "2.3.0",
+  "license": "GPL-3.0-or-later",
   "url": "https://github.com/Romanov-E/SwitchBack-Ubuntu"
 }

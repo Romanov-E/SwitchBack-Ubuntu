@@ -52,7 +52,7 @@ TRANSLATIONS = {
         'step_daemon': 'Настройка фонового демона и службы',
         'step_daemon_desc': 'Регистрация пользовательской службы systemd',
         'step_enable': 'Активация расширения в GNOME Shell',
-        'step_enable_desc': 'Включение расширения switchback@local',
+        'step_enable_desc': 'Включение расширения switchback@romanov-e',
         'log_expander': 'Подробный журнал установки',
         'btn_copy_log': 'Скопировать журнал',
         'log_copied': 'Журнал скопирован в буфер обмена',
@@ -111,7 +111,7 @@ TRANSLATIONS = {
         'step_daemon': 'Configuring daemon & systemd service',
         'step_daemon_desc': 'Registering systemd --user service',
         'step_enable': 'Activating extension in GNOME Shell',
-        'step_enable_desc': 'Enabling switchback@local',
+        'step_enable_desc': 'Enabling switchback@romanov-e',
         'log_expander': 'Detailed installation log',
         'btn_copy_log': 'Copy Log',
         'log_copied': 'Log copied to clipboard',
@@ -452,8 +452,9 @@ Terminal=false
         )
 
     def check_existing_installation(self):
-        ext_path = os.path.expanduser('~/.local/share/gnome-shell/extensions/switchback@local/metadata.json')
-        if os.path.exists(ext_path):
+        ext_path_new = os.path.expanduser('~/.local/share/gnome-shell/extensions/switchback@romanov-e/metadata.json')
+        ext_path_old = os.path.expanduser('~/.local/share/gnome-shell/extensions/switchback@local/metadata.json')
+        if os.path.exists(ext_path_new) or os.path.exists(ext_path_old):
             self.installed_version = VERSION
         else:
             self.installed_version = None
@@ -919,7 +920,7 @@ Terminal=false
 
     def on_open_preferences(self, btn):
         try:
-            subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@local'])
+            subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@romanov-e'])
         except Exception as e:
             self.log(f"Failed to open preferences: {e}")
 
@@ -1032,7 +1033,13 @@ Terminal=false
             # Step 4: Deploy Extension
             GLib.idle_add(self.step_rows['ext'].set_status, "running")
             GLib.idle_add(self.progress_bar.set_fraction, 0.65)
-            ext_target = os.path.expanduser("~/.local/share/gnome-shell/extensions/switchback@local")
+
+            legacy_ext = os.path.expanduser("~/.local/share/gnome-shell/extensions/switchback@local")
+            if os.path.exists(legacy_ext):
+                subprocess.run(['gnome-extensions', 'disable', 'switchback@local'], check=False)
+                shutil.rmtree(legacy_ext, ignore_errors=True)
+
+            ext_target = os.path.expanduser("~/.local/share/gnome-shell/extensions/switchback@romanov-e")
             self.log(f"Deploying extension files to {ext_target}...")
 
             os.makedirs(os.path.join(ext_target, "schemas"), exist_ok=True)
@@ -1127,7 +1134,7 @@ Terminal=false
                 except Exception as e:
                     self.log(f"Notice: Failed to set xkb-options: {e}")
 
-            subprocess.run(['gnome-extensions', 'enable', 'switchback@local'], check=False)
+            subprocess.run(['gnome-extensions', 'enable', 'switchback@romanov-e'], check=False)
             self.log("✅ GNOME Shell extension enabled.")
             GLib.idle_add(self.step_rows['enable'].set_status, "done")
             GLib.idle_add(self.progress_bar.set_fraction, 1.0)
@@ -1162,7 +1169,7 @@ Terminal=false
         if options.get('open_prefs', True) and not self.need_logout:
             def _open_prefs():
                 try:
-                    subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@local'])
+                    subprocess.Popen(['gnome-extensions', 'prefs', 'switchback@romanov-e'])
                 except Exception:
                     pass
                 return GLib.SOURCE_REMOVE
@@ -1218,10 +1225,11 @@ Terminal=false
         try:
             # 1. Disable & remove extension
             self.log("Disabling GNOME extension...")
-            subprocess.run(['gnome-extensions', 'disable', 'switchback@local'], check=False)
-            ext_path = os.path.expanduser("~/.local/share/gnome-shell/extensions/switchback@local")
-            if os.path.exists(ext_path):
-                shutil.rmtree(ext_path, ignore_errors=True)
+            for uid in ['switchback@romanov-e', 'switchback@local']:
+                subprocess.run(['gnome-extensions', 'disable', uid], check=False)
+                ep = os.path.expanduser(f"~/.local/share/gnome-shell/extensions/{uid}")
+                if os.path.exists(ep):
+                    shutil.rmtree(ep, ignore_errors=True)
             self.log("Extension files removed.")
             GLib.idle_add(self.progress_bar.set_fraction, 0.4)
 

@@ -10,9 +10,9 @@ res._register();
 
 const {ExtensionPreferences} = await import('resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js');
 
-const extPath = '/home/romanov/.local/share/gnome-shell/extensions/switchback@local';
+const extPath = '/home/romanov/.local/share/gnome-shell/extensions/switchback@romanov-e';
 const metadata = {
-    uuid: 'switchback@local',
+    uuid: 'switchback@romanov-e',
     dir: Gio.File.new_for_path(extPath),
     path: extPath,
     'settings-schema': 'org.gnome.shell.extensions.switchback',

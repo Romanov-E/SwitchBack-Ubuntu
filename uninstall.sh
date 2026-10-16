@@ -17,7 +17,9 @@ echo -e "${YELLOW}${BOLD}🧹 Удаление SwitchBack Indicator... / Uninsta
 
 # 1. Отключение и удаление расширения
 echo "1. Отключение расширения GNOME Shell..."
+gnome-extensions disable switchback@romanov-e 2>/dev/null || true
 gnome-extensions disable switchback@local 2>/dev/null || true
+rm -rf "$HOME/.local/share/gnome-shell/extensions/switchback@romanov-e"
 rm -rf "$HOME/.local/share/gnome-shell/extensions/switchback@local"
 
 # 2. Остановка и удаление службы

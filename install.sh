@@ -91,7 +91,10 @@ echo -e "${GREEN}✅ Схема настроек скомпилирована.${
 
 # 6. Развёртывание расширения GNOME Shell
 echo -e "${BLUE}🧩 Установка расширения GNOME Shell...${NC}"
-EXT_TARGET="$HOME/.local/share/gnome-shell/extensions/switchback@local"
+gnome-extensions disable switchback@local 2>/dev/null || true
+rm -rf "$HOME/.local/share/gnome-shell/extensions/switchback@local"
+
+EXT_TARGET="$HOME/.local/share/gnome-shell/extensions/switchback@romanov-e"
 mkdir -p "$EXT_TARGET/schemas"
 mkdir -p "$EXT_TARGET/locale"
 mkdir -p "$EXT_TARGET/icons"
@@ -145,7 +148,7 @@ cp -f "$PROJECT_DIR/desktop/icons/switchback.svg" "$ICON_DIR/switchback.svg"
 
 # 10. Активация расширения
 echo -e "${BLUE}⚡ Активация расширения GNOME...${NC}"
-gnome-extensions enable switchback@local 2>/dev/null || true
+gnome-extensions enable switchback@romanov-e 2>/dev/null || true
 
 echo ""
 echo -e "${GREEN}══════════════════════════════════════════════════════════════════${NC}"
@@ -154,7 +157,7 @@ echo -e "${GREEN}═════════════════════
 echo ""
 echo -e "🔹 ${BOLD}Как открыть настройки:${NC}"
 echo "   1. В окне «Расширения» / «Менеджер расширений» GNOME: кнопка шестерёнки ⚙️ рядом с SwitchBack"
-echo "   2. Командой в терминале: gnome-extensions prefs switchback@local"
+echo "   2. Командой в терминале: gnome-extensions prefs switchback@romanov-e"
 echo ""
 if [ "$NEED_LOGOUT" -eq 1 ]; then
     echo -e "${YELLOW}${BOLD}⚠️  ВАЖНОЕ ПРИМЕЧАНИЕ:${NC}"
