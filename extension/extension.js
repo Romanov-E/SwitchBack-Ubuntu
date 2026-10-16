@@ -288,7 +288,7 @@ export default class SwitchBackExtension extends Extension {
             if (this._capsLockHoldNotify) {
                 // Показываем разомкнутый замочек синхронно со стандартным языковым индикатором OSD
                 this._isShowingUnlock = true;
-                this._showLockCard('changes-allow-symbolic', false);
+                this._showLockCard('padlock-open-left-symbolic', false);
             } else {
                 this._hideLockCard(true);
             }
@@ -393,7 +393,16 @@ export default class SwitchBackExtension extends Extension {
                 this._lockTimeoutId = null;
             }
 
-            this._lockIcon.gicon = Gio.ThemedIcon.new(iconName);
+            if (iconName === 'padlock-open-left-symbolic') {
+                const iconFile = this.dir ? this.dir.get_child('icons').get_child('padlock-open-left-symbolic.svg') : null;
+                if (iconFile && iconFile.query_exists(null)) {
+                    this._lockIcon.gicon = Gio.FileIcon.new(iconFile);
+                } else {
+                    this._lockIcon.gicon = Gio.ThemedIcon.new('changes-allow-symbolic');
+                }
+            } else {
+                this._lockIcon.gicon = Gio.ThemedIcon.new(iconName);
+            }
 
             // Размеры плашки как у нативных индикаторов Ubuntu (108 x 70 px, скругление 18px)
             const width = 108;
@@ -675,7 +684,7 @@ export default class SwitchBackExtension extends Extension {
                 this._isLocked = false;
                 if (this._capsLockHoldNotify) {
                     this._isShowingUnlock = true;
-                    this._showLockCard('changes-allow-symbolic', false);
+                    this._showLockCard('padlock-open-left-symbolic', false);
                 } else {
                     this._hideLockCard(true);
                 }
