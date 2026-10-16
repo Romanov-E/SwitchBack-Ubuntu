@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 484" width="620" height="484">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="100%" stop-color="#161b22" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c2128" />
+      <stop offset="100%" stop-color="#181c22" />
+    </linearGradient>
+    <marker id="arrowhead-blue" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M 0 0.5 L 5 3 L 0 5.5 Z" fill="#58a6ff" />
+    </marker>
+    <marker id="arrowhead-orange" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M 0 0.5 L 5 3 L 0 5.5 Z" fill="#f0883e" />
+    </marker>
+    <marker id="arrowhead-green" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M 0 0.5 L 5 3 L 0 5.5 Z" fill="#3fb950" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; fill: #8b949e; letter-spacing: 1.5px; text-anchor: middle; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #6e7681; text-anchor: middle; }
+    .card-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13.5px; font-weight: 600; fill: #f0f6fc; }
+    .card-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11.5px; fill: #8b949e; }
+    .badge-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 10.5px; font-weight: 500; text-anchor: middle; }
+    .list-item { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11.5px; fill: #c9d1d9; }
+  </style>
+
+  <!-- Container Box -->
+  <rect x="1" y="1" width="618" height="482" rx="12" fill="url(#bgGrad)" stroke="#30363d" stroke-width="1.2" />
+
+  <!-- Title & Header -->
+  <text x="310" y="28" class="title">АРХИТЕКТУРА СИСТЕМЫ SWITCHBACK</text>
+  <text x="310" y="44" class="subtitle">Аппаратная изоляция ввода и конвейер разделяемой памяти</text>
+
+  <!-- ==================== CARD 1: HARDWARE ==================== -->
+  <g transform="translate(45, 58)">
+    <rect width="530" height="52" rx="8" fill="url(#cardGrad)" stroke="#388bfd" stroke-width="1.2" />
+    <circle cx="28" cy="26" r="14" fill="#388bfd" fill-opacity="0.15" />
+    <!-- Keyboard vector icon -->
+    <g transform="translate(17, 16)" stroke="#58a6ff" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="1" y="3" width="20" height="14" rx="2" />
+      <line x1="5" y1="7" x2="7" y2="7" />
+      <line x1="10" y1="7" x2="12" y2="7" />
+      <line x1="15" y1="7" x2="17" y2="7" />
+      <line x1="5" y1="10" x2="7" y2="10" />
+      <line x1="10" y1="10" x2="12" y2="10" />
+      <line x1="15" y1="10" x2="17" y2="10" />
+      <line x1="7" y1="13" x2="15" y2="13" />
+    </g>
+    <text x="54" y="23" class="card-title">Физическая клавиатура (/dev/input)</text>
+    <text x="54" y="39" class="card-desc">Прямой поток аппаратных событий ядра Linux (evdev)</text>
+  </g>
+
+  <!-- ARROW 1 -->
+  <line x1="310" y1="110" x2="310" y2="120" stroke="#58a6ff" stroke-width="1.5" />
+  <rect x="140" y="120" width="340" height="20" rx="10" fill="#1f242c" stroke="#388bfd" stroke-width="1" />
+  <text x="310" y="134" class="badge-text" fill="#79c0ff">Только события EV_KEY • фильтрация мыши</text>
+  <line x1="310" y1="140" x2="310" y2="149" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arrowhead-blue)" />
+
+  <!-- ==================== CARD 2: DAEMON ==================== -->
+  <g transform="translate(45, 150)">
+    <rect width="530" height="52" rx="8" fill="url(#cardGrad)" stroke="#f0883e" stroke-width="1.2" />
+    <circle cx="28" cy="26" r="14" fill="#f0883e" fill-opacity="0.15" />
+    <!-- Cog vector icon -->
+    <g transform="translate(18, 16)" stroke="#f0883e" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="10" cy="10" r="3" />
+      <path d="M10 2v2 M10 16v2 M2 10h2 M16 10h2 M4.34 4.34l1.42 1.42 M14.24 14.24l1.42 1.42 M4.34 15.66l1.42-1.42 M14.24 5.76l1.42-1.42" />
+    </g>
+    <text x="54" y="23" class="card-title">Фоновый демон SwitchBack (systemd --user)</text>
+    <text x="54" y="39" class="card-desc">Изолированный сервис пользователя • 0% CPU в простое</text>
+  </g>
+
+  <!-- ARROW 2 -->
+  <line x1="310" y1="202" x2="310" y2="212" stroke="#f0883e" stroke-width="1.5" />
+  <rect x="145" y="212" width="330" height="20" rx="10" fill="#242121" stroke="#f0883e" stroke-width="1" />
+  <text x="310" y="226" class="badge-text" fill="#ffb454">Атомарная запись метки времени • права 0600</text>
+  <line x1="310" y1="232" x2="310" y2="241" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arrowhead-orange)" />
+
+  <!-- ==================== CARD 3: SHARED MEMORY ==================== -->
+  <g transform="translate(45, 242)">
+    <rect width="530" height="52" rx="8" fill="url(#cardGrad)" stroke="#3fb950" stroke-width="1.2" />
+    <circle cx="28" cy="26" r="14" fill="#3fb950" fill-opacity="0.15" />
+    <!-- Chip / RAM vector icon -->
+    <g transform="translate(18, 16)" stroke="#3fb950" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="4" width="12" height="12" rx="2" />
+      <line x1="7" y1="1" x2="7" y2="4" />
+      <line x1="13" y1="1" x2="13" y2="4" />
+      <line x1="7" y1="16" x2="7" y2="19" />
+      <line x1="13" y1="16" x2="13" y2="19" />
+      <line x1="1" y1="7" x2="4" y2="7" />
+      <line x1="1" y1="13" x2="4" y2="13" />
+      <line x1="16" y1="7" x2="19" y2="7" />
+      <line x1="16" y1="13" x2="19" y2="13" />
+    </g>
+    <text x="54" y="23" class="card-title">Разделяемая память RAM (/dev/shm)</text>
+    <text x="54" y="39" class="card-desc">POSIX shm буфер в RAM • нулевая нагрузка на диск</text>
+  </g>
+
+  <!-- ARROW 3 -->
+  <line x1="310" y1="294" x2="310" y2="304" stroke="#3fb950" stroke-width="1.5" />
+  <rect x="150" y="304" width="320" height="20" rx="10" fill="#1b2520" stroke="#3fb950" stroke-width="1" />
+  <text x="310" y="318" class="badge-text" fill="#7ee787">Мгновенное неблокирующее чтение без задержек</text>
+  <line x1="310" y1="324" x2="310" y2="333" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arrowhead-green)" />
+
+  <!-- ==================== CARD 4: GNOME EXTENSION ==================== -->
+  <g transform="translate(45, 334)">
+    <rect width="530" height="122" rx="8" fill="url(#cardGrad)" stroke="#d2a8ff" stroke-width="1.2" />
+    <circle cx="28" cy="26" r="14" fill="#d2a8ff" fill-opacity="0.15" />
+    <!-- Monitor vector icon -->
+    <g transform="translate(18, 16)" stroke="#d2a8ff" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="16" height="11" rx="1.5" />
+      <line x1="10" y1="14" x2="10" y2="17" />
+      <line x1="6" y1="17" x2="14" y2="17" />
+    </g>
+    <text x="54" y="25" class="card-title">Расширение GNOME Shell (Wayland / X11)</text>
+
+    <!-- Checklist / details -->
+    <g transform="translate(54, 46)">
+      <!-- Item 1 -->
+      <circle cx="4" cy="4" r="2.5" fill="#d2a8ff" />
+      <text x="14" y="8" class="list-item">Плавная 60 FPS отрисовка полосы индикатора (Clutter / St)</text>
+
+      <!-- Item 2 -->
+      <circle cx="4" cy="26" r="2.5" fill="#d2a8ff" />
+      <text x="14" y="30" class="list-item">Безопасный автовозврат раскладки через InputSourceManager</text>
+
+      <!-- Item 3 -->
+      <circle cx="4" cy="48" r="2.5" fill="#d2a8ff" />
+      <text x="14" y="52" class="list-item">Мгновенная синхронизация GSettings с окном настроек GTK4</text>
+    </g>
+  </g>
+</svg>

@@ -78,30 +78,27 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## 🏗️ Architecture
 
+<div align="center">
+  <img src="docs/architecture-en.svg" width="620" alt="SwitchBack Architecture" />
+</div>
+
+| Component | Layer | Description |
+| :--- | :--- | :--- |
+| **Physical Keyboard** | `/dev/input/event*` | Direct Linux kernel hardware event stream; captures physical keystrokes with zero latency. |
+| **SwitchBack Daemon** | `systemd --user` | Lightweight user daemon; filters out all mouse clicks/movements and writes monotonic timestamps. |
+| **Shared Memory RAM** | `/dev/shm` (0600) | POSIX shared memory buffer in RAM; enables atomic zero-overhead state sharing without disk I/O. |
+| **GNOME Shell Extension** | Wayland / X11 | 60 FPS smooth Clutter timer bar, automatic layout restore via `InputSourceManager`, and real-time GTK4 sync. |
+
+<details>
+<summary><b>View Mermaid Diagram</b></summary>
+
+```mermaid
+flowchart TD
+    A["⌨️ Physical Keyboard (/dev/input)"] -->|"EV_KEY events only (filters mouse)"| B["⚙️ SwitchBack Daemon (systemd --user)"]
+    B -->|"Monotonic timestamp (0600)"| C["⚡ Shared Memory RAM (/dev/shm)"]
+    C -->|"Instant zero-overhead read"| D["🖥️ GNOME Shell Extension (Wayland / X11)"]
 ```
-                  ┌──────────────────────────────────────────────┐
-                  │          Physical Keyboard (/dev/input)      │
-                  └──────────────────────┬───────────────────────┘
-                                         │ EV_KEY events only
-                                         ▼
-                  ┌──────────────────────────────────────────────┐
-                  │       SwitchBack Daemon (systemd --user)     │
-                  │   Filters out all mouse clicks and movements │
-                  └──────────────────────┬───────────────────────┘
-                                         │ Monotonic timestamp (0600)
-                                         ▼
-                  ┌──────────────────────────────────────────────┐
-                  │        Shared Memory RAM (/dev/shm)          │
-                  └──────────────────────┬───────────────────────┘
-                                         │ Instant zero-overhead read
-                                         ▼
-                  ┌──────────────────────────────────────────────┐
-                  │        GNOME Shell Extension (Wayland / X11) │
-                  │    • 60 FPS Clutter / St indicator           │
-                  │    • Auto-switch via InputSourceManager      │
-                  │    • Live GSettings sync with GTK4 Prefs GUI │
-                  └──────────────────────────────────────────────┘
-```
+</details>
 
 ---
 

@@ -41,6 +41,7 @@ cp -rf "$PROJECT_DIR/po" "$STAGE_DIR/"
 cp -rf "$PROJECT_DIR/scripts" "$STAGE_DIR/"
 mkdir -p "$STAGE_DIR/docs"
 cp -rf "$PROJECT_DIR/docs/screenshots" "$STAGE_DIR/docs/"
+cp -f "$PROJECT_DIR"/docs/architecture-*.svg "$STAGE_DIR/docs/" 2>/dev/null || true
 
 # Clean up unwanted temp files if any
 find "$STAGE_DIR" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
