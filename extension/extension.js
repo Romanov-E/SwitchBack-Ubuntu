@@ -96,6 +96,8 @@ export default class SwitchBackExtension extends Extension {
         this._lockIcon = null;
         this._lockTimeoutId = null;
         this._isShowingUnlock = false;
+        this._popupDestroyId = null;
+        this._trackedPopup = null;
 
         this._loadSettings();
         this._syncCapsLockOption();
@@ -286,9 +288,9 @@ export default class SwitchBackExtension extends Extension {
         if (this._isLocked) {
             this._isLocked = false;
             if (this._capsLockHoldNotify) {
-                // Показываем разомкнутый замочек на 1.3 секунды
+                // Показываем разомкнутый замочек синхронно со стандартным языковым индикатором (1500 мс)
                 this._isShowingUnlock = true;
-                this._showLockCard('changes-allow-symbolic', false, 1300);
+                this._showLockCard('changes-allow-symbolic', false, 1500);
             } else {
                 this._hideLockCard(true);
             }
@@ -335,6 +337,13 @@ export default class SwitchBackExtension extends Extension {
             GLib.source_remove(this._lockTimeoutId);
             this._lockTimeoutId = null;
         }
+        if (this._popupDestroyId && this._trackedPopup) {
+            try {
+                this._trackedPopup.disconnect(this._popupDestroyId);
+            } catch (e) {}
+            this._popupDestroyId = null;
+            this._trackedPopup = null;
+        }
         if (this._lockCard) {
             try {
                 this._lockCard.destroy();
@@ -357,6 +366,13 @@ export default class SwitchBackExtension extends Extension {
                 GLib.source_remove(this._lockTimeoutId);
                 this._lockTimeoutId = null;
             }
+            if (this._popupDestroyId && this._trackedPopup) {
+                try {
+                    this._trackedPopup.disconnect(this._popupDestroyId);
+                } catch (e) {}
+                this._popupDestroyId = null;
+                this._trackedPopup = null;
+            }
 
             this._lockIcon.gicon = Gio.ThemedIcon.new(iconName);
 
@@ -376,18 +392,28 @@ export default class SwitchBackExtension extends Extension {
             this._lockCard.visible = true;
             this._lockCard.ease({
                 opacity: 255,
-                duration: 180,
+                duration: 100, // В унисон со стандартным переключателем раскладок GNOME Shell (100 мс)
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             });
 
             if (!isPersistent) {
+                // Если в GNOME Shell открыт попап переключения раскладки, синхронизируем закрытие с ним
+                if (this._ism && this._ism._switcherPopup) {
+                    const popup = this._ism._switcherPopup;
+                    this._trackedPopup = popup;
+                    this._popupDestroyId = popup.connect('destroy', () => {
+                        this._hideLockCard(true);
+                    });
+                }
+
+                // Стандартное время затухания, синхронное с основным языковым индикатором (1500 мс)
                 this._lockTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, durationMs, () => {
                     this._lockTimeoutId = null;
                     this._isShowingUnlock = false;
                     if (this._lockCard && this._lockCard.visible) {
                         this._lockCard.ease({
                             opacity: 0,
-                            duration: 250,
+                            duration: 100, // В точности соответствует POPUP_FADE_OUT_TIME (100 мс) GNOME Shell
                             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                             onComplete: () => {
                                 if (this._lockCard && !this._isLocked && !this._isShowingUnlock) {
@@ -411,12 +437,19 @@ export default class SwitchBackExtension extends Extension {
             GLib.source_remove(this._lockTimeoutId);
             this._lockTimeoutId = null;
         }
+        if (this._popupDestroyId && this._trackedPopup) {
+            try {
+                this._trackedPopup.disconnect(this._popupDestroyId);
+            } catch (e) {}
+            this._popupDestroyId = null;
+            this._trackedPopup = null;
+        }
         if (!this._lockCard || !this._lockCard.visible) return;
         try {
             this._lockCard.remove_all_transitions();
             this._lockCard.ease({
                 opacity: 0,
-                duration: 200,
+                duration: 100, // 100 мс в точности соответствует времени затухания GNOME Shell
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => {
                     if (this._lockCard && !this._isLocked && !this._isShowingUnlock) {
@@ -635,7 +668,7 @@ export default class SwitchBackExtension extends Extension {
                 this._isLocked = false;
                 if (this._capsLockHoldNotify) {
                     this._isShowingUnlock = true;
-                    this._showLockCard('changes-allow-symbolic', false, 1300);
+                    this._showLockCard('changes-allow-symbolic', false, 1500);
                 } else {
                     this._hideLockCard(true);
                 }
