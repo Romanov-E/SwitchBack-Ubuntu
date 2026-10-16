@@ -21,26 +21,40 @@ def get_token():
 TOKEN = get_token()
 OWNER = "Romanov-E"
 REPO = "SwitchBack-Ubuntu"
-TAG = "v2.4.0"
-VERSION = "2.4.0"
-RELEASE_TITLE = f"v{VERSION} — Caps Lock Hold Layout Lock & Pinned Live Preview"
+TAG = "v2.5.0"
+VERSION = "2.5.0"
+RELEASE_TITLE = f"v{VERSION} — Native Ubuntu Lock HUD & Persistent Lock Badge"
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIST_DIR = os.path.join(PROJECT_DIR, "dist")
 
-RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.4.0
+RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.5.0
 
-### ✨ Key Features & Improvements
+### ✨ Key Features & Improvements in v2.5.0
 
-- **🔒 Caps Lock Hold Layout Lock**:
-  - Hold `Caps Lock` (default 300 ms, configurable from 150 to 2000 ms) to temporarily lock the non-primary layout, disabling auto-switch countdown.
-  - Quick single tap on `Caps Lock` instantly releases the lock and returns to the primary layout.
-  - Integrated GNOME Shell OSD notification banners ("Layout Locked" / "Layout Unlocked") for instant visual feedback.
+- **🔒 Native Ubuntu-Style Lock & Unlock HUD Indicators**:
+  - Replaced wide text banners with an elegant, dedicated notification card matching Ubuntu's native layout switcher styling (`108 × 70 px`, `border-radius: 18px`).
+  - Crisp, prominent symbolic icons:
+    - `🔒` (`changes-prevent-symbolic`) on layout lock.
+    - `🔓` (`changes-allow-symbolic`) on unlock.
+  - Positioned comfortably below GNOME's central layout popup ($Y = 70\%$ height), completely eliminating any visual overlap.
+
+- **📌 Persistent On-Screen Lock Badge (`caps-lock-hold-persistent-badge`)**:
+  - Option to keep the discrete lock card on screen for the entire duration of the lock, providing permanent visual assurance of the locked layout.
+  - Non-reactive actor (`reactive: false`): mouse clicks and typing pass through without interference.
+
+- **🧹 Clean Screen Edges While Locked (`caps-lock-hold-hide-bars`)**:
+  - Option to smoothly hide countdown indicator bars while layout is locked, keeping screen edges completely clear and distraction-free.
+
+- **🔔 Lock Notification Toggle (`caps-lock-hold-notify`)**:
+  - Independent switch to enable or disable the lock and unlock HUD notifications.
+
+- **🛡️ Hardware Daemon Keyboard Repeat Fix**:
+  - Filtered out `KEY_CAPSLOCK` from autorepeat events in `daemon.py` and maintained a frozen 100% indicator bar during key hold, completely eliminating visual bar jerking or reset loops.
 
 - **📌 Pinned 16:9 Live Preview & Relative Margins**:
   - Pinned real-time 16:9 monitor preview stays permanently fixed at the top of the "Appearance" tab while scrolling through settings.
   - Real-time proportional edge margin visualization directly inside the monitor preview for top, bottom, left, and right offsets.
-  - Increased default preferences window height to 800px for comfortable configuration on high-DPI screens.
 
 - **🎨 Modern GTK4 + Libadwaita GUI Installer (`install-gui`)**:
   - Interactive graphical installation with real-time log terminal and progress bar.
@@ -53,11 +67,7 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.4.0
   - 4 corner L-bracket positions and simultaneous 4-corner HUD mode.
 
 - **⏱️ Advanced Transition Timing (Libadwaita Expander)**:
-  - Master transition duration slider (`0–2000 ms`, default `300 ms`).
-  - Option B separate timing controls via dedicated expander row:
-    - **Fade-In appearance duration:** `0–1000 ms` (default `150 ms`).
-    - **Fade-Out dissolution duration:** `0–2000 ms` (default `800 ms`).
-  - Live 16:9 monitor preview immediately reflects the configured in/out timing.
+  - Separate Fade-In appearance duration (`0–1000 ms`) and Fade-Out dissolution duration (`0–2000 ms`).
 
 - **🛡️ Full GNOME Shell 45 – 51 & Wayland Support**:
   - Clean real-time `/dev/shm` shared memory IPC with zero lag and zero CPU overhead.
@@ -70,7 +80,7 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.4.0
 #### Fast One-Line Launch (Recommended)
 Run in terminal to download and launch the installer in seconds:
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install-gui
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.5.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.5.0 && ./install-gui
 ```
 
 #### Or extract and run:

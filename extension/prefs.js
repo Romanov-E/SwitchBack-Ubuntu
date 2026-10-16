@@ -183,12 +183,44 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
         updateCapsHoldSubtitle();
         rowCapsHoldDuration.connect('notify::value', updateCapsHoldSubtitle);
 
+        groupSwitching.add(rowCapsHoldDuration);
+
+        // Уведомление при фиксации
+        const rowCapsHoldNotify = new Adw.SwitchRow({
+            title: _('Show lock notification'),
+            subtitle: _('Display HUD notification banner when locking or unlocking layout'),
+            active: settings.get_boolean('caps-lock-hold-notify'),
+        });
+        settings.bind('caps-lock-hold-notify', rowCapsHoldNotify, 'active', Gio.SettingsBindFlags.DEFAULT);
+        groupSwitching.add(rowCapsHoldNotify);
+
+        // Постоянный значок замка на экране
+        const rowCapsHoldPersistentBadge = new Adw.SwitchRow({
+            title: _('Keep lock icon on screen while locked'),
+            subtitle: _('Keep a discrete lock icon on screen for the entire duration of the layout lock'),
+            active: settings.get_boolean('caps-lock-hold-persistent-badge'),
+        });
+        settings.bind('caps-lock-hold-persistent-badge', rowCapsHoldPersistentBadge, 'active', Gio.SettingsBindFlags.DEFAULT);
+        groupSwitching.add(rowCapsHoldPersistentBadge);
+
+        // Скрывать полосы индикатора при фиксации
+        const rowCapsHoldHideBars = new Adw.SwitchRow({
+            title: _('Hide indicator bars while locked'),
+            subtitle: _('Hide screen indicator lines when layout is locked, keeping screen edges clear'),
+            active: settings.get_boolean('caps-lock-hold-hide-bars'),
+        });
+        settings.bind('caps-lock-hold-hide-bars', rowCapsHoldHideBars, 'active', Gio.SettingsBindFlags.DEFAULT);
+        groupSwitching.add(rowCapsHoldHideBars);
+
         const syncHoldSensitivity = () => {
-            rowCapsHoldDuration.sensitive = rowCapsHold.active;
+            const active = rowCapsHold.active;
+            rowCapsHoldDuration.sensitive = active;
+            rowCapsHoldNotify.sensitive = active;
+            rowCapsHoldPersistentBadge.sensitive = active;
+            rowCapsHoldHideBars.sensitive = active;
         };
         syncHoldSensitivity();
         rowCapsHold.connect('notify::active', syncHoldSensitivity);
-        groupSwitching.add(rowCapsHoldDuration);
 
         // --- Group 2: Master Auto-Switch Toggles ---
         const groupMaster = new Adw.PreferencesGroup({
@@ -1133,7 +1165,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
         }
         rowVersion.add_prefix(appIcon);
 
-        const currentVersion = this.metadata?.['version-name'] || (this.metadata?.version ? String(this.metadata.version) : '2.4.0');
+        const currentVersion = this.metadata?.['version-name'] || (this.metadata?.version ? String(this.metadata.version) : '2.5.0');
         const labelVersion = new Gtk.Label({
             label: currentVersion,
             css_classes: ['dim-label', 'title-4'],

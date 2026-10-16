@@ -7,7 +7,7 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VERSION="${1:-2.4.0}"
+VERSION="${1:-2.5.0}"
 
 DIST_DIR="$PROJECT_DIR/dist"
 STAGE_DIR="$DIST_DIR/SwitchBack-Ubuntu-v$VERSION"

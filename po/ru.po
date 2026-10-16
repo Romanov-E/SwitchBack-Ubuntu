@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: SwitchBack Ubuntu 2.4.0\n"
+"Project-Id-Version: SwitchBack Ubuntu 2.5.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Romanov-E/SwitchBack-Ubuntu\n"
 "POT-Creation-Date: 2026-10-14 15:45+0300\n"
 "PO-Revision-Date: 2026-10-14 15:45+0300\n"
@@ -48,6 +48,24 @@ msgstr "Раскладка зафиксирована"
 
 msgid "Layout Unlocked"
 msgstr "Фиксация снята"
+
+msgid "Show lock notification"
+msgstr "Уведомление о фиксации"
+
+msgid "Display HUD notification banner when locking or unlocking layout"
+msgstr "Показывать всплывающий значок при фиксации и снятии фиксации раскладки"
+
+msgid "Keep lock icon on screen while locked"
+msgstr "Значок замка на экране при фиксации"
+
+msgid "Keep a discrete lock icon on screen for the entire duration of the layout lock"
+msgstr "Оставлять аккуратную плашку с замочком на экране на всё время действия блокировки"
+
+msgid "Hide indicator bars while locked"
+msgstr "Скрывать полосы индикатора при фиксации"
+
+msgid "Hide screen indicator lines when layout is locked, keeping screen edges clear"
+msgstr "Не отображать линии на границах экрана во время фиксации раскладки"
 
 msgid "Automatic Layout Return"
 msgstr "Автоматический возврат раскладки"

@@ -24,7 +24,7 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## ✨ Features
 
-- **Caps Lock Toggle & Layout Lock:** Single-key layout toggle using `Caps Lock`. Hold Caps Lock (default 300 ms, configurable from 150 to 2000 ms) to temporarily lock the non-primary layout and disable auto-return; single tap unlocks. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
+- **Caps Lock Toggle & Layout Lock:** Single-key layout toggle using `Caps Lock`. Hold Caps Lock (default 300 ms, configurable from 150 to 2000 ms) to temporarily lock the non-primary layout and disable auto-return; single tap unlocks. Features native Ubuntu-styled HUD indicators (`🔒` / `🔓`), optional persistent lock badge on screen, and an option to hide screen indicator bars while locked.
 - **Inactivity Auto-Return:** Switches back to your primary layout (e.g., English) after a configurable pause in typing (0.5 to 30 seconds).
 - **On-Screen Indicators:**
   - **Placements:** Top, Bottom, Dual Top + Bottom, Left, Right, Dual Left + Right, Corner L-brackets (all 4 individual corners and simultaneous 4-corner HUD).
@@ -46,13 +46,13 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## 📸 Interface & Live Preview Animations
 
-### Preferences Window Tabs
+### Layout Lock HUD & Preferences Tabs
 
 <div align="center">
 
-| Tab 1: Behavior | Tab 2: Appearance | Tab 3: Service |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/tab1-behavior-en.png" width="280" alt="Tab 1: Behavior" /> | <img src="docs/screenshots/tab2-appearance-en.png" width="280" alt="Tab 2: Appearance" /> | <img src="docs/screenshots/tab3-service-en.png" width="280" alt="Tab 3: Service" /> |
+| Layout Lock HUD (Ubuntu Style) | Tab 1: Behavior | Tab 2: Appearance | Tab 3: Service |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/lock-indicator.png" width="220" alt="Lock HUD Indicator" /> | <img src="docs/screenshots/tab1-behavior-en.png" width="240" alt="Tab 1: Behavior" /> | <img src="docs/screenshots/tab2-appearance-en.png" width="240" alt="Tab 2: Appearance" /> | <img src="docs/screenshots/tab3-service-en.png" width="240" alt="Tab 3: Service" /> |
 
 </div>
 
@@ -115,7 +115,7 @@ cd SwitchBack-Ubuntu
 
 **Fast one-line launch (without manual download):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install-gui
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.5.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.5.0 && ./install-gui
 ```
 
 Or from a cloned repository:
@@ -139,7 +139,7 @@ Supports fresh setup, configuring startup options, opening preferences, and clea
 
 **Fast one-line install (no git or manual download required):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install.sh
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.5.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.5.0 && ./install.sh
 ```
 
 Or run the automated CLI script from a cloned repository:

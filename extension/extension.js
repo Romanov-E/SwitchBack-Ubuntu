@@ -92,6 +92,11 @@ export default class SwitchBackExtension extends Extension {
         this._capsMonitorId = null;
         this._capsFile = null;
 
+        this._lockCard = null;
+        this._lockIcon = null;
+        this._lockTimeoutId = null;
+        this._isShowingUnlock = false;
+
         this._loadSettings();
         this._syncCapsLockOption();
         this._setupCapsMonitor();
@@ -111,10 +116,23 @@ export default class SwitchBackExtension extends Extension {
             if (key === 'caps-lock-switch-enabled') {
                 this._syncCapsLockOption();
             }
+            if (!this._capsLockHoldEnabled && this._isLocked) {
+                this._isLocked = false;
+                this._hideLockCard(true);
+            }
             this._rebuildBars();
             if (this._isSecondaryLayout() && this._autoSwitchEnabled) {
                 if (this._isLocked) {
-                    this._showLockedIndicator();
+                    if (this._capsLockHoldPersistentBadge) {
+                        this._showLockCard('changes-prevent-symbolic', true);
+                    } else {
+                        this._hideLockCard(true);
+                    }
+                    if (this._capsLockHoldHideBars) {
+                        this._stopCountdown(true);
+                    } else {
+                        this._showLockedIndicator();
+                    }
                 } else {
                     this._startCountdown();
                 }
@@ -138,6 +156,9 @@ export default class SwitchBackExtension extends Extension {
         this._capsLockSwitchEnabled = this._settings.get_boolean('caps-lock-switch-enabled');
         this._capsLockHoldEnabled = this._settings.get_boolean('caps-lock-hold-enabled');
         this._capsLockHoldDuration = this._settings.get_int('caps-lock-hold-duration');
+        this._capsLockHoldNotify = this._settings.get_boolean('caps-lock-hold-notify');
+        this._capsLockHoldPersistentBadge = this._settings.get_boolean('caps-lock-hold-persistent-badge');
+        this._capsLockHoldHideBars = this._settings.get_boolean('caps-lock-hold-hide-bars');
         this._autoSwitchEnabled = this._settings.get_boolean('auto-switch-enabled');
         this._showIndicator = this._settings.get_boolean('show-indicator');
         this._timeoutMs = Math.round(this._settings.get_double('timeout-seconds') * 1000);
@@ -242,35 +263,171 @@ export default class SwitchBackExtension extends Extension {
         }
 
         this._isLocked = true;
+        this._isShowingUnlock = false;
         this._stopCountdown(false);
-        this._showOsd('changes-prevent-symbolic', _('Layout Locked'));
-        this._showLockedIndicator();
+
+        if (this._capsLockHoldNotify) {
+            // Показываем замок: если включен постоянный значок — оставляем на экране, иначе плавно скрываем
+            this._showLockCard('changes-prevent-symbolic', this._capsLockHoldPersistentBadge, 1500);
+        } else if (this._capsLockHoldPersistentBadge) {
+            // Уведомление выключено, но постоянный значок включен — показываем на всё время
+            this._showLockCard('changes-prevent-symbolic', true);
+        }
+
+        if (this._capsLockHoldHideBars) {
+            this._stopCountdown(true);
+        } else {
+            this._showLockedIndicator();
+        }
     }
 
     _onCapsTap() {
         this._isCapsHeldDown = false;
         if (this._isLocked) {
             this._isLocked = false;
-            this._showOsd('changes-allow-symbolic', _('Layout Unlocked'));
+            if (this._capsLockHoldNotify) {
+                // Показываем разомкнутый замочек на 1.3 секунды
+                this._isShowingUnlock = true;
+                this._showLockCard('changes-allow-symbolic', false, 1300);
+            } else {
+                this._hideLockCard(true);
+            }
             this._switchToPrimary();
             this._stopCountdown(true);
         }
     }
 
-    _showOsd(iconName, labelText) {
+    _ensureLockCard() {
+        if (this._lockCard) return;
+
+        this._lockCard = new St.BoxLayout({
+            style: `
+                width: 108px;
+                height: 70px;
+                background-color: rgba(45, 45, 45, 0.94);
+                border: 1px solid rgba(255, 255, 255, 0.10);
+                border-radius: 18px;
+                box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+            `,
+            reactive: false,
+            visible: false,
+            can_focus: false,
+            track_hover: false,
+            opacity: 0,
+        });
+
+        this._lockIcon = new St.Icon({
+            icon_size: 36,
+            x_align: Clutter.ActorAlign.CENTER,
+            y_align: Clutter.ActorAlign.CENTER,
+            x_expand: true,
+            y_expand: true,
+            style: 'color: #ffffff;',
+        });
+        this._lockCard.add_child(this._lockIcon);
+
+        Main.layoutManager.uiGroup.add_child(this._lockCard);
+    }
+
+    _destroyLockCard() {
+        this._isShowingUnlock = false;
+        if (this._lockTimeoutId) {
+            GLib.source_remove(this._lockTimeoutId);
+            this._lockTimeoutId = null;
+        }
+        if (this._lockCard) {
+            try {
+                this._lockCard.destroy();
+            } catch (e) {}
+            this._lockCard = null;
+            this._lockIcon = null;
+        }
+    }
+
+    _showLockCard(iconName, isPersistent, durationMs = 1500) {
         try {
-            const icon = Gio.ThemedIcon.new(iconName);
-            if (typeof Main.osdWindowManager.showAll === 'function') {
-                Main.osdWindowManager.showAll(icon, labelText, null, null);
-            } else if (typeof Main.osdWindowManager.showOne === 'function') {
-                const monitorIndex = Main.layoutManager.primaryIndex ?? 0;
-                Main.osdWindowManager.showOne(monitorIndex, icon, labelText, null, null);
-            } else if (typeof Main.osdWindowManager.show === 'function') {
-                const monitorIndex = Main.layoutManager.primaryIndex ?? 0;
-                Main.osdWindowManager.show(monitorIndex, icon, labelText, null);
+            this._ensureLockCard();
+            if (!this._lockCard) return;
+
+            const monitorIndex = global.display.get_current_monitor ? global.display.get_current_monitor() : 0;
+            const monitor = Main.layoutManager.monitors[monitorIndex] || Main.layoutManager.primaryMonitor;
+            if (!monitor) return;
+
+            if (this._lockTimeoutId) {
+                GLib.source_remove(this._lockTimeoutId);
+                this._lockTimeoutId = null;
+            }
+
+            this._lockIcon.gicon = Gio.ThemedIcon.new(iconName);
+
+            // Размеры плашки как у нативных индикаторов Ubuntu (108 x 70 px, скругление 18px)
+            const width = 108;
+            const height = 70;
+
+            // Позиционирование ниже нативного переключателя раскладок (70% высоты экрана) для исключения наслоения
+            const x = monitor.x + Math.round((monitor.width - width) / 2);
+            const y = monitor.y + Math.round(monitor.height * 0.70);
+
+            this._lockCard.set_position(x, y);
+            this._lockCard.set_size(width, height);
+            Main.layoutManager.uiGroup.set_child_above_sibling(this._lockCard, null);
+
+            this._lockCard.remove_all_transitions();
+            this._lockCard.visible = true;
+            this._lockCard.ease({
+                opacity: 255,
+                duration: 180,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+
+            if (!isPersistent) {
+                this._lockTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, durationMs, () => {
+                    this._lockTimeoutId = null;
+                    this._isShowingUnlock = false;
+                    if (this._lockCard && this._lockCard.visible) {
+                        this._lockCard.ease({
+                            opacity: 0,
+                            duration: 250,
+                            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                            onComplete: () => {
+                                if (this._lockCard && !this._isLocked && !this._isShowingUnlock) {
+                                    this._lockCard.visible = false;
+                                }
+                            },
+                        });
+                    }
+                    return GLib.SOURCE_REMOVE;
+                });
             }
         } catch (e) {
-            console.error('[SwitchBack] Ошибка отображения OSD:', e);
+            console.error('[SwitchBack] Ошибка отображения индикатора блокировки:', e);
+        }
+    }
+
+    _hideLockCard(force = false) {
+        if (this._isShowingUnlock && !force) return;
+        this._isShowingUnlock = false;
+        if (this._lockTimeoutId) {
+            GLib.source_remove(this._lockTimeoutId);
+            this._lockTimeoutId = null;
+        }
+        if (!this._lockCard || !this._lockCard.visible) return;
+        try {
+            this._lockCard.remove_all_transitions();
+            this._lockCard.ease({
+                opacity: 0,
+                duration: 200,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onComplete: () => {
+                    if (this._lockCard && !this._isLocked && !this._isShowingUnlock) {
+                        this._lockCard.visible = false;
+                    }
+                },
+            });
+        } catch (e) {
+            if (this._lockCard) {
+                this._lockCard.visible = false;
+            }
         }
     }
 
@@ -401,6 +558,7 @@ export default class SwitchBackExtension extends Extension {
     }
 
     _destroyBars() {
+        this._stopCountdown(false);
         for (const bar of this._bars) {
             try {
                 bar.destroy();
@@ -452,20 +610,38 @@ export default class SwitchBackExtension extends Extension {
         // Если автовозврат выключен — ничего не делаем и прячем всё
         if (!this._autoSwitchEnabled) {
             this._isLocked = false;
+            this._hideLockCard(true);
             this._stopCountdown(false);
             return;
         }
 
         if (this._isSecondaryLayout()) {
             if (this._isLocked) {
-                // Зафиксировано: таймер не запускаем, держим индикатор
-                this._showLockedIndicator();
+                // Зафиксировано: таймер не запускаем
+                if (this._capsLockHoldPersistentBadge) {
+                    this._showLockCard('changes-prevent-symbolic', true);
+                }
+                if (this._capsLockHoldHideBars) {
+                    this._stopCountdown(true);
+                } else {
+                    this._showLockedIndicator();
+                }
                 return;
             }
             this._startCountdown();
         } else {
-            // Вернулись на приоритетную раскладку: сбрасываем фиксацию
-            this._isLocked = false;
+            // Вернулись на приоритетную раскладку
+            if (this._isLocked) {
+                this._isLocked = false;
+                if (this._capsLockHoldNotify) {
+                    this._isShowingUnlock = true;
+                    this._showLockCard('changes-allow-symbolic', false, 1300);
+                } else {
+                    this._hideLockCard(true);
+                }
+            } else if (!this._isShowingUnlock) {
+                this._hideLockCard();
+            }
             this._stopCountdown(true);
         }
     }
@@ -705,6 +881,7 @@ export default class SwitchBackExtension extends Extension {
 
     disable() {
         this._destroyCapsMonitor();
+        this._destroyLockCard();
         this._isCapsHeldDown = false;
         this._isLocked = false;
         this._stopCountdown(false);

@@ -20,6 +20,24 @@
       <description>Duration in milliseconds Caps Lock must be held down to lock the layout.</description>
     </key>
 
+    <key name="caps-lock-hold-notify" type="b">
+      <default>true</default>
+      <summary>Show lock notification</summary>
+      <description>Display HUD notification banner when locking or unlocking layout.</description>
+    </key>
+
+    <key name="caps-lock-hold-persistent-badge" type="b">
+      <default>false</default>
+      <summary>Keep lock badge on screen while locked</summary>
+      <description>Keep a discrete lock icon on screen for the entire duration of the layout lock.</description>
+    </key>
+
+    <key name="caps-lock-hold-hide-bars" type="b">
+      <default>true</default>
+      <summary>Hide indicator bars while locked</summary>
+      <description>Hide screen indicator lines when layout is locked, keeping screen edges clear.</description>
+    </key>
+
     <key name="auto-switch-enabled" type="b">
       <default>true</default>
       <summary>Auto-switch enabled</summary>

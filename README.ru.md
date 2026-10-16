@@ -24,7 +24,7 @@
 
 ## ✨ Возможности
 
-- **Переключение и фиксация раскладки по Caps Lock:** Быстрая смена языка по клавише `Caps Lock`. Удержание Caps Lock (по умолчанию 300 мс, настраивается от 150 до 2000 мс) временно фиксирует текущую неприоритетную раскладку, отключая автовозврат; одиночное нажатие снимает фиксацию. При отключении функции действуют стандартные системные комбинации (`Super+Пробел`, `Alt+Shift`).
+- **Переключение и фиксация раскладки по Caps Lock:** Быстрая смена языка по клавише `Caps Lock`. Удержание Caps Lock (по умолчанию 300 мс, настраивается от 150 до 2000 мс) временно фиксирует текущую неприоритетную раскладку, отключая автовозврат; одиночное нажатие снимает фиксацию. Нативные экранные индикаторы в стиле Ubuntu (`🔒` / `🔓`), опция постоянного значка замка на экране и возможность скрывать экранные полосы во время фиксации.
 - **Автовозврат при бездействии:** Переключение на приоритетную раскладку после паузы в наборе текста (от 0.5 до 30 секунд).
 - **Экранный индикатор:**
   - **Расположение:** Сверху, Снизу, Парные полосы Сверху + Снизу, Слева, Справа, Парные Слева + Справа, Угловые Г-образные индикаторы (все 4 угла по отдельности и синхронно все 4 угла).
@@ -46,13 +46,13 @@
 
 ## 📸 Интерфейс и анимации визуализации
 
-### Вкладки окна настроек
+### Индикатор блокировки и вкладки настроек
 
 <div align="center">
 
-| Вкладка 1: Поведение | Вкладка 2: Внешний вид | Вкладка 3: Служба |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/tab1-behavior.png" width="280" alt="Вкладка 1: Поведение" /> | <img src="docs/screenshots/tab2-appearance.png" width="280" alt="Вкладка 2: Внешний вид" /> | <img src="docs/screenshots/tab3-service.png" width="280" alt="Вкладка 3: Служба" /> |
+| Индикатор блокировки (стиль Ubuntu) | Вкладка 1: Поведение | Вкладка 2: Внешний вид | Вкладка 3: Служба |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/lock-indicator.png" width="220" alt="Индикатор блокировки" /> | <img src="docs/screenshots/tab1-behavior.png" width="240" alt="Вкладка 1: Поведение" /> | <img src="docs/screenshots/tab2-appearance.png" width="240" alt="Вкладка 2: Внешний вид" /> | <img src="docs/screenshots/tab3-service.png" width="240" alt="Вкладка 3: Служба" /> |
 
 </div>
 
@@ -115,7 +115,7 @@ cd SwitchBack-Ubuntu
 
 **Быстрый запуск одной командой (без ручного скачивания архива):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install-gui
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.5.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.5.0 && ./install-gui
 ```
 
 Либо из склонированного репозитория:
@@ -139,7 +139,7 @@ wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/downloa
 
 **Быстрая установка одной командой (без git и ручной распаковки):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install.sh
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.5.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.5.0 && ./install.sh
 ```
 
 Либо запуск скрипта из склонированного репозитория:

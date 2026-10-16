@@ -10,3 +10,8 @@ dist/
 # Internal review documents
 docs/EXPERT_REVIEW.md
 EXPERT_REVIEW.md
+
+# Antigravity chats and local logs
+chats/
+.Backups/
+.agents/
