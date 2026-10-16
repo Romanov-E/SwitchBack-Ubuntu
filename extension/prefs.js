@@ -167,7 +167,7 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
             title: _('Hold duration to lock (ms)'),
             subtitle: _('Duration in milliseconds Caps Lock must be held down to lock the layout'),
             adjustment: new Gtk.Adjustment({
-                lower: 300,
+                lower: 150,
                 upper: 2000,
                 step_increment: 50,
                 page_increment: 100,

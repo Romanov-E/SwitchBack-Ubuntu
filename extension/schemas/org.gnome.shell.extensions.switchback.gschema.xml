@@ -14,8 +14,8 @@
     </key>
 
     <key name="caps-lock-hold-duration" type="i">
-      <default>600</default>
-      <range min="300" max="2000"/>
+      <default>300</default>
+      <range min="150" max="2000"/>
       <summary>Caps Lock hold duration in milliseconds</summary>
       <description>Duration in milliseconds Caps Lock must be held down to lock the layout.</description>
     </key>

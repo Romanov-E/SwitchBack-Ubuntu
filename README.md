@@ -24,7 +24,7 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## ✨ Features
 
-- **Caps Lock Toggle & Layout Lock:** Single-key layout toggle using `Caps Lock`. Hold Caps Lock (default 600 ms, configurable) to temporarily lock the non-primary layout and disable auto-return; single tap unlocks. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
+- **Caps Lock Toggle & Layout Lock:** Single-key layout toggle using `Caps Lock`. Hold Caps Lock (default 300 ms, configurable from 150 to 2000 ms) to temporarily lock the non-primary layout and disable auto-return; single tap unlocks. Standard system shortcuts (`Super+Space`, `Alt+Shift`) remain available when disabled.
 - **Inactivity Auto-Return:** Switches back to your primary layout (e.g., English) after a configurable pause in typing (0.5 to 30 seconds).
 - **On-Screen Indicators:**
   - **Placements:** Top, Bottom, Dual Top + Bottom, Left, Right, Dual Left + Right, Corner L-brackets (all 4 individual corners and simultaneous 4-corner HUD).

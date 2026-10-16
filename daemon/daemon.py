@@ -49,15 +49,15 @@ def get_hold_settings():
     """Reads Caps Lock hold duration and enabled status from GSettings."""
     global _settings_cached
     if not has_gio:
-        return True, 0.6
+        return True, 0.3
     try:
         if _settings_cached is None:
             _settings_cached = Gio.Settings(schema_id='org.gnome.shell.extensions.switchback')
         enabled = _settings_cached.get_boolean('caps-lock-hold-enabled')
-        duration_s = max(0.2, min(3.0, _settings_cached.get_int('caps-lock-hold-duration') / 1000.0))
+        duration_s = max(0.1, min(3.0, _settings_cached.get_int('caps-lock-hold-duration') / 1000.0))
         return enabled, duration_s
     except Exception:
-        return True, 0.6
+        return True, 0.3
 
 def write_caps_event(action, ts_ms):
     """Writes an event string into /dev/shm/switchback_caps."""
@@ -246,10 +246,10 @@ def main():
                                 if ev_value == 1:
                                     caps_down_time = key_now
                                     caps_hold_fired = False
+                                    write_caps_event("DOWN", key_now_ms)
                                 elif ev_value == 0:
                                     if caps_hold_fired:
-                                        # Key released after hold: reset state
-                                        pass
+                                        write_caps_event("UP", key_now_ms)
                                     else:
                                         # Key released quickly: TAP event!
                                         write_caps_event("TAP", key_now_ms)
@@ -258,8 +258,8 @@ def main():
 
                             # EV_KEY: 1 (key down) or 2 (key repeat)
                             if ev_value == 1 or ev_value == 2:
-                                # Filter out mouse and pointer buttons
-                                if not (MOUSE_BUTTONS_START <= ev_code <= MOUSE_BUTTONS_END):
+                                # Filter out mouse and pointer buttons, and Caps Lock key (avoids autorepeat timer jerking)
+                                if not (MOUSE_BUTTONS_START <= ev_code <= MOUSE_BUTTONS_END) and ev_code != KEY_CAPSLOCK:
                                     key_hit = True
             except OSError:
                 # Device unplugged / invalid fd

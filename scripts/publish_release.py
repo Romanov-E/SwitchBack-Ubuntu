@@ -33,7 +33,7 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.4.0
 ### ✨ Key Features & Improvements
 
 - **🔒 Caps Lock Hold Layout Lock**:
-  - Hold `Caps Lock` (default 600 ms, configurable from 300 to 2000 ms) to temporarily lock the non-primary layout, disabling auto-switch countdown.
+  - Hold `Caps Lock` (default 300 ms, configurable from 150 to 2000 ms) to temporarily lock the non-primary layout, disabling auto-switch countdown.
   - Quick single tap on `Caps Lock` instantly releases the lock and returns to the primary layout.
   - Integrated GNOME Shell OSD notification banners ("Layout Locked" / "Layout Unlocked") for instant visual feedback.
 

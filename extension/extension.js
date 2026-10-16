@@ -86,6 +86,7 @@ export default class SwitchBackExtension extends Extension {
         this._shmPath = '/dev/shm/switchback_key';
 
         this._isLocked = false;
+        this._isCapsHeldDown = false;
         this._lastProcessedCapsTs = 0;
         this._capsMonitor = null;
         this._capsMonitorId = null;
@@ -208,13 +209,30 @@ export default class SwitchBackExtension extends Extension {
                 this._onCapsHold();
             } else if (action === 'TAP') {
                 this._onCapsTap();
+            } else if (action === 'DOWN') {
+                this._onCapsDown();
+            } else if (action === 'UP') {
+                this._onCapsUp();
             }
         } catch (e) {
             console.error('[SwitchBack] Ошибка чтения события Caps Lock:', e);
         }
     }
 
+    _onCapsDown() {
+        if (!this._capsLockHoldEnabled) return;
+        this._isCapsHeldDown = true;
+        if (this._isSecondaryLayout() && !this._isLocked) {
+            this._lastKeyboardTime = GLib.get_monotonic_time() / 1000;
+        }
+    }
+
+    _onCapsUp() {
+        this._isCapsHeldDown = false;
+    }
+
     _onCapsHold() {
+        this._isCapsHeldDown = false;
         if (!this._capsLockHoldEnabled) return;
         if (this._isLocked) return;
 
@@ -225,24 +243,34 @@ export default class SwitchBackExtension extends Extension {
 
         this._isLocked = true;
         this._stopCountdown(false);
-
-        try {
-            Main.osdWindowManager.show(-1, Gio.ThemedIcon.new('changes-prevent-symbolic'), _('Layout Locked'), null);
-        } catch (e) {}
-
+        this._showOsd('changes-prevent-symbolic', _('Layout Locked'));
         this._showLockedIndicator();
     }
 
     _onCapsTap() {
+        this._isCapsHeldDown = false;
         if (this._isLocked) {
             this._isLocked = false;
-
-            try {
-                Main.osdWindowManager.show(-1, Gio.ThemedIcon.new('changes-allow-symbolic'), _('Layout Unlocked'), null);
-            } catch (e) {}
-
+            this._showOsd('changes-allow-symbolic', _('Layout Unlocked'));
             this._switchToPrimary();
             this._stopCountdown(true);
+        }
+    }
+
+    _showOsd(iconName, labelText) {
+        try {
+            const icon = Gio.ThemedIcon.new(iconName);
+            if (typeof Main.osdWindowManager.showAll === 'function') {
+                Main.osdWindowManager.showAll(icon, labelText, null, null);
+            } else if (typeof Main.osdWindowManager.showOne === 'function') {
+                const monitorIndex = Main.layoutManager.primaryIndex ?? 0;
+                Main.osdWindowManager.showOne(monitorIndex, icon, labelText, null, null);
+            } else if (typeof Main.osdWindowManager.show === 'function') {
+                const monitorIndex = Main.layoutManager.primaryIndex ?? 0;
+                Main.osdWindowManager.show(monitorIndex, icon, labelText, null);
+            }
+        } catch (e) {
+            console.error('[SwitchBack] Ошибка отображения OSD:', e);
         }
     }
 
@@ -395,8 +423,12 @@ export default class SwitchBackExtension extends Extension {
                 : `background-color: ${this._barColor}; border-radius: 0px ${r}px ${r}px 0px;`;
 
             for (let i = 0; i < this._bars.length; i += 2) {
-                if (this._bars[i]) this._bars[i].set_style(styleA);
-                if (this._bars[i + 1]) this._bars[i + 1].set_style(styleB);
+                try {
+                    if (this._bars[i]) this._bars[i].set_style(styleA);
+                } catch (e) {}
+                try {
+                    if (this._bars[i + 1]) this._bars[i + 1].set_style(styleB);
+                } catch (e) {}
             }
         } else {
             const style =
@@ -404,7 +436,9 @@ export default class SwitchBackExtension extends Extension {
                 `border-radius: ${r}px;`;
 
             for (const bar of this._bars) {
-                bar.set_style(style);
+                try {
+                    bar.set_style(style);
+                } catch (e) {}
             }
         }
     }
@@ -508,7 +542,10 @@ export default class SwitchBackExtension extends Extension {
                 }
             }
 
-            // 2. Расчёт прошедшего времени
+            // 2. Расчёт прошедшего времени (при удержании Caps Lock держим полосу на 100%)
+            if (this._isCapsHeldDown) {
+                this._lastKeyboardTime = currentNow;
+            }
             const timeSinceTyping = currentNow - this._lastKeyboardTime;
 
             if (timeSinceTyping >= this._timeoutMs) {
@@ -668,6 +705,7 @@ export default class SwitchBackExtension extends Extension {
 
     disable() {
         this._destroyCapsMonitor();
+        this._isCapsHeldDown = false;
         this._isLocked = false;
         this._stopCountdown(false);
 
