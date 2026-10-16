@@ -1058,6 +1058,10 @@ Terminal=false
             if os.path.exists(loc_src):
                 shutil.copytree(loc_src, os.path.join(ext_target, "locale"), dirs_exist_ok=True)
 
+            icons_src = os.path.join(PROJECT_DIR, "extension", "icons")
+            if os.path.exists(icons_src):
+                shutil.copytree(icons_src, os.path.join(ext_target, "icons"), dirs_exist_ok=True)
+
             svg_icon = os.path.join(PROJECT_DIR, "desktop", "icons", "switchback.svg")
             if os.path.exists(svg_icon):
                 shutil.copy2(svg_icon, os.path.join(ext_target, "icons"))

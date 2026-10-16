@@ -96,6 +96,8 @@ export default class SwitchBackExtension extends Extension {
         this._lockIcon = null;
         this._lockTimeoutId = null;
         this._isShowingUnlock = false;
+        this._osdSettings = null;
+        this._osdChangedId = null;
 
         this._loadSettings();
         this._syncCapsLockOption();
@@ -301,14 +303,6 @@ export default class SwitchBackExtension extends Extension {
         if (this._lockCard) return;
 
         this._lockCard = new St.BoxLayout({
-            style: `
-                width: 108px;
-                height: 70px;
-                background-color: rgba(45, 45, 45, 0.94);
-                border: 1px solid rgba(255, 255, 255, 0.10);
-                border-radius: 18px;
-                box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
-            `,
             reactive: false,
             visible: false,
             can_focus: false,
@@ -329,39 +323,89 @@ export default class SwitchBackExtension extends Extension {
         Main.layoutManager.uiGroup.add_child(this._lockCard);
     }
 
-    _getOsdTimings() {
+    _getOsdConfig() {
+        // Дефолтные параметры в стиле стандартного OSD Ubuntu (Yaru)
         let hideDelayMs = 700;
         let fadeDurationMs = 250;
+        let targetOpacity = 255;
+        let isOsdExtensionActive = false;
+        let cardStyle = `
+            width: 108px;
+            height: 70px;
+            background-color: rgba(47, 47, 47, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        `;
 
         try {
-            const userSchemaPath = `${GLib.get_home_dir()}/.local/share/gnome-shell/extensions/keyboard-layout-osd@gruvery.systems/schemas`;
-            const sysSchemaPath = '/usr/share/gnome-shell/extensions/keyboard-layout-osd@gruvery.systems/schemas';
+            // Проверяем, установлено и включено ли расширение keyboard-layout-osd
+            const ext = Main.extensionManager ? Main.extensionManager.lookup('keyboard-layout-osd@gruvery.systems') : null;
+            const isOsdEnabled = ext ? (ext.state === 1 && ext.enabled !== false) : (Main.extensionManager ? false : true);
 
-            let schemaDir = null;
-            if (GLib.file_test(userSchemaPath, GLib.FileTest.IS_DIR)) {
-                schemaDir = userSchemaPath;
-            } else if (GLib.file_test(sysSchemaPath, GLib.FileTest.IS_DIR)) {
-                schemaDir = sysSchemaPath;
-            }
+            if (isOsdEnabled) {
+                if (!this._osdSettings) {
+                    const userSchemaPath = `${GLib.get_home_dir()}/.local/share/gnome-shell/extensions/keyboard-layout-osd@gruvery.systems/schemas`;
+                    const sysSchemaPath = '/usr/share/gnome-shell/extensions/keyboard-layout-osd@gruvery.systems/schemas';
 
-            if (schemaDir) {
-                const schemaSource = Gio.SettingsSchemaSource.new_from_directory(
-                    schemaDir,
-                    Gio.SettingsSchemaSource.get_default(),
-                    false
-                );
-                const schema = schemaSource.lookup('org.gnome.shell.extensions.layout-osd', false);
-                if (schema) {
-                    const osdSettings = Gio.Settings.new_full(schema, null, null);
-                    hideDelayMs = Math.round(osdSettings.get_double('hide-delay') * 1000);
-                    fadeDurationMs = osdSettings.get_int('fade-duration');
+                    let schemaDir = null;
+                    if (GLib.file_test(userSchemaPath, GLib.FileTest.IS_DIR)) {
+                        schemaDir = userSchemaPath;
+                    } else if (GLib.file_test(sysSchemaPath, GLib.FileTest.IS_DIR)) {
+                        schemaDir = sysSchemaPath;
+                    }
+
+                    if (schemaDir) {
+                        const schemaSource = Gio.SettingsSchemaSource.new_from_directory(
+                            schemaDir,
+                            Gio.SettingsSchemaSource.get_default(),
+                            false
+                        );
+                        const schema = schemaSource.lookup('org.gnome.shell.extensions.layout-osd', false);
+                        if (schema) {
+                            this._osdSettings = Gio.Settings.new_full(schema, null, null);
+                            this._osdChangedId = this._osdSettings.connect('changed::opacity', () => {
+                                if (this._lockCard && this._lockCard.visible && this._isLocked) {
+                                    const cfg = this._getOsdConfig();
+                                    this._lockCard.set_style(cfg.cardStyle);
+                                    this._lockCard.ease({
+                                        opacity: cfg.targetOpacity,
+                                        duration: 100,
+                                        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }
+
+                if (this._osdSettings) {
+                    hideDelayMs = Math.round(this._osdSettings.get_double('hide-delay') * 1000);
+                    fadeDurationMs = this._osdSettings.get_int('fade-duration');
+                    const opacityPercent = Math.max(10, Math.min(100, this._osdSettings.get_int('opacity')));
+                    targetOpacity = Math.round(opacityPercent * 255 / 100);
+                    isOsdExtensionActive = true;
+
+                    // Синхронизация визуального стиля с keyboard-layout-osd (.layout-osd-popup):
+                    // background-color: rgba(40,40,40,0.80), скругление 18px, тонкая рамка без затемняющей тени
+                    cardStyle = `
+                        width: 108px;
+                        height: 70px;
+                        background-color: rgba(40, 40, 40, 0.80);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                        border-radius: 18px;
+                    `;
                 }
             }
         } catch (e) {
-            // Fallback default: 700 ms удержание, 250 ms затухание
+            // При ошибке или в ванильной Ubuntu используем дефолтный стиль
         }
 
-        return { hideDelayMs, fadeDurationMs };
+        return { hideDelayMs, fadeDurationMs, targetOpacity, cardStyle, isOsdExtensionActive };
+    }
+
+    _getOsdTimings() {
+        return this._getOsdConfig();
     }
 
     _destroyLockCard() {
@@ -412,17 +456,18 @@ export default class SwitchBackExtension extends Extension {
             const x = monitor.x + Math.round((monitor.width - width) / 2);
             const y = monitor.y + Math.round(monitor.height * 0.70);
 
+            const { hideDelayMs, fadeDurationMs, targetOpacity, cardStyle } = this._getOsdConfig();
+            const durationMs = customDurationMs !== null ? customDurationMs : hideDelayMs;
+
+            this._lockCard.set_style(cardStyle);
             this._lockCard.set_position(x, y);
             this._lockCard.set_size(width, height);
             Main.layoutManager.uiGroup.set_child_above_sibling(this._lockCard, null);
 
-            const { hideDelayMs, fadeDurationMs } = this._getOsdTimings();
-            const durationMs = customDurationMs !== null ? customDurationMs : hideDelayMs;
-
             this._lockCard.remove_all_transitions();
             this._lockCard.visible = true;
             this._lockCard.ease({
-                opacity: 255,
+                opacity: targetOpacity,
                 duration: 150, // Синхронное плавное появление с основным языковым индикатором OSD
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             });
@@ -461,7 +506,7 @@ export default class SwitchBackExtension extends Extension {
         }
         if (!this._lockCard || !this._lockCard.visible) return;
         try {
-            const { fadeDurationMs } = this._getOsdTimings();
+            const { fadeDurationMs } = this._getOsdConfig();
             this._lockCard.remove_all_transitions();
             this._lockCard.ease({
                 opacity: 0,
@@ -944,6 +989,12 @@ export default class SwitchBackExtension extends Extension {
             this._ism.disconnect(this._sourceChangedId);
             this._sourceChangedId = null;
         }
+
+        if (this._osdChangedId && this._osdSettings) {
+            this._osdSettings.disconnect(this._osdChangedId);
+            this._osdChangedId = null;
+        }
+        this._osdSettings = null;
 
         this._destroyBars();
         this._settings = null;

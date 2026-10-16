@@ -48,7 +48,7 @@ RELEASE_BODY = r"""# 🚀 SwitchBack Ubuntu v2.5.0
   - Защита анимации разблокировки от обрыва системным событием смены источника ввода при возврате раскладки.
 
 - **🤝 Умная адаптация к OSD-расширениям:**
-  - Автоматическая синхронизация таймингов затухания и задержки с популярным расширением `keyboard-layout-osd` для монолитного визуального опыта (затухают и исчезают в идеальный унисон).
+  - Автоматическая синхронизация прозрачности, стиля фона и таймингов затухания с популярным расширением `keyboard-layout-osd` (и сохранение чистого нативного стиля Ubuntu Yaru по умолчанию).
 
 - **📌 Постоянный экранный бейдж замка (`caps-lock-hold-persistent-badge`)**:
   - Опция непрерывного отображения компактной карточки замка на экране на всё время действия блокировки.
@@ -109,7 +109,7 @@ wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/downloa
   - Protected unlock animation against premature disposal by GNOME input source change events.
 
 - **🤝 Smart OSD Extension Synergy**:
-  - Automatic dynamic synchronization of fade durations and display delays with the popular `keyboard-layout-osd` extension for a unified desktop experience.
+  - Automatic dynamic synchronization of opacity, background styling, and fade timings with the popular `keyboard-layout-osd` extension (while maintaining a crisp native Ubuntu Yaru style by default).
 
 - **📌 Persistent On-Screen Lock Badge (`caps-lock-hold-persistent-badge`)**:
   - Option to keep the discrete lock card on screen for the entire duration of the lock, providing permanent visual assurance of the locked layout.

@@ -106,6 +106,7 @@ cp -f "$PROJECT_DIR/extension/extension.js" "$EXT_TARGET/"
 cp -f "$PROJECT_DIR/extension/prefs.js" "$EXT_TARGET/"
 cp -f "$PROJECT_DIR/extension/schemas/"* "$EXT_TARGET/schemas/"
 cp -rf "$PROJECT_DIR/extension/locale/"* "$EXT_TARGET/locale/"
+cp -rf "$PROJECT_DIR/extension/icons/"* "$EXT_TARGET/icons/" 2>/dev/null || true
 cp -f "$PROJECT_DIR/desktop/icons/switchback.svg" "$EXT_TARGET/icons/"
 
 echo -e "${GREEN}✅ Файлы расширения, иконок и локализации установлены в $EXT_TARGET${NC}"
