@@ -116,8 +116,13 @@ cd SwitchBack-Ubuntu
 ```
 
 ### Способ А: Графический установщик (Рекомендуется)
-Запустите графический установщик и менеджер на GTK4/Libadwaita:
 
+**Быстрый запуск одной командой (без ручного скачивания архива):**
+```bash
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install-gui
+```
+
+Либо из склонированного репозитория:
 ```bash
 ./install-gui
 # или: ./install.sh --gui
@@ -135,8 +140,13 @@ cd SwitchBack-Ubuntu
 </div>
 
 ### Способ Б: Установка через терминал
-Запустите скрипт автоматической установки:
 
+**Быстрая установка одной командой (без git и ручной распаковки):**
+```bash
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install.sh
+```
+
+Либо запуск скрипта из склонированного репозитория:
 ```bash
 ./install.sh
 ```

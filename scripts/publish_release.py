@@ -61,17 +61,15 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.3.0
 
 ### 📦 Installation Options
 
-#### Option A: Graphical Installer (Recommended)
-Download and extract `SwitchBack-Ubuntu-v2.3.0.tar.gz` or `.zip`:
+#### Fast One-Line Launch (Recommended)
+Run in terminal to download and launch the installer in seconds:
 ```bash
-./install-gui
-# Or double-click "SwitchBack-Installer.desktop"
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install-gui
 ```
 
-#### Option B: Terminal CLI
-```bash
-./install.sh
-```
+#### Or extract and run:
+- **Graphical Setup (GUI):** `./install-gui` (or double-click `SwitchBack-Installer.desktop`)
+- **Terminal Script (CLI):** `./install.sh`
 
 ---
 

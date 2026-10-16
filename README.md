@@ -115,8 +115,13 @@ cd SwitchBack-Ubuntu
 ```
 
 ### Option A: Graphical Installer (Recommended)
-Launch the modern GTK4/Libadwaita installer & manager:
 
+**Fast one-line launch (without manual download):**
+```bash
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install-gui
+```
+
+Or from a cloned repository:
 ```bash
 ./install-gui
 # or: ./install.sh --gui
@@ -134,8 +139,13 @@ Supports fresh setup, configuring startup options, opening preferences, and clea
 </div>
 
 ### Option B: Terminal Script
-Run the automated CLI script:
 
+**Fast one-line install (no git or manual download required):**
+```bash
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install.sh
+```
+
+Or run the automated CLI script from a cloned repository:
 ```bash
 ./install.sh
 ```
