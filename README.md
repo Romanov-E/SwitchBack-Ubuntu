@@ -46,14 +46,26 @@ It adds single-key layout switching via `Caps Lock`, customizable on-screen coun
 
 ## 📸 Interface & Live Preview Animations
 
-### Layout Lock HUD & Preferences Tabs
-
+### Preferences Tabs
+ 
 <div align="center">
-
-| Layout Lock HUD (Ubuntu Style) | Tab 1: Behavior | Tab 2: Appearance | Tab 3: Service |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/lock-indicator.png" width="220" alt="Lock HUD Indicator" /> | <img src="docs/screenshots/tab1-behavior-en.png" width="240" alt="Tab 1: Behavior" /> | <img src="docs/screenshots/tab2-appearance-en.png" width="240" alt="Tab 2: Appearance" /> | <img src="docs/screenshots/tab3-service-en.png" width="240" alt="Tab 3: Service" /> |
-
+ 
+| Tab 1: Behavior | Tab 2: Appearance | Tab 3: Service |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tab1-behavior-en.png" width="310" alt="Tab 1: Behavior" /> | <img src="docs/screenshots/tab2-appearance-en.png" width="310" alt="Tab 2: Appearance" /> | <img src="docs/screenshots/tab3-service-en.png" width="310" alt="Tab 3: Service" /> |
+ 
+</div>
+ 
+### Layout Lock & Unlock HUD
+ 
+Holding **Caps Lock** (default: 300 ms) temporarily locks the current non-primary layout. A single tap on Caps Lock instantly unlocks it (🔓) and returns to the primary layout. Notifications are styled after native Ubuntu OSD banners.
+ 
+<div align="center">
+ 
+<img src="docs/screenshots/lock-indicator.png" width="560" alt="Layout Lock and Unlock HUD Indicators" />
+ 
+<p><em>Native Ubuntu OSD style: Layout Locked (left) and Layout Unlocked (right)</em></p>
+ 
 </div>
 
 ### Live Indicator Preview Animations

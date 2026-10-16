@@ -46,13 +46,25 @@
 
 ## 📸 Интерфейс и анимации визуализации
 
-### Индикатор блокировки и вкладки настроек
+### Вкладки окна настроек
 
 <div align="center">
 
-| Индикатор блокировки (стиль Ubuntu) | Вкладка 1: Поведение | Вкладка 2: Внешний вид | Вкладка 3: Служба |
-| :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/lock-indicator.png" width="220" alt="Индикатор блокировки" /> | <img src="docs/screenshots/tab1-behavior.png" width="240" alt="Вкладка 1: Поведение" /> | <img src="docs/screenshots/tab2-appearance.png" width="240" alt="Вкладка 2: Внешний вид" /> | <img src="docs/screenshots/tab3-service.png" width="240" alt="Вкладка 3: Служба" /> |
+| Вкладка 1: Поведение | Вкладка 2: Внешний вид | Вкладка 3: Служба |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tab1-behavior.png" width="310" alt="Вкладка 1: Поведение" /> | <img src="docs/screenshots/tab2-appearance.png" width="310" alt="Вкладка 2: Внешний вид" /> | <img src="docs/screenshots/tab3-service.png" width="310" alt="Вкладка 3: Служба" /> |
+
+</div>
+
+### Индикаторы фиксации и разблокировки раскладки (Lock & Unlock HUD)
+
+Удержание **Caps Lock** (по умолчанию 300 мс) фиксирует текущую неприоритетную раскладку, а повторное одиночное нажатие мгновенно снимает фиксацию (🔓) и возвращает приоритетный язык. Уведомления выполнены в едином нативном стиле системных OSD-индикаторов Ubuntu.
+
+<div align="center">
+
+<img src="docs/screenshots/lock-indicator.png" width="560" alt="Индикаторы блокировки и разблокировки раскладки (стиль Ubuntu OSD)" />
+
+<p><em>Нативные системные уведомления Ubuntu: фиксация раскладки (слева) и снятие блокировки (справа)</em></p>
 
 </div>
 
