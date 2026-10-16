@@ -31,6 +31,16 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.3.0
 
 ### ✨ Key Features & Improvements
 
+- **🔒 Caps Lock Hold Layout Lock**:
+  - Hold `Caps Lock` (default 600 ms, configurable from 300 to 2000 ms) to temporarily lock the non-primary layout, disabling auto-switch countdown.
+  - Quick single tap on `Caps Lock` instantly releases the lock and returns to the primary layout.
+  - Integrated GNOME Shell OSD banners ("Layout Locked" / "Layout Unlocked") for instant visual feedback.
+
+- **📌 Pinned 16:9 Live Preview & Relative Margins**:
+  - Pinned real-time 16:9 monitor preview stays permanently fixed at the top of the "Appearance" tab while scrolling through settings.
+  - Real-time proportional edge margin visualization directly inside the monitor preview for top, bottom, left, and right offsets.
+  - Increased default preferences window height to 800px for comfortable configuration on high-DPI screens.
+
 - **🎨 Modern GTK4 + Libadwaita GUI Installer (`install-gui`)**:
   - Interactive graphical installation with real-time log terminal and progress bar.
   - Multi-language switcher (RU / EN).
@@ -47,11 +57,6 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.3.0
     - **Fade-In appearance duration:** `0–1000 ms` (default `150 ms`).
     - **Fade-Out dissolution duration:** `0–2000 ms` (default `800 ms`).
   - Live 16:9 monitor preview immediately reflects the configured in/out timing.
-
-- **🖥️ 16:9 Realistic Virtual Display Preview in Preferences**:
-  - Enlarged 16:9 aspect ratio monitor with active bezel styling.
-  - Automatic 3-cycle animation repeat when switching animation types for instant visual feedback.
-  - Sub-pixel precise indicator and corner positioning preview.
 
 - **🛡️ Full GNOME Shell 45 – 51 & Wayland Support**:
   - Clean real-time `/dev/shm` shared memory IPC with zero lag and zero CPU overhead.
