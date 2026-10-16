@@ -23,14 +23,79 @@ OWNER = "Romanov-E"
 REPO = "SwitchBack-Ubuntu"
 TAG = "v2.5.0"
 VERSION = "2.5.0"
-RELEASE_TITLE = f"v{VERSION} — Native Ubuntu Lock HUD & Persistent Lock Badge"
+RELEASE_TITLE = f"v{VERSION} — Native Ubuntu Lock HUD & Persistent Lock Badge (Фиксация раскладки)"
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIST_DIR = os.path.join(PROJECT_DIR, "dist")
 
-RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.5.0
+RELEASE_BODY = r"""# 🚀 SwitchBack Ubuntu v2.5.0
 
-### ✨ Key Features & Improvements in v2.5.0
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Romanov-E/SwitchBack-Ubuntu/main/docs/screenshots/lock-indicator.png" width="600" alt="SwitchBack Lock and Unlock HUD Indicators" />
+  <p><em>🔒 Фиксация раскладки (слева) • 🔓 Снятие блокировки (справа)</em></p>
+</div>
+
+---
+
+## 🇷🇺 Ключевые новшества и улучшения в v2.5.0
+
+- **🔒 Нативные индикаторы блокировки и разблокировки раскладки (Lock & Unlock HUD)**:
+  - Широкие текстовые плашки заменены на аккуратные карточки уведомлений в аутентичном стиле переключателя раскладок Ubuntu (`108 × 70 px`, скругление `18 px`).
+  - Чёткие символьные системные иконки:
+    - `🔒` (`changes-prevent-symbolic`) при фиксации неприоритетной раскладки.
+    - `🔓` (`changes-allow-symbolic`) при снятии фиксации и возврате на приоритетный язык.
+  - Оптимальное расположение по высоте ($Y = 70\%$) — карточка отображается строго под системным переключателем раскладок GNOME ($Y = 50\%$) без визуального наложения.
+  - Защита анимации разблокировки от обрыва системным событием смены источника ввода при возврате раскладки.
+
+- **📌 Постоянный экранный бейдж замка (`caps-lock-hold-persistent-badge`)**:
+  - Опция непрерывного отображения компактной карточки замка на экране на всё время действия блокировки.
+  - Сквозной элемент (`reactive: false`) — не перехватывает клики мыши и нажатия клавиш при вводе текста.
+
+- **🧹 Чистые края экрана при блокировке (`caps-lock-hold-hide-bars`)**:
+  - Опция плавного скрытия полос обратного отсчета по краям экрана во время активной фиксации раскладки, оставляя экран чистым и не отвлекающим от работы.
+
+- **🔔 Тумблер уведомлений блокировки (`caps-lock-hold-notify`)**:
+  - Отдельный переключатель для включения или отключения OSD-уведомлений фиксации.
+
+- **🛡️ Аппаратное устранение автоповтора клавиши Caps Lock**:
+  - Фильтрация аппаратных autorepeat-событий `KEY_CAPSLOCK` в `daemon.py` и удержание 100% заполнения полосы во время нажатия клавиши. Полоса больше не дергается и не перезапускается циклами.
+
+- **📌 Закреплённое Live Preview 16:9 и относительные отступы**:
+  - Миниатюра монитора с аппаратным VSync теперь постоянно закреплена вверху вкладки «Внешний вид» и не уезжает при прокрутке настроек.
+  - Наглядная пропорциональная визуализация границ отступов (верх, низ, лево, право) прямо внутри рамки превью.
+
+- **🎨 Графический установщик GTK4 + Libadwaita (`install-gui`)**:
+  - Интерактивная установка с терминальным журналом реального времени и прогресс-баром.
+  - Переключатель языка интерфейса (RU / EN).
+  - Запуск в один клик через `SwitchBack-Installer.desktop` или терминальной командой.
+
+- **📐 Режимы анимации и бесшовное схождение линий**:
+  - 6 стилей движения индикатора: сжатие к центру, разделение к краям, заполнение из центра, схождение от краев к центру, сжатие к началу и к концу.
+  - Субпиксельная точность и направленное скругление углов без ступенек и зазоров.
+  - 4 угловых Г-образных положения и режим одновременного 4-углового HUD.
+
+- **⏱️ Тонкая настройка плавности появления и затухания**:
+  - Раздельные параметры времени Fade-In (0–1000 мс) и Fade-Out (0–2000 мс).
+
+- **🛡️ Полная поддержка GNOME Shell 45–51 и Wayland**:
+  - IPC через разделяемую память `/dev/shm` без задержек и нагрузки на CPU.
+  - Полная русская и английская локализация с выверенной типографикой.
+
+### 📦 Варианты установки
+
+#### Быстрый запуск одной командой (Рекомендуется)
+Выполните в терминале для автоматического скачивания и запуска установщика:
+```bash
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.5.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.5.0 && ./install-gui
+```
+
+#### Или распаковать архив и запустить:
+- **Графический установщик (GUI):** `./install-gui` (или двойной клик по `SwitchBack-Installer.desktop`)
+- **Установка через терминал (CLI):** `./install.sh`
+
+---
+
+## 🇬🇧 Key Features & Improvements in v2.5.0
 
 - **🔒 Native Ubuntu-Style Lock & Unlock HUD Indicators**:
   - Replaced wide text banners with an elegant, dedicated notification card matching Ubuntu's native layout switcher styling (`108 × 70 px`, `border-radius: 18px`).
@@ -38,6 +103,7 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.5.0
     - `🔒` (`changes-prevent-symbolic`) on layout lock.
     - `🔓` (`changes-allow-symbolic`) on unlock.
   - Positioned comfortably below GNOME's central layout popup ($Y = 70\%$ height), completely eliminating any visual overlap.
+  - Protected unlock animation against premature disposal by GNOME input source change events.
 
 - **📌 Persistent On-Screen Lock Badge (`caps-lock-hold-persistent-badge`)**:
   - Option to keep the discrete lock card on screen for the entire duration of the lock, providing permanent visual assurance of the locked layout.
