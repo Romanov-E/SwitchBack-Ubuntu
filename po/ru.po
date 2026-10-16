@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: SwitchBack Ubuntu 2.3.0\n"
+"Project-Id-Version: SwitchBack Ubuntu 2.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Romanov-E/SwitchBack-Ubuntu\n"
 "POT-Creation-Date: 2026-10-14 15:45+0300\n"
 "PO-Revision-Date: 2026-10-14 15:45+0300\n"

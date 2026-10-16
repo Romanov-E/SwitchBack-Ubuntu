@@ -115,7 +115,7 @@ cd SwitchBack-Ubuntu
 
 **Fast one-line launch (without manual download):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install-gui
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install-gui
 ```
 
 Or from a cloned repository:
@@ -139,7 +139,7 @@ Supports fresh setup, configuring startup options, opening preferences, and clea
 
 **Fast one-line install (no git or manual download required):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install.sh
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install.sh
 ```
 
 Or run the automated CLI script from a cloned repository:

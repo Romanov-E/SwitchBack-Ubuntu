@@ -1133,8 +1133,9 @@ export default class SwitchBackPreferences extends ExtensionPreferences {
         }
         rowVersion.add_prefix(appIcon);
 
+        const currentVersion = this.metadata?.['version-name'] || (this.metadata?.version ? String(this.metadata.version) : '2.4.0');
         const labelVersion = new Gtk.Label({
-            label: '2.3.0',
+            label: currentVersion,
             css_classes: ['dim-label', 'title-4'],
             valign: Gtk.Align.CENTER,
         });

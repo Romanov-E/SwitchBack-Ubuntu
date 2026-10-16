@@ -21,20 +21,21 @@ def get_token():
 TOKEN = get_token()
 OWNER = "Romanov-E"
 REPO = "SwitchBack-Ubuntu"
-TAG = "v2.3.0"
-VERSION = "2.3.0"
+TAG = "v2.4.0"
+VERSION = "2.4.0"
+RELEASE_TITLE = f"v{VERSION} — Caps Lock Hold Layout Lock & Pinned Live Preview"
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIST_DIR = os.path.join(PROJECT_DIR, "dist")
 
-RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.3.0
+RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.4.0
 
 ### ✨ Key Features & Improvements
 
 - **🔒 Caps Lock Hold Layout Lock**:
   - Hold `Caps Lock` (default 600 ms, configurable from 300 to 2000 ms) to temporarily lock the non-primary layout, disabling auto-switch countdown.
   - Quick single tap on `Caps Lock` instantly releases the lock and returns to the primary layout.
-  - Integrated GNOME Shell OSD banners ("Layout Locked" / "Layout Unlocked") for instant visual feedback.
+  - Integrated GNOME Shell OSD notification banners ("Layout Locked" / "Layout Unlocked") for instant visual feedback.
 
 - **📌 Pinned 16:9 Live Preview & Relative Margins**:
   - Pinned real-time 16:9 monitor preview stays permanently fixed at the top of the "Appearance" tab while scrolling through settings.
@@ -69,7 +70,7 @@ RELEASE_BODY = """## 🚀 SwitchBack Ubuntu v2.3.0
 #### Fast One-Line Launch (Recommended)
 Run in terminal to download and launch the installer in seconds:
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install-gui
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install-gui
 ```
 
 #### Or extract and run:
@@ -100,7 +101,7 @@ def create_or_get_release():
             
             # Patch release text and title
             patch_payload = {
-                "name": f"v{VERSION} — Smooth Transitions, Inward Convergence & GUI Installer",
+                "name": RELEASE_TITLE,
                 "body": RELEASE_BODY
             }
             patch_req = urllib.request.Request(
@@ -121,7 +122,7 @@ def create_or_get_release():
     payload = {
         "tag_name": TAG,
         "target_commitish": "main",
-        "name": f"v{VERSION} — Smooth Transitions, Inward Convergence & GUI Installer",
+        "name": RELEASE_TITLE,
         "body": RELEASE_BODY,
         "draft": False,
         "prerelease": False

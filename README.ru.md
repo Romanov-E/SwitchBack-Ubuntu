@@ -115,7 +115,7 @@ cd SwitchBack-Ubuntu
 
 **Быстрый запуск одной командой (без ручного скачивания архива):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install-gui
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install-gui
 ```
 
 Либо из склонированного репозитория:
@@ -139,7 +139,7 @@ wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/downloa
 
 **Быстрая установка одной командой (без git и ручной распаковки):**
 ```bash
-wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.3.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.3.0 && ./install.sh
+wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/download/SwitchBack-Ubuntu-v2.4.0.tar.gz | tar xz && cd SwitchBack-Ubuntu-v2.4.0 && ./install.sh
 ```
 
 Либо запуск скрипта из склонированного репозитория:
