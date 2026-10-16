@@ -68,6 +68,9 @@ Holding **Caps Lock** (default: 300 ms) temporarily locks the current non-primar
  
 </div>
 
+> 💡 **Seamless OSD Synergy:**  
+> SwitchBack lock indicators are fully autonomous and work out-of-the-box on vanilla Ubuntu, but also feature automatic timing and fade synchronization when paired with the popular [*Keyboard Layout OSD*](https://extensions.gnome.org/extension/4461/keyboard-layout-osd/) extension.
+
 ### Live Indicator Preview Animations
 
 <div align="center">

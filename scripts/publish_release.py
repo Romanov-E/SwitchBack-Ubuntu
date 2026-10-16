@@ -43,9 +43,12 @@ RELEASE_BODY = r"""# 🚀 SwitchBack Ubuntu v2.5.0
   - Широкие текстовые плашки заменены на аккуратные карточки уведомлений в аутентичном стиле переключателя раскладок Ubuntu (`108 × 70 px`, скругление `18 px`).
   - Чёткие символьные системные иконки:
     - `🔒` (`changes-prevent-symbolic`) при фиксации неприоритетной раскладки.
-    - `🔓` (`changes-allow-symbolic`) при снятии фиксации и возврате на приоритетный язык.
+    - `🔓` (`padlock-open-left-symbolic`) при снятии фиксации с размыканием слева (гармоничный дизайн LTR).
   - Оптимальное расположение по высоте ($Y = 70\%$) — карточка отображается строго под системным переключателем раскладок GNOME ($Y = 50\%$) без визуального наложения.
   - Защита анимации разблокировки от обрыва системным событием смены источника ввода при возврате раскладки.
+
+- **🤝 Умная адаптация к OSD-расширениям:**
+  - Автоматическая синхронизация таймингов затухания и задержки с популярным расширением `keyboard-layout-osd` для монолитного визуального опыта (затухают и исчезают в идеальный унисон).
 
 - **📌 Постоянный экранный бейдж замка (`caps-lock-hold-persistent-badge`)**:
   - Опция непрерывного отображения компактной карточки замка на экране на всё время действия блокировки.
@@ -101,9 +104,12 @@ wget -qO- https://github.com/Romanov-E/SwitchBack-Ubuntu/releases/latest/downloa
   - Replaced wide text banners with an elegant, dedicated notification card matching Ubuntu's native layout switcher styling (`108 × 70 px`, `border-radius: 18px`).
   - Crisp, prominent symbolic icons:
     - `🔒` (`changes-prevent-symbolic`) on layout lock.
-    - `🔓` (`changes-allow-symbolic`) on unlock.
+    - `🔓` (`padlock-open-left-symbolic`) on unlock with intuitive left-side opening (harmonious LTR design).
   - Positioned comfortably below GNOME's central layout popup ($Y = 70\%$ height), completely eliminating any visual overlap.
   - Protected unlock animation against premature disposal by GNOME input source change events.
+
+- **🤝 Smart OSD Extension Synergy**:
+  - Automatic dynamic synchronization of fade durations and display delays with the popular `keyboard-layout-osd` extension for a unified desktop experience.
 
 - **📌 Persistent On-Screen Lock Badge (`caps-lock-hold-persistent-badge`)**:
   - Option to keep the discrete lock card on screen for the entire duration of the lock, providing permanent visual assurance of the locked layout.
